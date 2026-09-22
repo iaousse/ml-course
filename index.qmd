@@ -1,40 +1,33 @@
----
-title: "École Supérieure de Technologie de Casablanca"
-subtitle: "École Supérieure de Technologie de Casablanca
+::: {.content-visible when-format="pdf"}
+![](images/logo_estc.png){width=6cm fig-align="center"}
+:::
+\clearpage 
+::: {.content-visible when-format="pdf"}
+![](images/qrcode.png){width=3.5cm fig-align="center"}
+:::
 
-    Licence Professionnelle DBT-DAIA
-    
-    Module : Machine Learning"
+\clearpage 
+:::{.content-visible when-format="html"}
+![](images/logo_estc.png){width=70% fig-align="center"}
+:::
 
-author: "IAOUSSE M'barek"
-date: "2026"
----
-
-![](images/logo_estc.png){width=880px fig-align="center"}
-
-
-
-# Préface {.unnumbered}
 
 ::: {.callout-note title="À propos de ce support"}
 
-#     {.unnumbered .unlisted}
-\vspace{-5.2cm} 
+
+\clearpage 
 {{< include _deuxieme_page.qmd >}}
 
 \clearpage
 :::
-
-
-## Préface {.unnumbered}
-
+# Préface {.unnumbered}
+ 
 Ce manuel a commencé comme notes de cours pour le module *Machine Learning* dispensé dans le cadre de la Licence Professionnelle DBT-DAIA (*Développement d'Applications et Intelligence Artificielle*) en temps aménagé à l'École Supérieure de Technologie de Casablanca (ESTC).
 À l'origine, la communauté étudiante dans ce programme provient de parcours techniques variés (DUT, BTS, DTS ou diplômes équivalents), ayant déjà acquis un bagage en programmation informatique et en mathématiques appliquées.
 Ainsi, ces personnes ont déjà appris à programmer en Python et à manipuler des structures de données.
 
 Pendant longtemps, l'enseignement du Machine Learning s'est appuyé sur des ouvrages de référence académiques classiques, tels que *Pattern Recognition and Machine Learning* [@bishop2006] ou *Hands-On Machine Learning* [@geron2022].
 Cependant, la plupart des livres du marché sont soit très théoriques et axés sur les mathématiques pures, soit rédigés exclusivement en anglais avec des études de cas pas toujours adaptées au rythme d'une formation en temps aménagé.
-
 De plus, certains aspects comme l'ingénierie des données (*Feature Engineering*), la validation rigoureuse des modèles et la transition progressive vers des environnements de production (VS Code, MLOps) sont devenus indispensables sur le marché du travail.
 Le présent manuel essaie de répondre à l'ensemble de ces besoins, sous forme de ressource éducative libre (REL).
 
@@ -45,7 +38,7 @@ Dans le cadre de l'enseignement, nous utilisons des plateformes de gestion de co
 Il est donc naturel d'adopter une démarche analogue pour le contenu de ce manuel, soit une **ressource éducative libre (REL)**.
 
 Pour favoriser la réutilisation et la pérennité du support, nous avons utilisé des logiciels libres de référence :
-
+  
 - Quarto [-@noauthor_quarto_2023] (le langage source du texte est [Markdown](https://quarto.org/docs/authoring/markdown-basics.html)) ;
 - Pandoc et LaTeX pour le traitement et la compilation vers les formats Web (HTML), PDF et EPUB ;
 - Python et ses bibliothèques scientifiques clés (`NumPy`, `Pandas`, `Matplotlib`, `Scikit-Learn`) pour les exemples et les travaux pratiques.
@@ -55,7 +48,7 @@ Autant que possible, les schémas et figures du manuel sont créés sous forme v
 ## Prérequis
 
 Le contenu de ce manuel est organisé pour les personnes ayant déjà une base et une expérience avec :
-
+  
 - la programmation en langage Python (fonctions, structures de données, bases de programmation orientée objet) ;
 - les notions élémentaires de mathématiques pour l'informatique (calcul matriciel de base, dérivées, probabilités et statistiques descriptives) ;
 - l'utilisation d'un environnement d'exécution d'analyse de données (Jupyter Notebooks, Google Colab ou VS Code).
@@ -68,12 +61,10 @@ Ce manuel s'inspire des méthodologies d'apprentissage guidé par les données e
 Pour approfondir certains sujets, des références vers des ouvrages classiques et la documentation officielle sont proposées au fil des chapitres.
 
 ::: {.callout-note}
-Au besoin, des références aux ouvrages de référence sont indiquées par l'icône du livre {{< fa solid book >}}.
-Par exemple, pour les aspects pratiques d'implémentation sous Python, nous renvoyons régulièrement au livre d'A. Géron [-@geron2022], noté **[GÉRON]**, ou à la documentation officielle de `Scikit-Learn`.
+Pour les aspects pratiques d'implémentation sous Python, nous renvoyons régulièrement au livre d'A. Géron [-@geron2022], noté **[GÉRON]**, ou à la documentation officielle de `Scikit-Learn`.
 :::
-
+  
 ::: {.callout-caution}
 Les bibliothèques scientifiques Python évoluant rapidement, veillez à utiliser un environnement virtuel basé sur Python 3.10 ou supérieur pour garantir la compatibilité des extraits de code présentés dans ce manuel.
 :::
 
-Dans ce manuel, vous trouverez également des sujets clés pour l'ingénierie logicielle appliquée à la science des données : l'analyse du compromis biais-variance, la structuration d'un projet ML, la prévention du sur-apprentissage et la préparation à l'industrialisation des modèles.

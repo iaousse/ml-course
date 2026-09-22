@@ -1,7 +1,3 @@
----
-title: "Introduction Générale"
----
-
 # Introduction au Machine Learning
 
 ::: {.callout-tip title="Objectifs pédagogiques de l'introduction"}

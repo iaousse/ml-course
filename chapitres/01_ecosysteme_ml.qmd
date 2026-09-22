@@ -1,7 +1,3 @@
----
-title: "Chapitre 1 — Écosystème et Fondements de l'Apprentissage Automatique"
----
-
 # Écosystème et Fondements de l'Apprentissage Automatique
 
 ::: {.callout-tip title="Objectifs du chapitre"}
@@ -140,7 +136,7 @@ En TP, cette notion sera manipulée directement avec `Scikit-Learn` (voir TP 1).
 
 ## 1.8 Illustration
 
-![Support de cours réalisé dans le cadre de la Licence DBT-DAIA.](../cover-old.png){#fig-logo-estc fig-align="center" width="200px"}
+![Support de cours réalisé dans le cadre de la Licence DBT-DAIA.](../images/cover-old.png){#fig-logo-estc fig-align="center" width="200px"}
 
 Voir @fig-logo-estc.
 

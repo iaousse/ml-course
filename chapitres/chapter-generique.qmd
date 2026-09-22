@@ -1,11 +1,3 @@
----
-title: "Titre du Chapitre ou du Module"
-subtitle: "Sous-titre ou description courte de la thématique"
-abstract: |
-  Résumé synthétique du chapitre : présentation des objectifs pédagogiques, 
-  des prérequis et des compétences visées par l'étudiant.
----
-
 # Titre du Chapitre
 
 ::: {.callout-tip title="Objectifs du chapitre"}
