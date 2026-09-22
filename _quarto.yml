@@ -1,0 +1,74 @@
+project:
+  type: book
+  output-dir: _build
+
+lang: fr
+language:
+  title-block-author-single: "Auteur"
+  title-block-author-plural: "Auteurs"
+  author-title: "Auteur"
+  authors-title: "Auteurs"
+crossref:
+  fig-prefix: figure     # (Par défaut "Figure")
+  tbl-prefix: tableau    # (Par défaut "Table")
+  sec-prefix: section    # (Par défaut "Section")
+  eq-prefix: équation    # (Par défaut "Équation")
+
+book:
+  title: "Cours de Machine Learning"
+  author: "IAOUSSE M'barek"
+  date: last-modified
+  date-format: "YYYY"
+  
+  # Navigation et options web
+  search: true
+  downloads: [pdf]
+  
+  # Structure du livre (votre table des matières)
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - chapitres/01_ecosysteme_ml.qmd
+    # Ajoutez vos autres chapitres ici au fur et à mesure :
+    # - chapitres/02_regression_lineaire.qmd
+    # - chapitres/03_classification.qmd
+    - references.qmd
+
+# Configuration pour le code Python
+execute:
+  freeze: auto   # Ne réexécute le code Python que si le fichier .qmd est modifié
+  echo: true     # Affiche le code par défaut dans le livre
+
+# Bibliographie
+bibliography: references.bib
+link-citations: true
+citations-hover: true
+
+# Styles d'exportation
+format:
+  html:
+    theme: spacelab             # Thème clair, lisible, avec des accents bleus
+    title-block-banner: true    # Active le bloc d'en-tête (prend la couleur bleue du thème)
+    # title-block-banner: "#1a467e" # Optionnel : remplacez "true" par un code couleur précis pour correspondre au bleu de l'ESTC
+    
+    # Options pour une mise en page "pratique" :
+    toc: true                   # Affiche la table des matières de la page
+    toc-title: "Dans ce chapitre" 
+    toc-location: right         # Place la table des matières à droite (très pratique pour lire)
+    toc-depth: 3
+    
+    code-copy: true             # Ajoute un petit bouton pour copier le code Python
+    code-fold: show             # Permet de masquer/afficher les longs blocs de code
+    smooth-scroll: true         # Défilement fluide
+    
+  pdf:
+    documentclass: scrbook
+    pdf-engine: xelatex   # Ou pdflatex
+    toc: true
+    number-sections: true
+    colorlinks: true
+    geometry:
+      - top=25mm
+      - bottom=25mm
+      - left=20mm
+      - right=20mm

@@ -1,0 +1,34 @@
+\small
+::: hanging-indent
+**Ce manuel** a été élaboré pour servir de support de cours principal pour le module *Machine Learning* dispensé dans le cadre de la Licence Professionnelle DBT-DAIA (*Développement d'Applications et Intelligence Artificielle*) en Temps Aménagé à l'École Supérieure de Technologie de Casablanca (ESTC).
+:::
+
+::: hanging-indent
+**L'auteur** est M'barek IAOUSSE, Enseignant-Chercheur à l'EST Casablanca, Université Hassan II de Casablanca.
+:::
+
+:::: {.callout}
+::: {layout="[12,-1,40]" layout-valign="center"}
+![](images/CC/by.png)   
+
+\justifying\small Sauf indications contraires, le contenu de ce manuel électronique est disponible 
+en vertu des termes de la [Licence Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/deed.fr).
+:::
+
+::: hanging-indent
+**Vous êtes autorisé à :**\
+**Partager** -- copier, distribuer et communiquer le matériel par tous moyens et sous tous formats.\
+**Adapter** -- remixer, transformer et créer à partir du matériel pour toute utilisation, y compris commerciale.
+:::
+::: hanging-indent
+**Condition :** Créditer l'auteur (M'barek IAOUSSE) en cas de réutilisation ou d'adaptation du contenu.
+:::
+::::
+
+\filbreak
+
+© M'barek IAOUSSE (2026)\
+Pour citer ce manuel : M'barek IAOUSSE. (2026).
+*Cours de Machine Learning : Fondements théoriques et applications pratiques en Python*. École Supérieure de Technologie de Casablanca.
+Sous licence CC BY 4.0.
+

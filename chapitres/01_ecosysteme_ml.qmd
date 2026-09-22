@@ -1,0 +1,164 @@
+---
+title: "Chapitre 1 — Écosystème et Fondements de l'Apprentissage Automatique"
+---
+
+# Écosystème et Fondements de l'Apprentissage Automatique
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre, l'étudiant sera capable de :
+- définir l'apprentissage statistique et le situer par rapport à l'intelligence artificielle ;
+- distinguer les grandes familles d'apprentissage (supervisé, non supervisé, par renforcement) ;
+- citer les rôles des bibliothèques scientifiques Python de référence (`NumPy`, `Pandas`, `Matplotlib`, `Scikit-Learn`) ;
+- distinguer un environnement d'exploration (Jupyter/Colab) d'un environnement de production (VS Code).
+:::
+
+*a remplir : introduction générale du chapitre.*
+
+## 1.1 Qu'est-ce que l'apprentissage automatique ?
+
+*a remplir*
+
+Le Machine Learning consiste à construire une fonction $f$ qui approxime une relation entre
+des variables d'entrée $X$ et une sortie $y$, à partir d'exemples $(X_i, y_i)_{i=1}^n$, plutôt
+que de la programmer explicitement.
+
+$$
+\begin{aligned}
+\hat{y} &= f_\theta(X) \\
+&= w^T X + b
+\end{aligned}
+$$ {#eq-hypothese}
+
+On peut se référer à l'@eq-hypothese pour la suite du cours : le problème de
+l'apprentissage consiste à trouver les paramètres optimaux qui minimisent une fonction de coût
+$\mathcal{L}$ :
+
+$$\hat{\theta} := \operatorname{argmin}_{\theta} \; \mathcal{L}\big(f_\theta(X), y\big)$$
+
+## 1.2 Panorama de l'écosystème ML
+
+*a remplir*
+
+| Bibliothèque | Rôle |
+|---|---|
+| `NumPy` | Calcul matriciel et vectoriel |
+| `Pandas` | Manipulation de données tabulaires |
+| `Matplotlib` | Visualisation de données |
+| `Scikit-Learn` | Modélisation, pipelines, métriques |
+| `TensorFlow` | Apprentissage profond |
+
+: Principales bibliothèques Python utilisées dans ce cours {#tbl-ecosysteme}
+
+Le @tbl-ecosysteme résume les outils qui seront utilisés dans les TP.
+
+::: {.callout-note collapse="true" title="Environnements d'exécution"}
+- **Exploration :** Jupyter Notebook, Google Colab — pratiques pour l'analyse rapide et la visualisation.
+- **Production :** Visual Studio Code — utilisé à partir du Module 4 pour structurer un projet ML complet (scripts, tests, versionnage).
+:::
+
+## 1.3 Théorème de projection orthogonale (rappel d'algèbre linéaire)
+
+*a remplir : lien avec la régression linéaire par moindres carrés (Module 3).*
+
+::: {#thm-projection name="Théorème de projection orthogonale"}
+Étant donné $y \in \mathbb R^n$ et un sous-espace linéaire $S \subset \mathbb R^n$, il existe
+une unique solution au problème de minimisation
+
+$$\hat y := \operatorname{argmin}_{z \in S} \Vert{}y - z\Vert{}$$
+
+Le minimiseur $\hat y$ est l'unique vecteur de $\mathbb R^n$ qui satisfait :
+
+* $\hat y \in S$
+* $y - \hat y \perp S$
+
+Le vecteur $\hat y$ est appelé la **projection orthogonale** de $y$ sur $S$.
+:::
+
+::: {.proof}
+Soit $z$ un autre point quelconque de $S$. En utilisant le fait que $S$ est un sous-espace
+linéaire, on peut montrer que :
+
+$$\Vert{} y - z \Vert{}^2 = \Vert{} (y - \hat y) + (\hat y - z) \Vert{}^2 = \Vert{} y - \hat y \Vert{}^2  + \Vert{} \hat y - z  \Vert{}^2$$
+
+Donc $\Vert{} y - z \Vert{} \geq \Vert{} y - \hat y \Vert{}$, ce qui achève la démonstration.
+:::
+
+La démonstration du @thm-projection se trouve ci-dessus.
+
+## 1.4 Auto-évaluation
+
+- [x] Comprendre la différence entre exploration et production
+- [ ] Maîtriser la manipulation matricielle avec `NumPy` (voir TP 1)
+
+
+## 1.5 Vocabulaire et abréviations
+
+*a remplir*
+
+C'est pour la licence <abbr title="Développement d'applications et intelligence artificielle">DAIA</abbr>
+que ce support de cours est conçu.
+
+Apprentissage supervisé
+: Famille d'algorithmes appris à partir d'exemples étiquetés $(X_i, y_i)$.
+
+Apprentissage non supervisé
+: Famille d'algorithmes appris sans étiquette, cherchant une structure dans les données
+  (voir Module 5).
+
+Sur-apprentissage
+: Situation où un modèle apprend le bruit de l'échantillon d'entraînement au détriment de sa
+  capacité de généralisation.
+
+On pourra utiliser le terme **Sur-apprentissage** tout au long du cours pour désigner ce phénomène.
+
+## 1.6 Citation
+
+> Le meilleur modèle n'est pas celui qui mémorise le mieux les données d'entraînement,
+> mais celui qui généralise le mieux à des données inédites.
+>
+> --- Principe fondamental du Machine Learning
+
+Ce principe sera formalisé mathématiquement au Module 3 avec la notion de sur-apprentissage[^overfitting].
+
+[^overfitting]: On parle aussi de *surajustement*, par opposition au *sous-apprentissage*
+(*underfitting*), où le modèle est trop simple pour capturer la structure des données.
+
+## 1.7 Contenu interactif *(disponible uniquement sur le site)*
+
+::: {.callout-note collapse="true" title="Cette section n'apparaît pas dans le PDF"}
+Les onglets et le contenu déroulant ci-dessous sont des fonctionnalités interactives de
+la version en ligne. La version PDF conserve le texte équivalent, sans l'interactivité.
+:::
+
+::: {.panel-tabset}
+## Rappel Théorie
+L'apprentissage automatique repose sur la minimisation d'une fonction de coût $\mathcal{L}$.
+
+## Application Pratique
+En TP, cette notion sera manipulée directement avec `Scikit-Learn` (voir TP 1).
+:::
+
+## 1.8 Illustration
+
+![Support de cours réalisé dans le cadre de la Licence DBT-DAIA.](../cover-old.png){#fig-logo-estc fig-align="center" width="200px"}
+
+Voir @fig-logo-estc.
+
+## 1.9 Résumé du chapitre
+
+::: {.callout-important title="À retenir"}
+- L'apprentissage automatique remplace une programmation explicite par une estimation à partir de données.
+- Le choix de l'environnement (exploration vs production) dépend de la maturité du projet.
+- Les notions de biais/variance et de sur-apprentissage seront approfondies au Module 3.
+:::
+
+## 1.10 Exercices
+
+::: {#exr-ecosysteme-1}
+Citer trois différences entre un notebook Jupyter d'exploration et un projet Python structuré
+pour la production.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-ecosysteme-1"}
+*a remplir : corrigé détaillé.*
+:::

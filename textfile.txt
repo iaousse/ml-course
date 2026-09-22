@@ -1,0 +1,37 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Cours de Machine Learning"
+  author: "IAOUSSE M'barek"
+  date: "2026-09-20"
+  chapters:
+    - index.qmd
+    - chapitres/chapter-generique.qmd
+    - chapitres/01_ecosysteme_ml.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+# Métadonnées globales (doivent être à la racine)
+lang: fr
+bibliography: references.bib
+citation: true
+license: "CC BY-NC-SA 4.0"
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+  pdf:
+    documentclass: scrreprt
+    number-sections: true
+    colorlinks: true
+  epub:
+    cover-image: cover.png
+  revealjs:
+    theme: default
+    slide-number: true

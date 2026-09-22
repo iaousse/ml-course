@@ -1,0 +1,59 @@
+---
+title: "Introduction Générale"
+---
+
+# Introduction au Machine Learning
+
+::: {.callout-tip title="Objectifs pédagogiques de l'introduction"}
+À la fin de ce chapitre introductif, l'étudiant sera capable de :
+
+- Définir formellement le Machine Learning et le situer dans l'écosystème global de l'IA.
+- Comparer le paradigme de programmation classique et l'approche guidée par les données (*Data-Driven*).
+- Identifier les grandes étapes du cycle de vie d'un projet de Machine Learning.
+:::
+
+## 1. De la Programmation Classique à l'Apprentissage Automatique
+
+En informatique traditionnelle, l'ingénieur écrit explicitement des règles métiers sous forme de code algorithmique pour traiter des données d'entrée et produire un résultat.
+
+```
+Programmation Classique :
+Données d'entrée  +  Règles (Code)  --->  Résultat
+```
+
+Cette approche trouve ses limites lorsque les règles deviennent trop complexes ou impossibles à formaliser manuellement (ex. reconnaissance faciale, détection de fraudes bancaires, traitement du langage naturel). 
+
+Le **Machine Learning** inverse ce paradigme : au lieu de programmer les règles, on fournit à l'ordinateur des données d'entrée associées aux résultats observés, et l'algorithme *apprend* automatiquement la fonction mathématique sous-jacente.
+
+```
+Machine Learning :
+Données d'entrée  +  Résultats observés  --->  Modèle (Règles induites)
+```
+
+## 2. Définition Formelle
+
+Selon Tom Mitchell (1997), la définition de référence de l'apprentissage automatique s'énonce ainsi :
+
+::: {#def-machine-learning name="Apprentissage Automatique"}
+Un programme informatique est dit **apprendre** d'une expérience $E$, relativement à une classe de tâches $T$ et à une mesure de performance $P$, si sa performance sur les tâches de $T$, mesurée par $P$, s'améliore avec l'expérience $E$.
+:::
+
+* **La Tâche ($T$) :** Prédire le prix d'un bien immobilier, classifier un e-mail (*Spam* / *Non-Spam*).
+* **L'Expérience ($E$) :** Le jeu de données d'entraînement historique (observations $X$ et étiquettes $y$).
+* **La Performance ($P$) :** La métrique d'évaluation choisie (Erreur Quadratique Moyenne, Exactitude, Score $F_1$).
+
+## 3. Le Cycle de Vie d'un Projet de Machine Learning
+
+Un projet de Machine Learning réussi dépasse le simple choix d'un algorithme. Il s'inscrit dans une démarche méthodologique rigoureuse :
+
+1. **Cadrage du problème :** Traduction du besoin métier en un problème ML ($T$, $E$, $P$).
+2. **Collecte & Nettoyage :** Traitement des valeurs manquantes, gestion des doublons et des aberrations.
+3. **Analyse Exploratoire (EDA) :** Visualisation des distributions et analyse des corrélations.
+4. **Ingénierie des Caractéristiques (*Feature Engineering*) :** Encodage, normalisation et création de variables.
+5. **Modélisation & Entraînement :** Sélection des algorithmes et minimisation de la fonction de coût $\mathcal{L}$.
+6. **Évaluation & Validation :** Test du modèle sur des données inédites pour évaluer sa capacité de généralisation.
+7. **Industrialisation & Suivi :** Déploiement du modèle en production et surveillance des performances.
+
+## 4. Fil Conducteur du Module
+
+Tout au long de ce cours, nous explorerons les fondements théoriques et mathématiques de chaque famille d'algorithmes avant de procéder à leur implémentation concrète à travers des ateliers pratiques en Python.
