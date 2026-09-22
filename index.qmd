@@ -1,70 +1,45 @@
+---
+number-sections: false
+---
+
+```{=latex}
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\pagenumbering{gobble}
+\renewcommand{\thepage}{}
+\pagestyle{empty}
+\thispagestyle{empty}
+\centering
+\vspace*{2cm}
+\includegraphics[width=6cm]{images/logo_estc.png}
+\vfill
+{\Huge\bfseries Machine Learning\par}
+\vspace{1cm}
+{\Large IAOUSSE M'barek\par}
+\vspace{0.5cm}
+{\large 2026\par}
+\newpage
+\thispagestyle{empty}
+\centering
+\vspace*{\fill}
+\includegraphics[width=8cm]{images/qrcode.png}
+\vspace*{\fill}
+\newpage
+```
+
+```{=html}
+<p style="text-align: center;">
+  <img src="images/logo_estc.png" style="width: 70%;" alt="Logo de l'EST de Casablanca">
+</p>
+```
+
+\newpage
+
 ::: {.content-visible when-format="pdf"}
-![](images/logo_estc.png){width=6cm fig-align="center"}
-:::
-\clearpage 
-::: {.content-visible when-format="pdf"}
-![](images/qrcode.png){width=3.5cm fig-align="center"}
-:::
-
-\clearpage 
-:::{.content-visible when-format="html"}
-![](images/logo_estc.png){width=70% fig-align="center"}
-:::
-
-
-::: {.callout-note title="À propos de ce support"}
-
-
-\clearpage 
 {{< include _deuxieme_page.qmd >}}
-
-\clearpage
-:::
-# Préface {.unnumbered}
- 
-Ce manuel a commencé comme notes de cours pour le module *Machine Learning* dispensé dans le cadre de la Licence Professionnelle DBT-DAIA (*Développement d'Applications et Intelligence Artificielle*) en temps aménagé à l'École Supérieure de Technologie de Casablanca (ESTC).
-À l'origine, la communauté étudiante dans ce programme provient de parcours techniques variés (DUT, BTS, DTS ou diplômes équivalents), ayant déjà acquis un bagage en programmation informatique et en mathématiques appliquées.
-Ainsi, ces personnes ont déjà appris à programmer en Python et à manipuler des structures de données.
-
-Pendant longtemps, l'enseignement du Machine Learning s'est appuyé sur des ouvrages de référence académiques classiques, tels que *Pattern Recognition and Machine Learning* [@bishop2006] ou *Hands-On Machine Learning* [@geron2022].
-Cependant, la plupart des livres du marché sont soit très théoriques et axés sur les mathématiques pures, soit rédigés exclusivement en anglais avec des études de cas pas toujours adaptées au rythme d'une formation en temps aménagé.
-De plus, certains aspects comme l'ingénierie des données (*Feature Engineering*), la validation rigoureuse des modèles et la transition progressive vers des environnements de production (VS Code, MLOps) sont devenus indispensables sur le marché du travail.
-Le présent manuel essaie de répondre à l'ensemble de ces besoins, sous forme de ressource éducative libre (REL).
-
-## Pourquoi une ressource éducative libre? {.unnumbered}
-
-Aujourd'hui, l'écosystème du Machine Learning repose quasi exclusivement sur des outils et logiciels libres.
-Dans le cadre de l'enseignement, nous utilisons des plateformes de gestion de code source libre comme GitHub et GitLab, car elles permettent d'évaluer, de valider des modèles et de collaborer dans des communautés d'ingénierie et de science des données.
-Il est donc naturel d'adopter une démarche analogue pour le contenu de ce manuel, soit une **ressource éducative libre (REL)**.
-
-Pour favoriser la réutilisation et la pérennité du support, nous avons utilisé des logiciels libres de référence :
-  
-- Quarto [-@noauthor_quarto_2023] (le langage source du texte est [Markdown](https://quarto.org/docs/authoring/markdown-basics.html)) ;
-- Pandoc et LaTeX pour le traitement et la compilation vers les formats Web (HTML), PDF et EPUB ;
-- Python et ses bibliothèques scientifiques clés (`NumPy`, `Pandas`, `Matplotlib`, `Scikit-Learn`) pour les exemples et les travaux pratiques.
-
-Autant que possible, les schémas et figures du manuel sont créés sous forme vectorielle (comme SVG) ou générés directement par du code Python afin de garantir une lisibilité optimale, une indexation par les moteurs de recherche et une bonne accessibilité.
-
-## Prérequis
-
-Le contenu de ce manuel est organisé pour les personnes ayant déjà une base et une expérience avec :
-  
-- la programmation en langage Python (fonctions, structures de données, bases de programmation orientée objet) ;
-- les notions élémentaires de mathématiques pour l'informatique (calcul matriciel de base, dérivées, probabilités et statistiques descriptives) ;
-- l'utilisation d'un environnement d'exécution d'analyse de données (Jupyter Notebooks, Google Colab ou VS Code).
-
-La familiarité préalable avec le Machine Learning n'est pas un prérequis : les concepts sont réintroduits progressivement depuis leurs fondements mathématiques jusqu'à leur mise en œuvre logicielle.
-
-## Livres et ressources complémentaires
-
-Ce manuel s'inspire des méthodologies d'apprentissage guidé par les données et de modélisation statistique moderne.
-Pour approfondir certains sujets, des références vers des ouvrages classiques et la documentation officielle sont proposées au fil des chapitres.
-
-::: {.callout-note}
-Pour les aspects pratiques d'implémentation sous Python, nous renvoyons régulièrement au livre d'A. Géron [-@geron2022], noté **[GÉRON]**, ou à la documentation officielle de `Scikit-Learn`.
-:::
-  
-::: {.callout-caution}
-Les bibliothèques scientifiques Python évoluant rapidement, veillez à utiliser un environnement virtuel basé sur Python 3.10 ou supérieur pour garantir la compatibilité des extraits de code présentés dans ce manuel.
 :::
 
+::: {.content-visible when-format="html"}
+{{< include _deuxieme_page.qmd >}}
+:::

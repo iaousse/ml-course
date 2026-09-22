@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>References – Machine Learning</title>
+<title>preface – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -55,7 +55,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./chapitres/01_ecosysteme_ml.html" rel="prev">
+<link href="./00_intro_ml.html" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -107,7 +108,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">References</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./preface.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">preface.html</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -117,23 +118,7 @@ div.csl-indent {
   </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body">
-      <h1 class="title">References</h1>
-                      </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta">
-
-      
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block"></header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
@@ -163,7 +148,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./preface.html" class="sidebar-item-text sidebar-link">
+  <a href="./preface.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">preface.html</span></span></a>
   </div>
 </li>
@@ -181,7 +166,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link active">
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
 </li>
@@ -199,22 +184,67 @@ div.csl-indent {
 
 
 
+<h1>Préface</h1>
+<p>Ce manuel a commencé comme notes de cours pour le module <em>Machine Learning</em> dispensé dans le cadre de la Licence Professionnelle DBT-DAIA (<em>Développement d’Applications et Intelligence Artificielle</em>) en temps aménagé à l’École Supérieure de Technologie de Casablanca (ESTC). À l’origine, la communauté étudiante dans ce programme provient de parcours techniques variés (DUT, BTS, DTS ou diplômes équivalents), ayant déjà acquis un bagage en programmation informatique et en mathématiques appliquées. Ainsi, ces personnes ont déjà appris à programmer en Python et à manipuler des structures de données.</p>
+<p>Pendant longtemps, l’enseignement du Machine Learning s’est appuyé sur des ouvrages de référence académiques classiques, tels que <em>Pattern Recognition and Machine Learning</em> <span class="citation" data-cites="bishop2006">(<a href="references.html#ref-bishop2006" role="doc-biblioref">Bishop 2006</a>)</span> ou <em>Hands-On Machine Learning</em> <span class="citation" data-cites="geron2022">(<a href="references.html#ref-geron2022" role="doc-biblioref">Géron 2022</a>)</span>. Cependant, la plupart des livres du marché sont soit très théoriques et axés sur les mathématiques pures, soit rédigés exclusivement en anglais avec des études de cas pas toujours adaptées au rythme d’une formation en temps aménagé. De plus, certains aspects comme l’ingénierie des données (<em>Feature Engineering</em>), la validation rigoureuse des modèles et la transition progressive vers des environnements de production (VS Code, MLOps) sont devenus indispensables sur le marché du travail. Le présent manuel essaie de répondre à l’ensemble de ces besoins, sous forme de ressource éducative libre (REL).</p>
+<h2 class="anchored">Pourquoi une ressource éducative libre?</h2>
+<p>Aujourd’hui, l’écosystème du Machine Learning repose quasi exclusivement sur des outils et logiciels libres. Dans le cadre de l’enseignement, nous utilisons des plateformes de gestion de code source libre comme GitHub et GitLab, car elles permettent d’évaluer, de valider des modèles et de collaborer dans des communautés d’ingénierie et de science des données. Il est donc naturel d’adopter une démarche analogue pour le contenu de ce manuel, soit une <strong>ressource éducative libre (REL)</strong>.</p>
+<p>Pour favoriser la réutilisation et la pérennité du support, nous avons utilisé des logiciels libres de référence :</p>
+<ul>
+<li>Quarto <span class="citation" data-cites="noauthor_quarto_2023">(<a href="references.html#ref-noauthor_quarto_2023" role="doc-biblioref">2023</a>)</span> (le langage source du texte est <a href="https://quarto.org/docs/authoring/markdown-basics.html">Markdown</a>) ;</li>
+<li>Pandoc et LaTeX pour le traitement et la compilation vers les formats Web (HTML), PDF et EPUB ;</li>
+<li>Python et ses bibliothèques scientifiques clés (<code>NumPy</code>, <code>Pandas</code>, <code>Matplotlib</code>, <code>Scikit-Learn</code>) pour les exemples et les travaux pratiques.</li>
+</ul>
+<p>Autant que possible, les schémas et figures du manuel sont créés sous forme vectorielle (comme SVG) ou générés directement par du code Python afin de garantir une lisibilité optimale, une indexation par les moteurs de recherche et une bonne accessibilité.</p>
+<h2 class="anchored">Prérequis</h2>
+<p>Le contenu de ce manuel est organisé pour les personnes ayant déjà une base et une expérience avec :</p>
+<ul>
+<li>la programmation en langage Python (fonctions, structures de données, bases de programmation orientée objet) ;</li>
+<li>les notions élémentaires de mathématiques pour l’informatique (calcul matriciel de base, dérivées, probabilités et statistiques descriptives) ;</li>
+<li>l’utilisation d’un environnement d’exécution d’analyse de données (Jupyter Notebooks, Google Colab ou VS Code).</li>
+</ul>
+<p>La familiarité préalable avec le Machine Learning n’est pas un prérequis : les concepts sont réintroduits progressivement depuis leurs fondements mathématiques jusqu’à leur mise en œuvre logicielle.</p>
+<h2 class="anchored">Livres et ressources complémentaires</h2>
+<p>Ce manuel s’inspire des méthodologies d’apprentissage guidé par les données et de modélisation statistique moderne. Pour approfondir certains sujets, des références vers des ouvrages classiques et la documentation officielle sont proposées au fil des chapitres.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pour les aspects pratiques d’implémentation sous Python, nous renvoyons régulièrement au livre d’A. Géron <span class="citation" data-cites="geron2022">(<a href="references.html#ref-geron2022" role="doc-biblioref">2022</a>)</span>, noté <strong>[GÉRON]</strong>, ou à la documentation officielle de <code>Scikit-Learn</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Mise en garde
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les bibliothèques scientifiques Python évoluant rapidement, veillez à utiliser un environnement virtuel basé sur Python 3.10 ou supérieur pour garantir la compatibilité des extraits de code présentés dans ce manuel.</p>
+</div>
+</div>
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-bishop2006" class="csl-entry" role="listitem">
-Bishop, Christopher M. 2006. <em>Pattern Recognition and Machine
-Learning</em>. Springer.
+Bishop, Christopher M. 2006. <em>Pattern Recognition and Machine Learning</em>. Springer.
 </div>
 <div id="ref-geron2022" class="csl-entry" role="listitem">
-Géron, Aurélien. 2022. <em>Hands-on Machine Learning with Scikit-Learn,
-Keras, and TensorFlow</em>. O’Reilly Media.
+Géron, Aurélien. 2022. <em>Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow</em>. O’Reilly Media.
 </div>
 <div id="ref-noauthor_quarto_2023" class="csl-entry" role="listitem">
 Posit Software. 2023. <em>Quarto Documentation</em>. <a href="https://quarto.org">https://quarto.org</a>.
 </div>
 </div>
-
-
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -619,11 +649,14 @@ Posit Software. 2023. <em>Quarto Documentation</em>. <a href="https://quarto.org
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./chapitres/01_ecosysteme_ml.html" class="pagination-link" aria-label="Écosystème et Fondements de l'Apprentissage Automatique">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Écosystème et Fondements de l’Apprentissage Automatique</span></span>
+      <a href="./index.html" class="pagination-link" aria-label="index.html">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./00_intro_ml.html" class="pagination-link" aria-label="Introduction au Machine Learning">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction au Machine Learning</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

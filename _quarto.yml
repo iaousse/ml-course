@@ -28,6 +28,7 @@ book:
   # Structure du livre (votre table des matières)
   chapters:
     - index.qmd
+    - preface.qmd
     - 00_intro_ml.qmd
     - chapitres/01_ecosysteme_ml.qmd
     # Ajoutez vos autres chapitres ici au fur et à mesure :
@@ -69,14 +70,24 @@ format:
   pdf:
     documentclass: scrbook
     pdf-engine: xelatex   # Ou pdflatex
-    toc: true
+    title-block: false
+    toc: false
     number-sections: true
     colorlinks: true
     citeproc: true
+    classoption:
+      - open=any
     geometry:
       - top=25mm
       - bottom=25mm
       - left=20mm
       - right=20mm
-    header-includes: 
+    header-includes:
+      - \usepackage{graphicx}
       - \usepackage{ragged2e}
+      - |
+        \makeatletter
+        \renewcommand{\maketitle}{}
+        \AtBeginDocument{\frontmatter\pagenumbering{gobble}\pagestyle{empty}}
+        \let\ps@plain\ps@empty
+        \makeatother
