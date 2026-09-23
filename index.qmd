@@ -1,4 +1,3 @@
-# Accueil {.unnumbered .hidden}
 ---
 number-sections: false
 ---
@@ -35,12 +34,12 @@ number-sections: false
 </p>
 ```
 
-\newpage
-
 ::: {.content-visible when-format="pdf"}
 {{< include _deuxieme_page.qmd >}}
 :::
 
 ::: {.content-visible when-format="html"}
+<h1 class="visually-hidden">Accueil</h1>
+
 {{< include _deuxieme_page.qmd >}}
 :::

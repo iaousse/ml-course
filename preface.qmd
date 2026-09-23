@@ -1,4 +1,7 @@
-# Préface {.unnumbered .hidden}
+---
+number-sections: false
+---
+# Préface {.hidden}
 ```{=latex}
 \pagenumbering{roman}
 \setcounter{page}{1}
@@ -14,8 +17,7 @@
 \pagestyle{preface}
 \thispagestyle{preface}
 \phantomsection
-\addcontentsline{toc}{chapter}{Préface}
-{\usekomafont{chapter}\strut Préface\par}
+%{\usekomafont{chapter}\strut Préface\par}
 ```
 
 ```{=html}
