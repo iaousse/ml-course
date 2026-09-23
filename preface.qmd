@@ -1,3 +1,4 @@
+# Préface {.unnumbered .hidden}
 ```{=latex}
 \pagenumbering{roman}
 \setcounter{page}{1}

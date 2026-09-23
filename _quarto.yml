@@ -29,7 +29,7 @@ book:
   chapters:
     - index.qmd
     - preface.qmd
-    - 00_intro_ml.qmd
+    - chapitres/00_intro_ml.qmd
     - chapitres/01_ecosysteme_ml.qmd
     # Ajoutez vos autres chapitres ici au fur et à mesure :
     # - chapitres/02_regression_lineaire.qmd
