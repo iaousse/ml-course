@@ -4,7 +4,7 @@
 :::
 
 ::: hanging-indent
-**L'auteur** est M'barek IAOUSSE, Enseignant-Chercheur à l'EST Casablanca, Université Hassan II de Casablanca.
+**L'auteur**: M'barek IAOUSSE, Enseignant-Chercheur à l'EST Casablanca, Université Hassan II de Casablanca.
 :::
 
 :::: {.callout}
@@ -16,12 +16,12 @@ en vertu des termes de la [Licence Creative Commons Attribution 4.0 Internationa
 :::
 
 ::: hanging-indent
-**Vous êtes autorisé à :**\
+**Autorisations accordées :**\
 **Partager** -- copier, distribuer et communiquer le matériel par tous moyens et sous tous formats.\
 **Adapter** -- remixer, transformer et créer à partir du matériel pour toute utilisation, y compris commerciale.
 :::
 ::: hanging-indent
-**Condition :** Créditer l'auteur (M'barek IAOUSSE) en cas de réutilisation ou d'adaptation du contenu.
+**Sous réserve de citer l'auteur.**
 :::
 ::::
 
@@ -29,6 +29,6 @@ en vertu des termes de la [Licence Creative Commons Attribution 4.0 Internationa
 
 © M'barek IAOUSSE (2026)\
 Pour citer ce manuel : M'barek IAOUSSE. (2026).
-*Cours de Machine Learning : Fondements théoriques et applications pratiques en Python*. École Supérieure de Technologie de Casablanca.
+*Machine Learning*. École Supérieure de Technologie de Casablanca.
 Sous licence CC BY 4.0.
 

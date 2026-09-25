@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Écosystème et Fondements de l’Apprentissage Automatique – Machine Learning</title>
+<title>Fondements Théoriques de l’Apprentissage Automatique – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -118,7 +118,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/01_ecosysteme_ml.html"><span class="chapter-title">Écosystème et Fondements de l’Apprentissage Automatique</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/01_ecosysteme_ml.html"><span class="chapter-title">Fondements Théoriques de l’Apprentissage Automatique</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -131,7 +131,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Écosystème et Fondements de l’Apprentissage Automatique</span></h1>
+      <h1 class="title"><span class="chapter-title">Fondements Théoriques de l’Apprentissage Automatique</span></h1>
                       </div>
   </div>
     
@@ -178,12 +178,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning et à son Écosystème</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Écosystème et Fondements de l’Apprentissage Automatique</span></a>
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Fondements Théoriques de l’Apprentissage Automatique</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -202,16 +202,21 @@ window.Quarto = {
     <h2 id="toc-title">Dans ce chapitre</h2>
    
   <ul>
-  <li><a href="#quest-ce-que-lapprentissage-automatique" id="toc-quest-ce-que-lapprentissage-automatique" class="nav-link active" data-scroll-target="#quest-ce-que-lapprentissage-automatique">1.1 Qu’est-ce que l’apprentissage automatique ?</a></li>
-  <li><a href="#panorama-de-lécosystème-ml" id="toc-panorama-de-lécosystème-ml" class="nav-link" data-scroll-target="#panorama-de-lécosystème-ml">1.2 Panorama de l’écosystème ML</a></li>
-  <li><a href="#théorème-de-projection-orthogonale-rappel-dalgèbre-linéaire" id="toc-théorème-de-projection-orthogonale-rappel-dalgèbre-linéaire" class="nav-link" data-scroll-target="#théorème-de-projection-orthogonale-rappel-dalgèbre-linéaire">1.3 Théorème de projection orthogonale (rappel d’algèbre linéaire)</a></li>
+  <li><a href="#vocabulaire-et-représentation-des-données" id="toc-vocabulaire-et-représentation-des-données" class="nav-link active" data-scroll-target="#vocabulaire-et-représentation-des-données">1. Vocabulaire et représentation des données</a></li>
+  <li><a href="#les-grandes-familles-dapprentissage" id="toc-les-grandes-familles-dapprentissage" class="nav-link" data-scroll-target="#les-grandes-familles-dapprentissage">2. Les grandes familles d’apprentissage</a></li>
+  <li><a href="#apprendre-et-généraliser" id="toc-apprendre-et-généraliser" class="nav-link" data-scroll-target="#apprendre-et-généraliser">3. Apprendre et généraliser</a></li>
+  <li><a href="#jeux-dévaluation-et-fuite-de-données" id="toc-jeux-dévaluation-et-fuite-de-données" class="nav-link" data-scroll-target="#jeux-dévaluation-et-fuite-de-données">4. Jeux d’évaluation et Fuite de données</a>
+  <ul class="collapse">
+  <li><a href="#la-fuite-de-données-data-leakage" id="toc-la-fuite-de-données-data-leakage" class="nav-link" data-scroll-target="#la-fuite-de-données-data-leakage">La fuite de données (Data Leakage)</a></li>
+  </ul></li>
+  <li><a href="#paramètres-et-hyperparamètres" id="toc-paramètres-et-hyperparamètres" class="nav-link" data-scroll-target="#paramètres-et-hyperparamètres">5. Paramètres et Hyperparamètres</a></li>
+  <li><a href="#la-baseline-et-les-limites-de-laccuracy" id="toc-la-baseline-et-les-limites-de-laccuracy" class="nav-link" data-scroll-target="#la-baseline-et-les-limites-de-laccuracy">6. La Baseline et les limites de l’Accuracy</a></li>
+  <li><a href="#prédiction-corrélation-et-causalité" id="toc-prédiction-corrélation-et-causalité" class="nav-link" data-scroll-target="#prédiction-corrélation-et-causalité">7. Prédiction, Corrélation et Causalité</a></li>
+  <li><a href="#enjeux-éthiques-et-reproductibilité" id="toc-enjeux-éthiques-et-reproductibilité" class="nav-link" data-scroll-target="#enjeux-éthiques-et-reproductibilité">8. Enjeux Éthiques et Reproductibilité</a></li>
+  <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">12. Exercices</a></li>
   <li><a href="#auto-évaluation" id="toc-auto-évaluation" class="nav-link" data-scroll-target="#auto-évaluation">1.4 Auto-évaluation</a></li>
-  <li><a href="#vocabulaire-et-abréviations" id="toc-vocabulaire-et-abréviations" class="nav-link" data-scroll-target="#vocabulaire-et-abréviations">1.5 Vocabulaire et abréviations</a></li>
-  <li><a href="#citation" id="toc-citation" class="nav-link" data-scroll-target="#citation">1.6 Citation</a></li>
   <li><a href="#contenu-interactif-disponible-uniquement-sur-le-site" id="toc-contenu-interactif-disponible-uniquement-sur-le-site" class="nav-link" data-scroll-target="#contenu-interactif-disponible-uniquement-sur-le-site">1.7 Contenu interactif <em>(disponible uniquement sur le site)</em></a></li>
-  <li><a href="#illustration" id="toc-illustration" class="nav-link" data-scroll-target="#illustration">1.8 Illustration</a></li>
-  <li><a href="#résumé-du-chapitre" id="toc-résumé-du-chapitre" class="nav-link" data-scroll-target="#résumé-du-chapitre">1.9 Résumé du chapitre</a></li>
-  <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">1.10 Exercices</a></li>
+  <li><a href="#exercices-1" id="toc-exercices-1" class="nav-link" data-scroll-target="#exercices-1">1.10 Exercices</a></li>
   </ul>
 </nav>
     </div>
@@ -232,105 +237,382 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>À la fin de ce chapitre, l’étudiant sera capable de : - définir l’apprentissage statistique et le situer par rapport à l’intelligence artificielle ; - distinguer les grandes familles d’apprentissage (supervisé, non supervisé, par renforcement) ; - citer les rôles des bibliothèques scientifiques Python de référence (<code>NumPy</code>, <code>Pandas</code>, <code>Matplotlib</code>, <code>Scikit-Learn</code>) ; - distinguer un environnement d’exploration (Jupyter/Colab) d’un environnement de production (VS Code).</p>
+<p>À la fin de ce chapitre, l’étudiant sera capable de :</p>
+<ul>
+<li><strong>Identifier</strong> les grandes familles d’algorithmes (supervisé, non-supervisé, renforcement) ;</li>
+<li><strong>Utiliser</strong> le vocabulaire fondamental (matrice de design, vecteur cible, hyperparamètres) ;</li>
+<li><strong>Diagnostiquer</strong> le sur-apprentissage et le sous-apprentissage ;</li>
+<li><strong>Structurer</strong> correctement un jeu de données (Train/Validation/Test) pour éviter la fuite de données ;</li>
+<li><strong>Évaluer</strong> l’importance d’une baseline et les limites de certaines métriques.</li>
+</ul>
 </div>
 </div>
-<p><em>a remplir : introduction générale du chapitre.</em></p>
-<section id="quest-ce-que-lapprentissage-automatique" class="level2">
-<h2 class="anchored" data-anchor-id="quest-ce-que-lapprentissage-automatique">1.1 Qu’est-ce que l’apprentissage automatique ?</h2>
-<p><em>a remplir</em></p>
-<p>Le Machine Learning consiste à construire une fonction <span class="math inline">\(f\)</span> qui approxime une relation entre des variables d’entrée <span class="math inline">\(X\)</span> et une sortie <span class="math inline">\(y\)</span>, à partir d’exemples <span class="math inline">\((X_i, y_i)_{i=1}^n\)</span>, plutôt que de la programmer explicitement.</p>
-<p><span id="eq-hypothese"><span class="math display">\[
-\begin{aligned}
-\hat{y} &amp;= f_\theta(X) \\
-&amp;= w^T X + b
-\end{aligned}
-\tag{4.1}\]</span></span></p>
-<p>On peut se référer à l’<a href="#eq-hypothese" class="quarto-xref">équation&nbsp;<span>4.1</span></a> pour la suite du cours : le problème de l’apprentissage consiste à trouver les paramètres optimaux qui minimisent une fonction de coût <span class="math inline">\(\mathcal{L}\)</span> :</p>
-<p><span class="math display">\[\hat{\theta} := \operatorname{argmin}_{\theta} \; \mathcal{L}\big(f_\theta(X), y\big)\]</span></p>
-</section>
-<section id="panorama-de-lécosystème-ml" class="level2">
-<h2 class="anchored" data-anchor-id="panorama-de-lécosystème-ml">1.2 Panorama de l’écosystème ML</h2>
-<p><em>a remplir</em></p>
-<div id="tbl-ecosysteme" class="quarto-float quarto-figure quarto-figure-center anchored">
+<section id="vocabulaire-et-représentation-des-données" class="level2">
+<h2 class="anchored" data-anchor-id="vocabulaire-et-représentation-des-données">1. Vocabulaire et représentation des données</h2>
+<p>Avant de choisir un algorithme, il faut formaliser algébriquement le jeu de données. Chaque ligne représente une observation et chaque colonne une information.</p>
+<div id="tbl-jeu-donnees" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ecosysteme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4.1: Principales bibliothèques Python utilisées dans ce cours
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-jeu-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Notions et vocabulaire
 </figcaption>
-<div aria-describedby="tbl-ecosysteme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="tbl-jeu-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Bibliothèque</th>
-<th>Rôle</th>
+<th>Terme</th>
+<th>Définition</th>
+<th>Exemple (Prédiction de prix)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>NumPy</code></td>
-<td>Calcul matriciel et vectoriel</td>
+<td><strong>Observation</strong></td>
+<td>Un exemple individuel décrit par plusieurs variables</td>
+<td>Un appartement particulier</td>
 </tr>
 <tr class="even">
-<td><code>Pandas</code></td>
-<td>Manipulation de données tabulaires</td>
+<td><strong>Échantillon</strong></td>
+<td>Un ensemble d’observations représentant une population</td>
+<td>10 000 appartements</td>
 </tr>
 <tr class="odd">
-<td><code>Matplotlib</code></td>
-<td>Visualisation de données</td>
+<td><strong>Variable explicative (Feature)</strong></td>
+<td>Information utilisée par le modèle pour prédire</td>
+<td>Surface, quartier</td>
 </tr>
 <tr class="even">
-<td><code>Scikit-Learn</code></td>
-<td>Modélisation, pipelines, métriques</td>
+<td><strong>Cible (Target)</strong></td>
+<td>La valeur que le modèle doit apprendre à prédire</td>
+<td>Prix de vente</td>
 </tr>
 <tr class="odd">
-<td><code>TensorFlow</code></td>
-<td>Apprentissage profond</td>
+<td><strong>Étiquette (Label)</strong></td>
+<td>La réponse connue associée à une observation (en classification)</td>
+<td>« Vendu rapidement »</td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>Le <a href="#tbl-ecosysteme" class="quarto-xref">tableau&nbsp;<span>4.1</span></a> résume les outils qui seront utilisés dans les TP.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Environnements d'exécution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Environnements d’exécution
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
+<p><strong>Notation mathématique standard :</strong></p>
 <ul>
-<li><strong>Exploration :</strong> Jupyter Notebook, Google Colab — pratiques pour l’analyse rapide et la visualisation.</li>
-<li><strong>Production :</strong> Visual Studio Code — utilisé à partir du Module 4 pour structurer un projet ML complet (scripts, tests, versionnage).</li>
+<li><span class="math inline">\(X\)</span> : la matrice de design contenant les variables explicatives.</li>
+<li><span class="math inline">\(y\)</span> : le vecteur cible (ou vecteur des étiquettes).</li>
+<li><span class="math inline">\(x_i\)</span> : les variables explicatives de l’observation <span class="math inline">\(i\)</span>.</li>
+<li><span class="math inline">\(y_i\)</span> : la réponse associée à l’observation <span class="math inline">\(i\)</span>.</li>
 </ul>
+</section>
+<section id="les-grandes-familles-dapprentissage" class="level2">
+<h2 class="anchored" data-anchor-id="les-grandes-familles-dapprentissage">2. Les grandes familles d’apprentissage</h2>
+<p>Selon la nature des données (<span class="math inline">\(X\)</span>) et la présence ou non de la cible (<span class="math inline">\(y\)</span>), l’apprentissage se divise en plusieurs paradigmes :</p>
+<ul>
+<li><strong>Apprentissage supervisé :</strong> Le modèle apprend à partir de données étiquetées (on possède <span class="math inline">\(X\)</span> et <span class="math inline">\(y\)</span>). Exemples : prédire un prix (Régression) ou détecter une fraude (Classification).</li>
+<li><strong>Apprentissage non-supervisé :</strong> Le modèle explore des données non étiquetées (on possède uniquement <span class="math inline">\(X\)</span>) pour y découvrir une structure cachée. Exemple : regrouper des clients par comportement (Clustering).</li>
+<li><strong>Apprentissage semi-supervisé :</strong> Utilise un petit nombre d’observations étiquetées et un grand nombre non étiquetées. Idéal quand l’annotation humaine est coûteuse (ex: imagerie médicale).</li>
+<li><strong>Apprentissage auto-supervisé :</strong> Le modèle construit sa propre cible à partir de la donnée brute (ex: masquer un mot dans une phrase et demander au modèle de le deviner).</li>
+<li><strong>Apprentissage par renforcement :</strong> Un agent agit dans un environnement et cherche la stratégie maximisant une récompense cumulée (ex: robotique, jeux).</li>
+</ul>
+</section>
+<section id="apprendre-et-généraliser" class="level2">
+<h2 class="anchored" data-anchor-id="apprendre-et-généraliser">3. Apprendre et généraliser</h2>
+<blockquote class="blockquote">
+<p>Le meilleur modèle n’est pas celui qui mémorise le mieux les données d’entraînement, mais celui qui généralise le mieux à des données inédites.</p>
+<p>— Principe fondamental du Machine Learning</p>
+</blockquote>
+<p>La <strong>généralisation</strong> est la capacité du modèle à produire une prédiction correcte face à une observation qu’il n’a jamais rencontrée. L’état d’un modèle se classe dans l’une de ces trois situations :</p>
+<ol type="1">
+<li><strong>Sous-apprentissage (Underfitting) :</strong> Modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout.</li>
+<li><strong>Ajustement optimal (Good fit) :</strong> Le modèle extrait les règles générales (le signal) et ignore les anomalies.</li>
+<li><strong>Sur-apprentissage (Overfitting) :</strong> Modèle trop complexe. Il mémorise le bruit spécifique aux données d’entraînement. Il excelle artificiellement sur l’historique mais échoue sur de nouvelles données.</li>
+</ol>
+</section>
+<section id="jeux-dévaluation-et-fuite-de-données" class="level2">
+<h2 class="anchored" data-anchor-id="jeux-dévaluation-et-fuite-de-données">4. Jeux d’évaluation et Fuite de données</h2>
+<p>Pour diagnostiquer la généralisation, on divise l’échantillon initial :</p>
+<div id="tbl-jeux-evaluation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-jeux-evaluation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Le jeux d’évaluation
+</figcaption>
+<div aria-describedby="tbl-jeux-evaluation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Jeu de données</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Entraînement (Train)</strong></td>
+<td>Ajuster les paramètres internes du modèle.</td>
+</tr>
+<tr class="even">
+<td><strong>Validation</strong></td>
+<td>Comparer les modèles et régler les hyperparamètres.</td>
+</tr>
+<tr class="odd">
+<td><strong>Test</strong></td>
+<td>Estimer la performance finale sur des données strictement inédites.</td>
+</tr>
+</tbody>
+</table>
 </div>
+</figure>
 </div>
+<section id="la-fuite-de-données-data-leakage" class="level3">
+<h3 class="anchored" data-anchor-id="la-fuite-de-données-data-leakage">La fuite de données (Data Leakage)</h3>
+<p>Il y a fuite lorsqu’une information qui ne devrait pas être disponible au moment de la prédiction influence l’entraînement. Cela génère des performances artificiellement excellentes. <em>Exemples :</em> Normaliser tout le jeu de données <em>avant</em> de le séparer en Train/Test, ou inclure une variable calculée <em>après</em> l’événement à prédire. Pour l’éviter, on utilise des <strong>Pipelines</strong>.</p>
+</section>
+</section>
+<section id="paramètres-et-hyperparamètres" class="level2">
+<h2 class="anchored" data-anchor-id="paramètres-et-hyperparamètres">5. Paramètres et Hyperparamètres</h2>
+<div id="tbl-parametres" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-parametres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Paramètres et hyperparamètres
+</figcaption>
+<div aria-describedby="tbl-parametres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Élément</th>
+<th>Qui le fixe ?</th>
+<th>Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Paramètre</strong></td>
+<td>Le modèle l’apprend automatiquement via les données</td>
+<td>Coefficients d’une régression linéaire</td>
+</tr>
+<tr class="even">
+<td><strong>Hyperparamètre</strong></td>
+<td>L’ingénieur le règle avant l’entraînement</td>
+<td>Profondeur maximale d’un arbre de décision</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
 </div>
 </section>
-<section id="théorème-de-projection-orthogonale-rappel-dalgèbre-linéaire" class="level2">
-<h2 class="anchored" data-anchor-id="théorème-de-projection-orthogonale-rappel-dalgèbre-linéaire">1.3 Théorème de projection orthogonale (rappel d’algèbre linéaire)</h2>
-<p><em>a remplir : lien avec la régression linéaire par moindres carrés (Module 3).</em></p>
-<div id="thm-projection" class="theorem">
-<p><span class="theorem-title"><strong>Théorème 4.1 (Théorème de projection orthogonale)</strong></span> Étant donné <span class="math inline">\(y \in \mathbb R^n\)</span> et un sous-espace linéaire <span class="math inline">\(S \subset \mathbb R^n\)</span>, il existe une unique solution au problème de minimisation</p>
-<p><span class="math display">\[\hat y := \operatorname{argmin}_{z \in S} \Vert{}y - z\Vert{}\]</span></p>
-<p>Le minimiseur <span class="math inline">\(\hat y\)</span> est l’unique vecteur de <span class="math inline">\(\mathbb R^n\)</span> qui satisfait :</p>
+<section id="la-baseline-et-les-limites-de-laccuracy" class="level2">
+<h2 class="anchored" data-anchor-id="la-baseline-et-les-limites-de-laccuracy">6. La Baseline et les limites de l’Accuracy</h2>
+<p>Une <strong>baseline</strong> est une règle de décision extrêmement simple (ex: “toujours prédire la classe majoritaire”). Elle répond à la question : <em>Le modèle ML complexe fait-il mieux que l’approche la plus basique ?</em></p>
+<p><strong>Le piège des classes déséquilibrées :</strong></p>
+<p>Si 99% des transactions sont légitimes et 1% sont des fraudes, une baseline qui prédit “Légitime” à 100% obtiendra 99% d’Accuracy (exactitude). Pourtant, le modèle est inutile. Il faut alors utiliser des métriques métiers :</p>
 <ul>
-<li><span class="math inline">\(\hat y \in S\)</span></li>
-<li><span class="math inline">\(y - \hat y \perp S\)</span></li>
+<li><strong>Précision :</strong> Parmi les fraudes prédites, combien le sont réellement ?</li>
+<li><strong>Rappel (Sensibilité) :</strong> Parmi toutes les vraies fraudes, combien ont été détectées ?</li>
+<li><strong>Matrice de confusion</strong> pour peser le coût d’un Faux Positif vs Faux Négatif.</li>
 </ul>
-<p>Le vecteur <span class="math inline">\(\hat y\)</span> est appelé la <strong>projection orthogonale</strong> de <span class="math inline">\(y\)</span> sur <span class="math inline">\(S\)</span>.</p>
+</section>
+<section id="prédiction-corrélation-et-causalité" class="level2">
+<h2 class="anchored" data-anchor-id="prédiction-corrélation-et-causalité">7. Prédiction, Corrélation et Causalité</h2>
+<p>Un modèle ML excelle à trouver des corrélations (ex: ventes de glaces et coups de soleil augmentent ensemble l’été). Cependant :</p>
+<ul>
+<li>La <strong>prédiction</strong> exploite la corrélation pour estimer une valeur.</li>
+<li>La <strong>causalité</strong> prouve qu’agir sur A modifie B. Un bon modèle prédictif ne justifie pas une décision causale (arrêter de vendre des glaces ne réduira pas les coups de soleil).</li>
+</ul>
+</section>
+<section id="enjeux-éthiques-et-reproductibilité" class="level2">
+<h2 class="anchored" data-anchor-id="enjeux-éthiques-et-reproductibilité">8. Enjeux Éthiques et Reproductibilité</h2>
+<p><strong>L’éthique dans le ML :</strong></p>
+<ul>
+<li>Biais de représentation (les données discriminent-elles une population ?).</li>
+<li>Explicabilité (peut-on justifier la décision de la machine ?).</li>
+</ul>
+<p><strong>La Reproductibilité :</strong> Un résultat doit pouvoir être relancé à l’identique. Pratiques obligatoires :</p>
+<ol type="1">
+<li>Figer les versions des bibliothèques (<code>uv.lock</code>).</li>
+<li>Fixer les “graines aléatoires” (<em>random seeds</em>).</li>
+<li>Versionner le code (Git) et documenter la pipeline de données.</li>
+</ol>
+</section>
+<section id="exercices" class="level2">
+<h2 class="anchored" data-anchor-id="exercices">12. Exercices</h2>
+<div id="exr-ecosysteme-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 1</strong></span> On dispose du tableau suivant :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: right;">surface</th>
+<th>quartier</th>
+<th style="text-align: right;">prix</th>
+<th>vendu_rapidement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">65</td>
+<td>Centre</td>
+<td style="text-align: right;">850000</td>
+<td>oui</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">42</td>
+<td>Nord</td>
+<td style="text-align: right;">420000</td>
+<td>non</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">80</td>
+<td>Centre</td>
+<td style="text-align: right;">990000</td>
+<td>oui</td>
+</tr>
+</tbody>
+</table>
+<p>Pour la tâche « prédire si un appartement sera vendu rapidement » :</p>
+<ol type="1">
+<li>Qu’est-ce qu’une observation ?</li>
+<li>Quel est l’échantillon ?</li>
+<li>Quelles sont les variables explicatives ?</li>
+<li>Quelle est la cible ?</li>
+<li>Quel est le rôle de la colonne <code>id</code> ?</li>
+</ol>
 </div>
-<div class="proof">
-<p><span class="proof-title"><em>Preuve</em>. </span>Soit <span class="math inline">\(z\)</span> un autre point quelconque de <span class="math inline">\(S\)</span>. En utilisant le fait que <span class="math inline">\(S\)</span> est un sous-espace linéaire, on peut montrer que :</p>
-<p><span class="math display">\[\Vert{} y - z \Vert{}^2 = \Vert{} (y - \hat y) + (\hat y - z) \Vert{}^2 = \Vert{} y - \hat y \Vert{}^2  + \Vert{} \hat y - z  \Vert{}^2\]</span></p>
-<p>Donc <span class="math inline">\(\Vert{} y - z \Vert{} \geq \Vert{} y - \hat y \Vert{}\)</span>, ce qui achève la démonstration.</p>
+<div id="exr-ecosysteme-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 2</strong></span> Deux modèles donnent les résultats suivants :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Modèle</th>
+<th style="text-align: right;">Accuracy train</th>
+<th style="text-align: right;">Accuracy test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">99%</td>
+<td style="text-align: right;">61%</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">84%</td>
+<td style="text-align: right;">81%</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Quel modèle généralise le mieux ?</li>
+<li>Quel modèle semble en sur-apprentissage ?</li>
+<li>Pourquoi ne faut-il pas choisir le modèle A en regardant uniquement l’accuracy d’entraînement ?</li>
+<li>Donnez deux actions qui pourraient réduire le sur-apprentissage.</li>
+</ol>
 </div>
-<p>La démonstration du <a href="#thm-projection" class="quarto-xref">Théorème&nbsp;<span>4.1</span></a> se trouve ci-dessus.</p>
+<div id="exr-ecosysteme-3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 3</strong></span> Une base contient 10 000 demandes de crédit datées de 2021 à 2025. Le modèle doit prédire les demandes de 2025.</p>
+<ol type="1">
+<li>Proposez une séparation entraînement/validation/test respectant le temps.</li>
+<li>Expliquez pourquoi un mélange aléatoire de toutes les lignes peut donner une estimation trop optimiste.</li>
+<li>Où placeriez-vous les demandes de 2025 dans cette séparation ?</li>
+</ol>
+</div>
+<div id="exr-ecosysteme-4" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 4</strong></span> Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, une équipe utilise :</p>
+<ul>
+<li>l’âge ;</li>
+<li>le diagnostic initial ;</li>
+<li>la durée d’hospitalisation ;</li>
+<li>la date de la prochaine consultation ;</li>
+<li>le nombre de médicaments prescrits pendant le séjour.</li>
+</ul>
+<ol type="1">
+<li>Quelle variable est potentiellement une fuite ?</li>
+<li>Pourquoi ?</li>
+<li>Les autres variables sont-elles automatiquement légitimes ? Quelle question faut-il poser pour le vérifier ?</li>
+</ol>
+</div>
+<div id="exr-ecosysteme-5" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 5</strong></span> Dans un jeu de classification de 1 000 observations, la classe A représente 900 observations et la classe B 100 observations.</p>
+<ol type="1">
+<li>Quelle accuracy obtient la baseline qui prédit toujours A ?</li>
+<li>Pourquoi cette baseline peut-elle être utile malgré sa simplicité ?</li>
+<li>Quelles métriques ajouteriez-vous pour évaluer un modèle chargé de détecter la classe B ?</li>
+</ol>
+</div>
+<div id="exr-ecosysteme-6" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 6</strong></span> Pour chacun des éléments suivants, indiquez s’il s’agit plutôt d’un paramètre appris ou d’un hyperparamètre choisi :</p>
+<ol type="1">
+<li>les coefficients d’une régression linéaire ;</li>
+<li>le nombre maximal de niveaux d’un arbre ;</li>
+<li>les poids d’un réseau de neurones ;</li>
+<li>le taux d’apprentissage ;</li>
+<li>le nombre de voisins dans K-nearest neighbors.</li>
+</ol>
+<p>Expliquez comment choisir les hyperparamètres sans utiliser abusivement le jeu de test.</p>
+</div>
+<div id="exr-ecosysteme-7" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 7</strong></span> Un détecteur de fraude donne la matrice de confusion suivante :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: right;">Prédit légitime</th>
+<th style="text-align: right;">Prédit fraude</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Réel légitime</td>
+<td style="text-align: right;">940</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr class="even">
+<td>Réel fraude</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Calculez l’accuracy.</li>
+<li>Calculez le rappel de la classe fraude.</li>
+<li>L’accuracy donne-t-elle une image suffisante du système ?</li>
+<li>Dans ce contexte, quelle erreur peut être la plus coûteuse : faux positif ou faux négatif ? La réponse est-elle nécessairement la même pour tous les acteurs ?</li>
+</ol>
+</div>
+<div id="exr-ecosysteme-8" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 8</strong></span> Une analyse montre que les personnes qui utilisent davantage une application réussissent mieux une formation. L’équipe conclut que rendre l’application obligatoire fera réussir davantage d’étudiants.</p>
+<ol type="1">
+<li>Quelle est la corrélation observée ?</li>
+<li>Pourquoi cette conclusion causale peut-elle être injustifiée ?</li>
+<li>Proposez une étude ou une information supplémentaire permettant de mieux examiner l’effet causal.</li>
+</ol>
+</div>
+<div id="exr-ecosysteme-9" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 9</strong></span> Pour chaque situation, choisissez le paradigme le plus approprié : supervisé, semi-supervisé, auto-supervisé ou par renforcement. Justifiez.</p>
+<ol type="1">
+<li>Classer des images dont 5% seulement ont été annotées par des experts.</li>
+<li>Apprendre une représentation de textes en prédisant les mots masqués.</li>
+<li>Prédire le prix d’un logement avec un historique de prix connu.</li>
+<li>Apprendre à un robot à atteindre une cible grâce à des récompenses.</li>
+</ol>
+<p>Ajoutez ensuite cinq pratiques de reproductibilité que vous appliqueriez au projet choisi : versions, environnement, graines aléatoires, données, code, configuration, résultats ou versionnement Git.</p>
+</div>
 </section>
 <section id="auto-évaluation" class="level2">
 <h2 class="anchored" data-anchor-id="auto-évaluation">1.4 Auto-évaluation</h2>
@@ -339,52 +621,8 @@ Table&nbsp;4.1: Principales bibliothèques Python utilisées dans ce cours
 <li><label><input type="checkbox">Maîtriser la manipulation matricielle avec <code>NumPy</code> (voir TP 1)</label></li>
 </ul>
 </section>
-<section id="vocabulaire-et-abréviations" class="level2">
-<h2 class="anchored" data-anchor-id="vocabulaire-et-abréviations">1.5 Vocabulaire et abréviations</h2>
-<p><em>a remplir</em></p>
-<p>C’est pour la licence <abbr title="Développement d'applications et intelligence artificielle">DAIA</abbr> que ce support de cours est conçu.</p>
-<dl>
-<dt>Apprentissage supervisé</dt>
-<dd>
-Famille d’algorithmes appris à partir d’exemples étiquetés <span class="math inline">\((X_i, y_i)\)</span>.
-</dd>
-<dt>Apprentissage non supervisé</dt>
-<dd>
-Famille d’algorithmes appris sans étiquette, cherchant une structure dans les données (voir Module 5).
-</dd>
-<dt>Sur-apprentissage</dt>
-<dd>
-Situation où un modèle apprend le bruit de l’échantillon d’entraînement au détriment de sa capacité de généralisation.
-</dd>
-</dl>
-<p>On pourra utiliser le terme <strong>Sur-apprentissage</strong> tout au long du cours pour désigner ce phénomène.</p>
-</section>
-<section id="citation" class="level2">
-<h2 class="anchored" data-anchor-id="citation">1.6 Citation</h2>
-<blockquote class="blockquote">
-<p>Le meilleur modèle n’est pas celui qui mémorise le mieux les données d’entraînement, mais celui qui généralise le mieux à des données inédites.</p>
-<p>— Principe fondamental du Machine Learning</p>
-</blockquote>
-<p>Ce principe sera formalisé mathématiquement au Module 3 avec la notion de sur-apprentissage<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
-</section>
 <section id="contenu-interactif-disponible-uniquement-sur-le-site" class="level2">
 <h2 class="anchored" data-anchor-id="contenu-interactif-disponible-uniquement-sur-le-site">1.7 Contenu interactif <em>(disponible uniquement sur le site)</em></h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Cette section n'apparaît pas dans le PDF">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Cette section n’apparaît pas dans le PDF
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Les onglets et le contenu déroulant ci-dessous sont des fonctionnalités interactives de la version en ligne. La version PDF conserve le texte équivalent, sans l’interactivité.</p>
-</div>
-</div>
-</div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Rappel Théorie</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Application Pratique</a></li></ul>
 <div class="tab-content">
@@ -397,56 +635,22 @@ Situation où un modèle apprend le bruit de l’échantillon d’entraînement 
 </div>
 </div>
 </section>
-<section id="illustration" class="level2">
-<h2 class="anchored" data-anchor-id="illustration">1.8 Illustration</h2>
-<div id="fig-logo-estc" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-logo-estc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../images/cover-old.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="200">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-logo-estc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.1: Support de cours réalisé dans le cadre de la Licence DBT-DAIA.
-</figcaption>
-</figure>
-</div>
-<p>Voir <a href="#fig-logo-estc" class="quarto-xref">figure&nbsp;<span>4.1</span></a>.</p>
-</section>
-<section id="résumé-du-chapitre" class="level2">
-<h2 class="anchored" data-anchor-id="résumé-du-chapitre">1.9 Résumé du chapitre</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="À retenir">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>À retenir
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li>L’apprentissage automatique remplace une programmation explicite par une estimation à partir de données.</li>
-<li>Le choix de l’environnement (exploration vs production) dépend de la maturité du projet.</li>
-<li>Les notions de biais/variance et de sur-apprentissage seront approfondies au Module 3.</li>
-</ul>
-</div>
-</div>
-</section>
-<section id="exercices" class="level2">
-<h2 class="anchored" data-anchor-id="exercices">1.10 Exercices</h2>
+<section id="exercices-1" class="level2">
+<h2 class="anchored" data-anchor-id="exercices-1">1.10 Exercices</h2>
 <div id="exr-ecosysteme-1" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 4.1</strong></span> Citer trois différences entre un notebook Jupyter d’exploration et un projet Python structuré pour la production.</p>
+<p><span class="theorem-title"><strong>Exercice 10</strong></span> Citer trois différences entre un notebook Jupyter d’exploration et un projet Python structuré pour la production.</p>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-ecosysteme-1">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-ecosysteme-1" class="quarto-xref">Exercice&nbsp;<span>4.1</span></a>
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-ecosysteme-1" class="quarto-xref">Exercice&nbsp;<span>10</span></a>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><em>a remplir : corrigé détaillé.</em></p>
 </div>
@@ -454,12 +658,6 @@ Figure&nbsp;4.1: Support de cours réalisé dans le cadre de la Licence DBT-DAIA
 </div>
 
 
-</section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn1"><p>On parle aussi de <em>surajustement</em>, par opposition au <em>sous-apprentissage</em> (<em>underfitting</em>), où le modèle est trop simple pour capturer la structure des données.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
 </section>
 
 </main> <!-- /main -->
@@ -865,8 +1063,8 @@ Figure&nbsp;4.1: Support de cours réalisé dans le cadre de la Licence DBT-DAIA
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapitres/00_intro_ml.html" class="pagination-link" aria-label="Introduction au Machine Learning">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Introduction au Machine Learning</span></span>
+      <a href="../chapitres/00_intro_ml.html" class="pagination-link" aria-label="Introduction au Machine Learning et à son Écosystème">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Introduction au Machine Learning et à son Écosystème</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

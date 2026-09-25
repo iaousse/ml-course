@@ -23,14 +23,14 @@ number-sections: false
 \thispagestyle{empty}
 \centering
 \vspace*{\fill}
-\includegraphics[width=8cm]{images/qrcode.png}
+\includegraphics[width=0.9\textwidth]{images/qrcode.png}
 \vspace*{\fill}
 \newpage
 ```
 
 ```{=html}
 <p style="text-align: center;">
-  <img src="images/logo_estc.png" style="width: 70%;" alt="Logo de l'EST de Casablanca">
+  <img src="images/qrcode.png" style="width: 60%;" alt="Code QR pour accéder à la ressource éducative libre">
 </p>
 ```
 

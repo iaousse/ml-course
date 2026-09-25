@@ -1,85 +1,246 @@
-# Écosystème et Fondements de l'Apprentissage Automatique
+# Fondements Théoriques de l'Apprentissage Automatique
 
 ::: {.callout-tip title="Objectifs du chapitre"}
 À la fin de ce chapitre, l'étudiant sera capable de :
-- définir l'apprentissage statistique et le situer par rapport à l'intelligence artificielle ;
-- distinguer les grandes familles d'apprentissage (supervisé, non supervisé, par renforcement) ;
-- citer les rôles des bibliothèques scientifiques Python de référence (`NumPy`, `Pandas`, `Matplotlib`, `Scikit-Learn`) ;
-- distinguer un environnement d'exploration (Jupyter/Colab) d'un environnement de production (VS Code).
+
+- **Identifier** les grandes familles d'algorithmes (supervisé, non-supervisé, renforcement) ;
+- **Utiliser** le vocabulaire fondamental (matrice de design, vecteur cible, hyperparamètres) ;
+- **Diagnostiquer** le sur-apprentissage et le sous-apprentissage ;
+- **Structurer** correctement un jeu de données (Train/Validation/Test) pour éviter la fuite de données ;
+- **Évaluer** l'importance d'une baseline et les limites de certaines métriques.
 :::
 
-*a remplir : introduction générale du chapitre.*
+## 1. Vocabulaire et représentation des données
 
-## 1.1 Qu'est-ce que l'apprentissage automatique ?
+Avant de choisir un algorithme, il faut formaliser algébriquement le jeu de données. Chaque ligne représente une observation et chaque colonne une information.
 
-*a remplir*
+| Terme | Définition | Exemple (Prédiction de prix) |
+|---|---|---|
+| **Observation** | Un exemple individuel décrit par plusieurs variables | Un appartement particulier |
+| **Échantillon** | Un ensemble d'observations représentant une population | 10 000 appartements |
+| **Variable explicative (Feature)** | Information utilisée par le modèle pour prédire | Surface, quartier |
+| **Cible (Target)** | La valeur que le modèle doit apprendre à prédire | Prix de vente |
+| **Étiquette (Label)** | La réponse connue associée à une observation (en classification) | « Vendu rapidement » |
+: Notions et vocabulaire {#tbl-jeu-donnees}
 
-Le Machine Learning consiste à construire une fonction $f$ qui approxime une relation entre
-des variables d'entrée $X$ et une sortie $y$, à partir d'exemples $(X_i, y_i)_{i=1}^n$, plutôt
-que de la programmer explicitement.
 
-$$
-\begin{aligned}
-\hat{y} &= f_\theta(X) \\
-&= w^T X + b
-\end{aligned}
-$$ {#eq-hypothese}
+**Notation mathématique standard :**
 
-On peut se référer à l'@eq-hypothese pour la suite du cours : le problème de
-l'apprentissage consiste à trouver les paramètres optimaux qui minimisent une fonction de coût
-$\mathcal{L}$ :
+- $X$ : la matrice de design contenant les variables explicatives.
+- $y$ : le vecteur cible (ou vecteur des étiquettes).
+- $x_i$ : les variables explicatives de l'observation $i$.
+- $y_i$ : la réponse associée à l'observation $i$.
 
-$$\hat{\theta} := \operatorname{argmin}_{\theta} \; \mathcal{L}\big(f_\theta(X), y\big)$$
+## 2. Les grandes familles d'apprentissage
 
-## 1.2 Panorama de l'écosystème ML
+Selon la nature des données ($X$) et la présence ou non de la cible ($y$), l'apprentissage se divise en plusieurs paradigmes :
 
-*a remplir*
+- **Apprentissage supervisé :** Le modèle apprend à partir de données étiquetées (on possède $X$ et $y$). Exemples : prédire un prix (Régression) ou détecter une fraude (Classification).
+- **Apprentissage non-supervisé :** Le modèle explore des données non étiquetées (on possède uniquement $X$) pour y découvrir une structure cachée. Exemple : regrouper des clients par comportement (Clustering).
+- **Apprentissage semi-supervisé :** Utilise un petit nombre d'observations étiquetées et un grand nombre non étiquetées. Idéal quand l'annotation humaine est coûteuse (ex: imagerie médicale).
+- **Apprentissage auto-supervisé :** Le modèle construit sa propre cible à partir de la donnée brute (ex: masquer un mot dans une phrase et demander au modèle de le deviner).
+- **Apprentissage par renforcement :** Un agent agit dans un environnement et cherche la stratégie maximisant une récompense cumulée (ex: robotique, jeux).
 
-| Bibliothèque | Rôle |
+## 3. Apprendre et généraliser
+
+> Le meilleur modèle n'est pas celui qui mémorise le mieux les données d'entraînement,
+> mais celui qui généralise le mieux à des données inédites.
+>
+> --- Principe fondamental du Machine Learning
+
+La **généralisation** est la capacité du modèle à produire une prédiction correcte face à une observation qu'il n'a jamais rencontrée. L'état d'un modèle se classe dans l'une de ces trois situations :
+
+1. **Sous-apprentissage (Underfitting) :** Modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout.
+2. **Ajustement optimal (Good fit) :** Le modèle extrait les règles générales (le signal) et ignore les anomalies.
+3. **Sur-apprentissage (Overfitting) :** Modèle trop complexe. Il mémorise le bruit spécifique aux données d'entraînement. Il excelle artificiellement sur l'historique mais échoue sur de nouvelles données.
+
+## 4. Jeux d'évaluation et Fuite de données
+
+Pour diagnostiquer la généralisation, on divise l'échantillon initial :
+
+| Jeu de données | Rôle |
 |---|---|
-| `NumPy` | Calcul matriciel et vectoriel |
-| `Pandas` | Manipulation de données tabulaires |
-| `Matplotlib` | Visualisation de données |
-| `Scikit-Learn` | Modélisation, pipelines, métriques |
-| `TensorFlow` | Apprentissage profond |
+| **Entraînement (Train)** | Ajuster les paramètres internes du modèle. |
+| **Validation** | Comparer les modèles et régler les hyperparamètres. |
+| **Test** | Estimer la performance finale sur des données strictement inédites. |
+: Le jeux d'évaluation {#tbl-jeux-evaluation}
 
-: Principales bibliothèques Python utilisées dans ce cours {#tbl-ecosysteme}
+### La fuite de données (Data Leakage)
+Il y a fuite lorsqu'une information qui ne devrait pas être disponible au moment de la prédiction influence l'entraînement. Cela génère des performances artificiellement excellentes.
+*Exemples :* Normaliser tout le jeu de données *avant* de le séparer en Train/Test, ou inclure une variable calculée *après* l'événement à prédire. Pour l'éviter, on utilise des **Pipelines**.
 
-Le @tbl-ecosysteme résume les outils qui seront utilisés dans les TP.
+## 5. Paramètres et Hyperparamètres
 
-::: {.callout-note collapse="true" title="Environnements d'exécution"}
-- **Exploration :** Jupyter Notebook, Google Colab — pratiques pour l'analyse rapide et la visualisation.
-- **Production :** Visual Studio Code — utilisé à partir du Module 4 pour structurer un projet ML complet (scripts, tests, versionnage).
+| Élément | Qui le fixe ? | Exemple |
+|---|---|---|
+| **Paramètre** | Le modèle l'apprend automatiquement via les données | Coefficients d'une régression linéaire |
+| **Hyperparamètre** | L'ingénieur le règle avant l'entraînement | Profondeur maximale d'un arbre de décision |
+: Paramètres et hyperparamètres {#tbl-parametres}
+
+## 6. La Baseline et les limites de l'Accuracy
+
+Une **baseline** est une règle de décision extrêmement simple (ex: "toujours prédire la classe majoritaire"). Elle répond à la question : *Le modèle ML complexe fait-il mieux que l'approche la plus basique ?*
+
+**Le piège des classes déséquilibrées :**
+
+Si 99% des transactions sont légitimes et 1% sont des fraudes, une baseline qui prédit "Légitime" à 100% obtiendra 99% d'Accuracy (exactitude). Pourtant, le modèle est inutile.
+Il faut alors utiliser des métriques métiers :
+
+- **Précision :** Parmi les fraudes prédites, combien le sont réellement ?
+- **Rappel (Sensibilité) :** Parmi toutes les vraies fraudes, combien ont été détectées ?
+- **Matrice de confusion** pour peser le coût d'un Faux Positif vs Faux Négatif.
+
+## 7. Prédiction, Corrélation et Causalité
+
+Un modèle ML excelle à trouver des corrélations (ex: ventes de glaces et coups de soleil augmentent ensemble l'été). Cependant :
+
+- La **prédiction** exploite la corrélation pour estimer une valeur.
+- La **causalité** prouve qu'agir sur A modifie B.
+Un bon modèle prédictif ne justifie pas une décision causale (arrêter de vendre des glaces ne réduira pas les coups de soleil).
+
+## 8. Enjeux Éthiques et Reproductibilité
+
+**L'éthique dans le ML :**
+
+- Biais de représentation (les données discriminent-elles une population ?).
+- Explicabilité (peut-on justifier la décision de la machine ?).
+
+**La Reproductibilité :**
+Un résultat doit pouvoir être relancé à l'identique. Pratiques obligatoires :
+
+1. Figer les versions des bibliothèques (`uv.lock`).
+2. Fixer les "graines aléatoires" (*random seeds*).
+3. Versionner le code (Git) et documenter la pipeline de données.
+
+## 12. Exercices 
+
+::: {#exr-ecosysteme-1}
+
+On dispose du tableau suivant :
+
+| id | surface | quartier | prix | vendu_rapidement |
+|---:|---:|---|---:|---|
+| 1 | 65 | Centre | 850000 | oui |
+| 2 | 42 | Nord | 420000 | non |
+| 3 | 80 | Centre | 990000 | oui |
+
+
+Pour la tâche « prédire si un appartement sera vendu rapidement » :
+
+1. Qu'est-ce qu'une observation ?
+2. Quel est l'échantillon ?
+3. Quelles sont les variables explicatives ?
+4. Quelle est la cible ?
+5. Quel est le rôle de la colonne `id` ?
+
 :::
 
-## 1.3 Théorème de projection orthogonale (rappel d'algèbre linéaire)
+::: {#exr-ecosysteme-2}
 
-*a remplir : lien avec la régression linéaire par moindres carrés (Module 3).*
+Deux modèles donnent les résultats suivants :
 
-::: {#thm-projection name="Théorème de projection orthogonale"}
-Étant donné $y \in \mathbb R^n$ et un sous-espace linéaire $S \subset \mathbb R^n$, il existe
-une unique solution au problème de minimisation
+| Modèle | Accuracy train | Accuracy test |
+|---|---:|---:|
+| A | 99% | 61% |
+| B | 84% | 81% |
 
-$$\hat y := \operatorname{argmin}_{z \in S} \Vert{}y - z\Vert{}$$
-
-Le minimiseur $\hat y$ est l'unique vecteur de $\mathbb R^n$ qui satisfait :
-
-* $\hat y \in S$
-* $y - \hat y \perp S$
-
-Le vecteur $\hat y$ est appelé la **projection orthogonale** de $y$ sur $S$.
+1. Quel modèle généralise le mieux ?
+2. Quel modèle semble en sur-apprentissage ?
+3. Pourquoi ne faut-il pas choisir le modèle A en regardant uniquement
+   l'accuracy d'entraînement ?
+4. Donnez deux actions qui pourraient réduire le sur-apprentissage.
 :::
 
-::: {.proof}
-Soit $z$ un autre point quelconque de $S$. En utilisant le fait que $S$ est un sous-espace
-linéaire, on peut montrer que :
+::: {#exr-ecosysteme-3}
+Une base contient 10 000 demandes de crédit datées de 2021 à 2025. Le modèle
+doit prédire les demandes de 2025.
 
-$$\Vert{} y - z \Vert{}^2 = \Vert{} (y - \hat y) + (\hat y - z) \Vert{}^2 = \Vert{} y - \hat y \Vert{}^2  + \Vert{} \hat y - z  \Vert{}^2$$
+1. Proposez une séparation entraînement/validation/test respectant le temps.
+2. Expliquez pourquoi un mélange aléatoire de toutes les lignes peut donner une
+   estimation trop optimiste.
+3. Où placeriez-vous les demandes de 2025 dans cette séparation ?
+:::
+::: {#exr-ecosysteme-4}
+Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie,
+une équipe utilise :
 
-Donc $\Vert{} y - z \Vert{} \geq \Vert{} y - \hat y \Vert{}$, ce qui achève la démonstration.
+- l'âge ;
+- le diagnostic initial ;
+- la durée d'hospitalisation ;
+- la date de la prochaine consultation ;
+- le nombre de médicaments prescrits pendant le séjour.
+
+1. Quelle variable est potentiellement une fuite ?
+2. Pourquoi ?
+3. Les autres variables sont-elles automatiquement légitimes ? Quelle question
+   faut-il poser pour le vérifier ?
 :::
 
-La démonstration du @thm-projection se trouve ci-dessus.
+::: {#exr-ecosysteme-5}
+Dans un jeu de classification de 1 000 observations, la classe A représente
+900 observations et la classe B 100 observations.
+
+1. Quelle accuracy obtient la baseline qui prédit toujours A ?
+2. Pourquoi cette baseline peut-elle être utile malgré sa simplicité ?
+3. Quelles métriques ajouteriez-vous pour évaluer un modèle chargé de détecter
+   la classe B ?
+:::
+
+::: {#exr-ecosysteme-6}
+Pour chacun des éléments suivants, indiquez s'il s'agit plutôt d'un paramètre
+appris ou d'un hyperparamètre choisi :
+
+1. les coefficients d'une régression linéaire ;
+2. le nombre maximal de niveaux d'un arbre ;
+3. les poids d'un réseau de neurones ;
+4. le taux d'apprentissage ;
+5. le nombre de voisins dans K-nearest neighbors.
+
+Expliquez comment choisir les hyperparamètres sans utiliser abusivement le jeu
+de test.
+:::
+
+::: {#exr-ecosysteme-7}
+Un détecteur de fraude donne la matrice de confusion suivante :
+
+| | Prédit légitime | Prédit fraude |
+|---|---:|---:|
+| Réel légitime | 940 | 50 |
+| Réel fraude | 5 | 5 |
+
+1. Calculez l'accuracy.
+2. Calculez le rappel de la classe fraude.
+3. L'accuracy donne-t-elle une image suffisante du système ?
+4. Dans ce contexte, quelle erreur peut être la plus coûteuse : faux positif ou
+   faux négatif ? La réponse est-elle nécessairement la même pour tous les
+   acteurs ?
+:::
+
+::: {#exr-ecosysteme-8}
+Une analyse montre que les personnes qui utilisent davantage une application
+réussissent mieux une formation. L'équipe conclut que rendre l'application
+obligatoire fera réussir davantage d'étudiants.
+
+1. Quelle est la corrélation observée ?
+2. Pourquoi cette conclusion causale peut-elle être injustifiée ?
+3. Proposez une étude ou une information supplémentaire permettant de mieux
+   examiner l'effet causal.
+:::
+
+::: {#exr-ecosysteme-9}
+Pour chaque situation, choisissez le paradigme le plus approprié :
+supervisé, semi-supervisé, auto-supervisé ou par renforcement. Justifiez.
+
+1. Classer des images dont 5% seulement ont été annotées par des experts.
+2. Apprendre une représentation de textes en prédisant les mots masqués.
+3. Prédire le prix d'un logement avec un historique de prix connu.
+4. Apprendre à un robot à atteindre une cible grâce à des récompenses.
+
+Ajoutez ensuite cinq pratiques de reproductibilité que vous appliqueriez au
+projet choisi : versions, environnement, graines aléatoires, données, code,
+configuration, résultats ou versionnement Git.
+:::
+
 
 ## 1.4 Auto-évaluation
 
@@ -87,44 +248,9 @@ La démonstration du @thm-projection se trouve ci-dessus.
 - [ ] Maîtriser la manipulation matricielle avec `NumPy` (voir TP 1)
 
 
-## 1.5 Vocabulaire et abréviations
-
-*a remplir*
-
-C'est pour la licence <abbr title="Développement d'applications et intelligence artificielle">DAIA</abbr>
-que ce support de cours est conçu.
-
-Apprentissage supervisé
-: Famille d'algorithmes appris à partir d'exemples étiquetés $(X_i, y_i)$.
-
-Apprentissage non supervisé
-: Famille d'algorithmes appris sans étiquette, cherchant une structure dans les données
-  (voir Module 5).
-
-Sur-apprentissage
-: Situation où un modèle apprend le bruit de l'échantillon d'entraînement au détriment de sa
-  capacité de généralisation.
-
-On pourra utiliser le terme **Sur-apprentissage** tout au long du cours pour désigner ce phénomène.
-
-## 1.6 Citation
-
-> Le meilleur modèle n'est pas celui qui mémorise le mieux les données d'entraînement,
-> mais celui qui généralise le mieux à des données inédites.
->
-> --- Principe fondamental du Machine Learning
-
-Ce principe sera formalisé mathématiquement au Module 3 avec la notion de sur-apprentissage[^overfitting].
-
-[^overfitting]: On parle aussi de *surajustement*, par opposition au *sous-apprentissage*
-(*underfitting*), où le modèle est trop simple pour capturer la structure des données.
-
 ## 1.7 Contenu interactif *(disponible uniquement sur le site)*
 
-::: {.callout-note collapse="true" title="Cette section n'apparaît pas dans le PDF"}
-Les onglets et le contenu déroulant ci-dessous sont des fonctionnalités interactives de
-la version en ligne. La version PDF conserve le texte équivalent, sans l'interactivité.
-:::
+
 
 ::: {.panel-tabset}
 ## Rappel Théorie
@@ -134,19 +260,7 @@ L'apprentissage automatique repose sur la minimisation d'une fonction de coût $
 En TP, cette notion sera manipulée directement avec `Scikit-Learn` (voir TP 1).
 :::
 
-## 1.8 Illustration
 
-![Support de cours réalisé dans le cadre de la Licence DBT-DAIA.](../images/cover-old.png){#fig-logo-estc fig-align="center" width="200px"}
-
-Voir @fig-logo-estc.
-
-## 1.9 Résumé du chapitre
-
-::: {.callout-important title="À retenir"}
-- L'apprentissage automatique remplace une programmation explicite par une estimation à partir de données.
-- Le choix de l'environnement (exploration vs production) dépend de la maturité du projet.
-- Les notions de biais/variance et de sur-apprentissage seront approfondies au Module 3.
-:::
 
 ## 1.10 Exercices
 

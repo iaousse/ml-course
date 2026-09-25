@@ -1,7 +1,6 @@
 project:
   type: book
   output-dir: _build
-
 lang: fr
 number-sections: false
 language:
@@ -10,10 +9,11 @@ language:
   author-title: "Auteur"
   authors-title: "Auteurs"
 crossref:
-  fig-prefix: figure     # (Par défaut "Figure")
-  tbl-prefix: tableau    # (Par défaut "Table")
-  sec-prefix: section    # (Par défaut "Section")
-  eq-prefix: équation    # (Par défaut "Équation")
+  fig-prefix: Figure     # (Par défaut "Figure")
+  tbl-prefix: Table    # (Par défaut "Table")
+  sec-prefix: Section    # (Par défaut "Section")
+  eq-prefix: Équation    # (Par défaut "Équation")
+  chapters: false
 
 book:
   title: "Machine Learning"

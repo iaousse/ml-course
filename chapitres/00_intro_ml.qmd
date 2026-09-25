@@ -1,55 +1,124 @@
-# Introduction au Machine Learning
+# Introduction au Machine Learning et à son Écosystème
 
-::: {.callout-tip title="Objectifs pédagogiques de l'introduction"}
+::: {.callout-tip title="Objectifs du chapitre"}
 À la fin de ce chapitre introductif, l'étudiant sera capable de :
 
-- Définir formellement le Machine Learning et le situer dans l'écosystème global de l'IA.
-- Comparer le paradigme de programmation classique et l'approche guidée par les données (*Data-Driven*).
-- Identifier les grandes étapes du cycle de vie d'un projet de Machine Learning.
+- **Définir** formellement le Machine Learning et le **situer** dans l'écosystème de l'Intelligence Artificielle ;
+- **Comparer** le paradigme de programmation classique et l'approche guidée par les données (*Data-Driven*) ;
+- **Identifier** les grandes étapes du cycle de vie d'un projet de Machine Learning ;
+- **Maîtriser** l'écosystème technique (bibliothèques Python, environnements d'exploration et de production).
 :::
 
-## 1. De la Programmation Classique à l'Apprentissage Automatique
+## 1. Qu'est-ce que le Machine Learning ? Sa place dans l'écosystème de l'IA
 
-En informatique traditionnelle, l'ingénieur écrit explicitement des règles métiers sous forme de code algorithmique pour traiter des données d'entrée et produire un résultat.
+### 1.1. De l'Intelligence Artificielle au Machine Learning
 
-```
-Programmation Classique :
-Données d'entrée  +  Règles (Code)  --->  Résultat
-```
+L'**Intelligence Artificielle (IA)** est le champ scientifique le plus large : il regroupe l'ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l'intelligence humaine. 
 
-Cette approche trouve ses limites lorsque les règles deviennent trop complexes ou impossibles à formaliser manuellement (ex. reconnaissance faciale, détection de fraudes bancaires, traitement du langage naturel). 
+Historiquement, les premiers systèmes d'IA reposaient sur des **systèmes experts** : des ensembles de règles logiques (`SI ... ALORS ...`) écrites explicitement par des humains. Ils fonctionnaient bien dans des domaines circonscrits, mais s'avéraient extrêmement coûteux à maintenir et incapables de s'adapter à des situations non anticipées.
 
-Le **Machine Learning** inverse ce paradigme : au lieu de programmer les règles, on fournit à l'ordinateur des données d'entrée associées aux résultats observés, et l'algorithme *apprend* automatiquement la fonction mathématique sous-jacente.
+Le **Machine Learning (ML)** constitue une rupture : plutôt que de coder explicitement les règles de décision, on conçoit des algorithmes capables d'**extraire eux-mêmes ces règles à partir de données d'exemples**. 
 
-```
-Machine Learning :
-Données d'entrée  +  Résultats observés  --->  Modèle (Règles induites)
-```
+Le **Deep Learning (Apprentissage Profond, DL)** est un **sous-domaine du ML** qui repose sur des réseaux de neurones artificiels comportant de nombreuses couches, performants sur des données non structurées (images, son, texte).
 
-## 2. Définition Formelle
+![Intelligence Artificielle, Machine Learning et Deep Learning](../images/venn-ai-ml-dl.svg)
 
-Selon Tom Mitchell (1997), la définition de référence de l'apprentissage automatique s'énonce ainsi :
-
-::: {#def-machine-learning name="Apprentissage Automatique"}
-Un programme informatique est dit **apprendre** d'une expérience $E$, relativement à une classe de tâches $T$ et à une mesure de performance $P$, si sa performance sur les tâches de $T$, mesurée par $P$, s'améliore avec l'expérience $E$.
+::: {.callout-tip title="À retenir"}
+Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l'IA — mais la réciproque est fausse (ex: un algorithme de recherche aux échecs est de l'IA sans être du ML).
 :::
 
-* **La Tâche ($T$) :** Prédire le prix d'un bien immobilier, classifier un e-mail (*Spam* / *Non-Spam*).
-* **L'Expérience ($E$) :** Le jeu de données d'entraînement historique (observations $X$ et étiquettes $y$).
-* **La Performance ($P$) :** La métrique d'évaluation choisie (Erreur Quadratique Moyenne, Exactitude, Score $F_1$).
+### 1.2. Définition formelle du Machine Learning
 
-## 3. Le Cycle de Vie d'un Projet de Machine Learning
+La définition de référence est celle de [@mitchell1997machine] :
 
-Un projet de Machine Learning réussi dépasse le simple choix d'un algorithme. Il s'inscrit dans une démarche méthodologique rigoureuse :
+::: {.callout-tip}
+## Apprentissage Automatique (Machine Learning)
 
-1. **Cadrage du problème :** Traduction du besoin métier en un problème ML ($T$, $E$, $P$).
-2. **Collecte & Nettoyage :** Traitement des valeurs manquantes, gestion des doublons et des aberrations.
-3. **Analyse Exploratoire (EDA) :** Visualisation des distributions et analyse des corrélations.
-4. **Ingénierie des Caractéristiques (*Feature Engineering*) :** Encodage, normalisation et création de variables.
-5. **Modélisation & Entraînement :** Sélection des algorithmes et minimisation de la fonction de coût $\mathcal{L}$.
-6. **Évaluation & Validation :** Test du modèle sur des données inédites pour évaluer sa capacité de généralisation.
-7. **Industrialisation & Suivi :** Déploiement du modèle en production et surveillance des performances.
+::: {#def-ml}
+On dit qu'un programme informatique apprend à partir d'une expérience E, par rapport à une classe de tâches T et une mesure de performance P, si sa performance aux tâches de T, mesurée par P, s'améliore avec l'expérience E. 
+:::
+:::
 
-## 4. Fil Conducteur du Module
+Cette définition se décompose en trois éléments concrets :
 
-Tout au long de ce cours, nous explorerons les fondements théoriques et mathématiques de chaque famille d'algorithmes avant de procéder à leur implémentation concrète à travers des ateliers pratiques en Python.
+| Symbole | Signification | Exemple : filtre anti-spam |
+|:---:|---|---|
+| **T** (Task) | La tâche que le système doit accomplir | Classer un e-mail comme *spam* ou *non-spam* |
+| **P** (Performance) | La métrique d'évaluation | Proportion d'e-mails correctement classés |
+| **E** (Experience) | Les données d'apprentissage | Une base d'e-mails déjà étiquetés |
+
+: Le cadre TPE de @mitchell1997machine appliqué au filtre anti-spam {#tbl-mitchell}
+
+Cette grille de lecture (T, P, E) est fondamentale : avant même de choisir un algorithme, tout projet ML doit répondre clairement à ces trois questions.
+
+## 2. Programmation classique vs. approche Data-Driven
+
+### 2.1. Le paradigme classique
+
+Dans le paradigme **classique** (déductif), le développeur déduit un ensemble de **règles explicites**, puis les traduit en code. Le programme prend des **données** en entrée et produit des **résultats** en appliquant mécaniquement ces règles. Idéal si les règles métier sont stables et peu nombreuses (ex: calcul d'un impôt).
+
+### 2.2. Le paradigme Data-Driven
+
+Le Machine Learning **inverse la logique** : on fournit au système des **données** et les **résultats attendus**. L'algorithme analyse les régularités statistiques pour produire un **modèle** (un programme appris automatiquement), capable de généraliser à de nouvelles données.
+
+![Comparaison entre la programmation classique et l'approche Data-Driven](../images/paradigme-programmation.svg){#fig-paradigme-programmation}
+
+| Critère | Programmation classique | Machine Learning |
+|---|---|---|
+| Fourni par l'humain | Règles + Données | Données + Résultats attendus (exemples) |
+| Produit par le système | Résultats | Un modèle (règles apprises) |
+| Adaptation | Faible (réécriture du code) | Élevée (réentraînement) |
+| Interprétabilité | Totale | Variable selon le modèle |
+
+## 3. Le cycle de vie d'un projet de Machine Learning
+
+Entraîner un modèle ne représente qu'une fraction du travail réel. Un projet ML se décompose en sept étapes itératives [@geron2022] :
+
+![Le cycle de vie d'un projet de Machine Learning](../images/cycle-vie-ml.svg){#fig-cycle-vie-ml}
+
+1. **Cadrage du problème métier** : Traduire un besoin en problème ML via la grille (T, P, E).
+2. **Collecte des données** : Rassembler un jeu de données représentatif.
+3. **Préparation et nettoyage** : Étape la plus chronophage (60-80 % du temps). Traitement des valeurs manquantes, encodage, création de variables (*feature engineering*).
+4. **Modélisation** : Choix des algorithmes et entraînement sur les données pour minimiser une erreur.
+5. **Évaluation** : Mesurer objectivement la performance sur des données jamais vues (test).
+6. **Déploiement** : Intégrer le modèle dans un système opérationnel (API).
+7. **Monitoring** : Surveiller les performances pour détecter la dérive des données (*data drift*).
+
+## 4. L'écosystème et les Outils de l'Ingénieur ML
+
+Pour mener à bien ce cycle, l'ingénieur s'appuie sur la stack Python, standard de l'industrie.
+
+### 4.1. Les bibliothèques scientifiques incontournables
+
+| Bibliothèque | Rôle dans le cycle de vie du projet |
+|---|---|
+| `pandas` / `polars` | Manipulation et nettoyage de tableaux de données (DataFrames). |
+| `numpy` | Calcul matriciel et opérations mathématiques optimisées. |
+| `matplotlib` / `seaborn` | Visualisation et exploration visuelle des données. |
+| `scikit-learn` | La référence pour le Machine Learning classique et l'ingénierie des features. |
+| `xgboost` / `lightgbm` | Algorithmes avancés (boosting), standards pour les données tabulaires. |
+| `pytorch` / `tensorflow` | Deep Learning (Réseaux de neurones profonds). |
+
+: Principales bibliothèques de l'écosystème Python {#tbl-ecosysteme}
+
+### 4.2. Environnements de développement : Exploration vs Production
+
+Il est crucial de distinguer la phase d'exploration (prototypage) de la phase de production (déploiement).
+
+**Outils d'exploration :**
+
+- **JupyterLab :** Interface basée sur des notebooks (cellules de texte/code). Parfait pour l'exploration, l'affichage de graphiques et les travaux pratiques locaux.
+- **Google Colab :** Notebooks dans le cloud sans installation locale. Idéal pour partager du code ou accéder à des ressources ponctuelles, mais éphémère.
+
+**Outils de production :**
+
+- **Visual Studio Code (VS Code) :** Éditeur généraliste robuste. Indispensable pour restructurer le code des notebooks en scripts modulaires orientés objet, gérer Git, et préparer le déploiement.
+
+### 4.3. Gestion de projet avec `uv`
+
+**`uv` :** Outil moderne de gestion des environnements et dépendances Python. Il garantit la reproductibilité en déclarant les bibliothèques dans `pyproject.toml` et en fixant les versions via `uv.lock`.
+```bash
+uv init
+uv add numpy pandas scikit-learn jupyterlab
+uv run jupyter lab
+```

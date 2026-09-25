@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Introduction au Machine Learning – Machine Learning</title>
+<title>Introduction au Machine Learning et à son Écosystème – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,7 +26,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -77,35 +131,6 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -118,7 +143,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/00_intro_ml.html"><span class="chapter-title">Introduction au Machine Learning</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/00_intro_ml.html"><span class="chapter-title">Introduction au Machine Learning et à son Écosystème</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -131,7 +156,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Introduction au Machine Learning</span></h1>
+      <h1 class="title"><span class="chapter-title">Introduction au Machine Learning et à son Écosystème</span></h1>
                       </div>
   </div>
     
@@ -178,12 +203,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Introduction au Machine Learning et à son Écosystème</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Écosystème et Fondements de l’Apprentissage Automatique</span></a>
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fondements Théoriques de l’Apprentissage Automatique</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -202,10 +227,23 @@ window.Quarto = {
     <h2 id="toc-title">Dans ce chapitre</h2>
    
   <ul>
-  <li><a href="#de-la-programmation-classique-à-lapprentissage-automatique" id="toc-de-la-programmation-classique-à-lapprentissage-automatique" class="nav-link active" data-scroll-target="#de-la-programmation-classique-à-lapprentissage-automatique">1. De la Programmation Classique à l’Apprentissage Automatique</a></li>
-  <li><a href="#définition-formelle" id="toc-définition-formelle" class="nav-link" data-scroll-target="#définition-formelle">2. Définition Formelle</a></li>
-  <li><a href="#le-cycle-de-vie-dun-projet-de-machine-learning" id="toc-le-cycle-de-vie-dun-projet-de-machine-learning" class="nav-link" data-scroll-target="#le-cycle-de-vie-dun-projet-de-machine-learning">3. Le Cycle de Vie d’un Projet de Machine Learning</a></li>
-  <li><a href="#fil-conducteur-du-module" id="toc-fil-conducteur-du-module" class="nav-link" data-scroll-target="#fil-conducteur-du-module">4. Fil Conducteur du Module</a></li>
+  <li><a href="#quest-ce-que-le-machine-learning-sa-place-dans-lécosystème-de-lia" id="toc-quest-ce-que-le-machine-learning-sa-place-dans-lécosystème-de-lia" class="nav-link active" data-scroll-target="#quest-ce-que-le-machine-learning-sa-place-dans-lécosystème-de-lia">1. Qu’est-ce que le Machine Learning ? Sa place dans l’écosystème de l’IA</a>
+  <ul class="collapse">
+  <li><a href="#de-lintelligence-artificielle-au-machine-learning" id="toc-de-lintelligence-artificielle-au-machine-learning" class="nav-link" data-scroll-target="#de-lintelligence-artificielle-au-machine-learning">1.1. De l’Intelligence Artificielle au Machine Learning</a></li>
+  <li><a href="#définition-formelle-du-machine-learning" id="toc-définition-formelle-du-machine-learning" class="nav-link" data-scroll-target="#définition-formelle-du-machine-learning">1.2. Définition formelle du Machine Learning</a></li>
+  </ul></li>
+  <li><a href="#programmation-classique-vs.-approche-data-driven" id="toc-programmation-classique-vs.-approche-data-driven" class="nav-link" data-scroll-target="#programmation-classique-vs.-approche-data-driven">2. Programmation classique vs.&nbsp;approche Data-Driven</a>
+  <ul class="collapse">
+  <li><a href="#le-paradigme-classique" id="toc-le-paradigme-classique" class="nav-link" data-scroll-target="#le-paradigme-classique">2.1. Le paradigme classique</a></li>
+  <li><a href="#le-paradigme-data-driven" id="toc-le-paradigme-data-driven" class="nav-link" data-scroll-target="#le-paradigme-data-driven">2.2. Le paradigme Data-Driven</a></li>
+  </ul></li>
+  <li><a href="#le-cycle-de-vie-dun-projet-de-machine-learning" id="toc-le-cycle-de-vie-dun-projet-de-machine-learning" class="nav-link" data-scroll-target="#le-cycle-de-vie-dun-projet-de-machine-learning">3. Le cycle de vie d’un projet de Machine Learning</a></li>
+  <li><a href="#lécosystème-et-les-outils-de-lingénieur-ml" id="toc-lécosystème-et-les-outils-de-lingénieur-ml" class="nav-link" data-scroll-target="#lécosystème-et-les-outils-de-lingénieur-ml">4. L’écosystème et les Outils de l’Ingénieur ML</a>
+  <ul class="collapse">
+  <li><a href="#les-bibliothèques-scientifiques-incontournables" id="toc-les-bibliothèques-scientifiques-incontournables" class="nav-link" data-scroll-target="#les-bibliothèques-scientifiques-incontournables">4.1. Les bibliothèques scientifiques incontournables</a></li>
+  <li><a href="#environnements-de-développement-exploration-vs-production" id="toc-environnements-de-développement-exploration-vs-production" class="nav-link" data-scroll-target="#environnements-de-développement-exploration-vs-production">4.2. Environnements de développement : Exploration vs Production</a></li>
+  <li><a href="#gestion-de-projet-avec-uv" id="toc-gestion-de-projet-avec-uv" class="nav-link" data-scroll-target="#gestion-de-projet-avec-uv">4.3. Gestion de projet avec <code>uv</code></a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -216,64 +254,278 @@ window.Quarto = {
 
 
 
-<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs pédagogiques de l'introduction">
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du chapitre">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Objectifs pédagogiques de l’introduction
+<span class="screen-reader-only">Astuce</span>Objectifs du chapitre
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>À la fin de ce chapitre introductif, l’étudiant sera capable de :</p>
 <ul>
-<li>Définir formellement le Machine Learning et le situer dans l’écosystème global de l’IA.</li>
-<li>Comparer le paradigme de programmation classique et l’approche guidée par les données (<em>Data-Driven</em>).</li>
-<li>Identifier les grandes étapes du cycle de vie d’un projet de Machine Learning.</li>
+<li><strong>Définir</strong> formellement le Machine Learning et le <strong>situer</strong> dans l’écosystème de l’Intelligence Artificielle ;</li>
+<li><strong>Comparer</strong> le paradigme de programmation classique et l’approche guidée par les données (<em>Data-Driven</em>) ;</li>
+<li><strong>Identifier</strong> les grandes étapes du cycle de vie d’un projet de Machine Learning ;</li>
+<li><strong>Maîtriser</strong> l’écosystème technique (bibliothèques Python, environnements d’exploration et de production).</li>
 </ul>
 </div>
 </div>
-<section id="de-la-programmation-classique-à-lapprentissage-automatique" class="level2">
-<h2 class="anchored" data-anchor-id="de-la-programmation-classique-à-lapprentissage-automatique">1. De la Programmation Classique à l’Apprentissage Automatique</h2>
-<p>En informatique traditionnelle, l’ingénieur écrit explicitement des règles métiers sous forme de code algorithmique pour traiter des données d’entrée et produire un résultat.</p>
-<pre><code>Programmation Classique :
-Données d'entrée  +  Règles (Code)  ---&gt;  Résultat</code></pre>
-<p>Cette approche trouve ses limites lorsque les règles deviennent trop complexes ou impossibles à formaliser manuellement (ex. reconnaissance faciale, détection de fraudes bancaires, traitement du langage naturel).</p>
-<p>Le <strong>Machine Learning</strong> inverse ce paradigme : au lieu de programmer les règles, on fournit à l’ordinateur des données d’entrée associées aux résultats observés, et l’algorithme <em>apprend</em> automatiquement la fonction mathématique sous-jacente.</p>
-<pre><code>Machine Learning :
-Données d'entrée  +  Résultats observés  ---&gt;  Modèle (Règles induites)</code></pre>
+<section id="quest-ce-que-le-machine-learning-sa-place-dans-lécosystème-de-lia" class="level2">
+<h2 class="anchored" data-anchor-id="quest-ce-que-le-machine-learning-sa-place-dans-lécosystème-de-lia">1. Qu’est-ce que le Machine Learning ? Sa place dans l’écosystème de l’IA</h2>
+<section id="de-lintelligence-artificielle-au-machine-learning" class="level3">
+<h3 class="anchored" data-anchor-id="de-lintelligence-artificielle-au-machine-learning">1.1. De l’Intelligence Artificielle au Machine Learning</h3>
+<p>L’<strong>Intelligence Artificielle (IA)</strong> est le champ scientifique le plus large : il regroupe l’ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l’intelligence humaine.</p>
+<p>Historiquement, les premiers systèmes d’IA reposaient sur des <strong>systèmes experts</strong> : des ensembles de règles logiques (<code>SI ... ALORS ...</code>) écrites explicitement par des humains. Ils fonctionnaient bien dans des domaines circonscrits, mais s’avéraient extrêmement coûteux à maintenir et incapables de s’adapter à des situations non anticipées.</p>
+<p>Le <strong>Machine Learning (ML)</strong> constitue une rupture : plutôt que de coder explicitement les règles de décision, on conçoit des algorithmes capables d’<strong>extraire eux-mêmes ces règles à partir de données d’exemples</strong>.</p>
+<p>Le <strong>Deep Learning (Apprentissage Profond, DL)</strong> est un <strong>sous-domaine du ML</strong> qui repose sur des réseaux de neurones artificiels comportant de nombreuses couches, performants sur des données non structurées (images, son, texte).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/venn-ai-ml-dl.svg" class="img-fluid figure-img"></p>
+<figcaption>Intelligence Artificielle, Machine Learning et Deep Learning</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="À retenir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>À retenir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l’IA — mais la réciproque est fausse (ex: un algorithme de recherche aux échecs est de l’IA sans être du ML).</p>
+</div>
+</div>
 </section>
-<section id="définition-formelle" class="level2">
-<h2 class="anchored" data-anchor-id="définition-formelle">2. Définition Formelle</h2>
-<p>Selon Tom Mitchell (1997), la définition de référence de l’apprentissage automatique s’énonce ainsi :</p>
-<div id="def-machine-learning" class="theorem definition">
-<p><span class="theorem-title"><strong>Définition 3.1 (Apprentissage Automatique)</strong></span> Un programme informatique est dit <strong>apprendre</strong> d’une expérience <span class="math inline">\(E\)</span>, relativement à une classe de tâches <span class="math inline">\(T\)</span> et à une mesure de performance <span class="math inline">\(P\)</span>, si sa performance sur les tâches de <span class="math inline">\(T\)</span>, mesurée par <span class="math inline">\(P\)</span>, s’améliore avec l’expérience <span class="math inline">\(E\)</span>.</p>
+<section id="définition-formelle-du-machine-learning" class="level3">
+<h3 class="anchored" data-anchor-id="définition-formelle-du-machine-learning">1.2. Définition formelle du Machine Learning</h3>
+<p>La définition de référence est celle de <span class="citation" data-cites="mitchell1997machine">(<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">Mitchell et Mitchell 1997</a>)</span> :</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<ul>
-<li><strong>La Tâche (<span class="math inline">\(T\)</span>) :</strong> Prédire le prix d’un bien immobilier, classifier un e-mail (<em>Spam</em> / <em>Non-Spam</em>).</li>
-<li><strong>L’Expérience (<span class="math inline">\(E\)</span>) :</strong> Le jeu de données d’entraînement historique (observations <span class="math inline">\(X\)</span> et étiquettes <span class="math inline">\(y\)</span>).</li>
-<li><strong>La Performance (<span class="math inline">\(P\)</span>) :</strong> La métrique d’évaluation choisie (Erreur Quadratique Moyenne, Exactitude, Score <span class="math inline">\(F_1\)</span>).</li>
-</ul>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Apprentissage Automatique (Machine Learning)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<div id="def-ml" class="theorem definition">
+<p><span class="theorem-title"><strong>Définition 1</strong></span> On dit qu’un programme informatique apprend à partir d’une expérience E, par rapport à une classe de tâches T et une mesure de performance P, si sa performance aux tâches de T, mesurée par P, s’améliore avec l’expérience E.</p>
+</div>
+</div>
+</div>
+<p>Cette définition se décompose en trois éléments concrets :</p>
+<div id="tbl-mitchell" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mitchell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Le cadre TPE de <span class="citation" data-cites="mitchell1997machine">Mitchell et Mitchell (<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">1997</a>)</span> appliqué au filtre anti-spam
+</figcaption>
+<div aria-describedby="tbl-mitchell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 45%">
+<col style="width: 27%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Symbole</th>
+<th>Signification</th>
+<th>Exemple : filtre anti-spam</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>T</strong> (Task)</td>
+<td>La tâche que le système doit accomplir</td>
+<td>Classer un e-mail comme <em>spam</em> ou <em>non-spam</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>P</strong> (Performance)</td>
+<td>La métrique d’évaluation</td>
+<td>Proportion d’e-mails correctement classés</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>E</strong> (Experience)</td>
+<td>Les données d’apprentissage</td>
+<td>Une base d’e-mails déjà étiquetés</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Cette grille de lecture (T, P, E) est fondamentale : avant même de choisir un algorithme, tout projet ML doit répondre clairement à ces trois questions.</p>
+</section>
+</section>
+<section id="programmation-classique-vs.-approche-data-driven" class="level2">
+<h2 class="anchored" data-anchor-id="programmation-classique-vs.-approche-data-driven">2. Programmation classique vs.&nbsp;approche Data-Driven</h2>
+<section id="le-paradigme-classique" class="level3">
+<h3 class="anchored" data-anchor-id="le-paradigme-classique">2.1. Le paradigme classique</h3>
+<p>Dans le paradigme <strong>classique</strong> (déductif), le développeur déduit un ensemble de <strong>règles explicites</strong>, puis les traduit en code. Le programme prend des <strong>données</strong> en entrée et produit des <strong>résultats</strong> en appliquant mécaniquement ces règles. Idéal si les règles métier sont stables et peu nombreuses (ex: calcul d’un impôt).</p>
+</section>
+<section id="le-paradigme-data-driven" class="level3">
+<h3 class="anchored" data-anchor-id="le-paradigme-data-driven">2.2. Le paradigme Data-Driven</h3>
+<p>Le Machine Learning <strong>inverse la logique</strong> : on fournit au système des <strong>données</strong> et les <strong>résultats attendus</strong>. L’algorithme analyse les régularités statistiques pour produire un <strong>modèle</strong> (un programme appris automatiquement), capable de généraliser à de nouvelles données.</p>
+<div id="fig-paradigme-programmation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-paradigme-programmation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/paradigme-programmation.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-paradigme-programmation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Comparaison entre la programmation classique et l’approche Data-Driven
+</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Critère</th>
+<th>Programmation classique</th>
+<th>Machine Learning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fourni par l’humain</td>
+<td>Règles + Données</td>
+<td>Données + Résultats attendus (exemples)</td>
+</tr>
+<tr class="even">
+<td>Produit par le système</td>
+<td>Résultats</td>
+<td>Un modèle (règles apprises)</td>
+</tr>
+<tr class="odd">
+<td>Adaptation</td>
+<td>Faible (réécriture du code)</td>
+<td>Élevée (réentraînement)</td>
+</tr>
+<tr class="even">
+<td>Interprétabilité</td>
+<td>Totale</td>
+<td>Variable selon le modèle</td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 <section id="le-cycle-de-vie-dun-projet-de-machine-learning" class="level2">
-<h2 class="anchored" data-anchor-id="le-cycle-de-vie-dun-projet-de-machine-learning">3. Le Cycle de Vie d’un Projet de Machine Learning</h2>
-<p>Un projet de Machine Learning réussi dépasse le simple choix d’un algorithme. Il s’inscrit dans une démarche méthodologique rigoureuse :</p>
+<h2 class="anchored" data-anchor-id="le-cycle-de-vie-dun-projet-de-machine-learning">3. Le cycle de vie d’un projet de Machine Learning</h2>
+<p>Entraîner un modèle ne représente qu’une fraction du travail réel. Un projet ML se décompose en sept étapes itératives <span class="citation" data-cites="geron2022">(<a href="../references.html#ref-geron2022" role="doc-biblioref">Géron 2022</a>)</span> :</p>
+<div id="fig-cycle-vie-ml" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cycle-vie-ml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/cycle-vie-ml.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cycle-vie-ml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Le cycle de vie d’un projet de Machine Learning
+</figcaption>
+</figure>
+</div>
 <ol type="1">
-<li><strong>Cadrage du problème :</strong> Traduction du besoin métier en un problème ML (<span class="math inline">\(T\)</span>, <span class="math inline">\(E\)</span>, <span class="math inline">\(P\)</span>).</li>
-<li><strong>Collecte &amp; Nettoyage :</strong> Traitement des valeurs manquantes, gestion des doublons et des aberrations.</li>
-<li><strong>Analyse Exploratoire (EDA) :</strong> Visualisation des distributions et analyse des corrélations.</li>
-<li><strong>Ingénierie des Caractéristiques (<em>Feature Engineering</em>) :</strong> Encodage, normalisation et création de variables.</li>
-<li><strong>Modélisation &amp; Entraînement :</strong> Sélection des algorithmes et minimisation de la fonction de coût <span class="math inline">\(\mathcal{L}\)</span>.</li>
-<li><strong>Évaluation &amp; Validation :</strong> Test du modèle sur des données inédites pour évaluer sa capacité de généralisation.</li>
-<li><strong>Industrialisation &amp; Suivi :</strong> Déploiement du modèle en production et surveillance des performances.</li>
+<li><strong>Cadrage du problème métier</strong> : Traduire un besoin en problème ML via la grille (T, P, E).</li>
+<li><strong>Collecte des données</strong> : Rassembler un jeu de données représentatif.</li>
+<li><strong>Préparation et nettoyage</strong> : Étape la plus chronophage (60-80 % du temps). Traitement des valeurs manquantes, encodage, création de variables (<em>feature engineering</em>).</li>
+<li><strong>Modélisation</strong> : Choix des algorithmes et entraînement sur les données pour minimiser une erreur.</li>
+<li><strong>Évaluation</strong> : Mesurer objectivement la performance sur des données jamais vues (test).</li>
+<li><strong>Déploiement</strong> : Intégrer le modèle dans un système opérationnel (API).</li>
+<li><strong>Monitoring</strong> : Surveiller les performances pour détecter la dérive des données (<em>data drift</em>).</li>
 </ol>
 </section>
-<section id="fil-conducteur-du-module" class="level2">
-<h2 class="anchored" data-anchor-id="fil-conducteur-du-module">4. Fil Conducteur du Module</h2>
-<p>Tout au long de ce cours, nous explorerons les fondements théoriques et mathématiques de chaque famille d’algorithmes avant de procéder à leur implémentation concrète à travers des ateliers pratiques en Python.</p>
+<section id="lécosystème-et-les-outils-de-lingénieur-ml" class="level2">
+<h2 class="anchored" data-anchor-id="lécosystème-et-les-outils-de-lingénieur-ml">4. L’écosystème et les Outils de l’Ingénieur ML</h2>
+<p>Pour mener à bien ce cycle, l’ingénieur s’appuie sur la stack Python, standard de l’industrie.</p>
+<section id="les-bibliothèques-scientifiques-incontournables" class="level3">
+<h3 class="anchored" data-anchor-id="les-bibliothèques-scientifiques-incontournables">4.1. Les bibliothèques scientifiques incontournables</h3>
+<div id="tbl-ecosysteme" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ecosysteme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Principales bibliothèques de l’écosystème Python
+</figcaption>
+<div aria-describedby="tbl-ecosysteme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bibliothèque</th>
+<th>Rôle dans le cycle de vie du projet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pandas</code> / <code>polars</code></td>
+<td>Manipulation et nettoyage de tableaux de données (DataFrames).</td>
+</tr>
+<tr class="even">
+<td><code>numpy</code></td>
+<td>Calcul matriciel et opérations mathématiques optimisées.</td>
+</tr>
+<tr class="odd">
+<td><code>matplotlib</code> / <code>seaborn</code></td>
+<td>Visualisation et exploration visuelle des données.</td>
+</tr>
+<tr class="even">
+<td><code>scikit-learn</code></td>
+<td>La référence pour le Machine Learning classique et l’ingénierie des features.</td>
+</tr>
+<tr class="odd">
+<td><code>xgboost</code> / <code>lightgbm</code></td>
+<td>Algorithmes avancés (boosting), standards pour les données tabulaires.</td>
+</tr>
+<tr class="even">
+<td><code>pytorch</code> / <code>tensorflow</code></td>
+<td>Deep Learning (Réseaux de neurones profonds).</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="environnements-de-développement-exploration-vs-production" class="level3">
+<h3 class="anchored" data-anchor-id="environnements-de-développement-exploration-vs-production">4.2. Environnements de développement : Exploration vs Production</h3>
+<p>Il est crucial de distinguer la phase d’exploration (prototypage) de la phase de production (déploiement).</p>
+<p><strong>Outils d’exploration :</strong></p>
+<ul>
+<li><strong>JupyterLab :</strong> Interface basée sur des notebooks (cellules de texte/code). Parfait pour l’exploration, l’affichage de graphiques et les travaux pratiques locaux.</li>
+<li><strong>Google Colab :</strong> Notebooks dans le cloud sans installation locale. Idéal pour partager du code ou accéder à des ressources ponctuelles, mais éphémère.</li>
+</ul>
+<p><strong>Outils de production :</strong></p>
+<ul>
+<li><strong>Visual Studio Code (VS Code) :</strong> Éditeur généraliste robuste. Indispensable pour restructurer le code des notebooks en scripts modulaires orientés objet, gérer Git, et préparer le déploiement.</li>
+</ul>
+</section>
+<section id="gestion-de-projet-avec-uv" class="level3">
+<h3 class="anchored" data-anchor-id="gestion-de-projet-avec-uv">4.3. Gestion de projet avec <code>uv</code></h3>
+<p><strong><code>uv</code> :</strong> Outil moderne de gestion des environnements et dépendances Python. Il garantit la reproductibilité en déclarant les bibliothèques dans <code>pyproject.toml</code> et en fixant les versions via <code>uv.lock</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> init</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> add numpy pandas scikit-learn jupyterlab</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run jupyter lab</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-geron2022" class="csl-entry" role="listitem">
+Géron, Aurélien. 2022. <em>Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow</em>. O’Reilly Media.
+</div>
+<div id="ref-mitchell1997machine" class="csl-entry" role="listitem">
+Mitchell, Tom M, et Tom M Mitchell. 1997. <em>Machine learning</em>. Vol. 1. McGraw-hill New York.
+</div>
+</div>
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -684,8 +936,8 @@ Données d'entrée  +  Résultats observés  ---&gt;  Modèle (Règles induites)
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapitres/01_ecosysteme_ml.html" class="pagination-link" aria-label="Écosystème et Fondements de l'Apprentissage Automatique">
-        <span class="nav-page-text"><span class="chapter-title">Écosystème et Fondements de l’Apprentissage Automatique</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapitres/01_ecosysteme_ml.html" class="pagination-link" aria-label="Fondements Théoriques de l'Apprentissage Automatique">
+        <span class="nav-page-text"><span class="chapter-title">Fondements Théoriques de l’Apprentissage Automatique</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
