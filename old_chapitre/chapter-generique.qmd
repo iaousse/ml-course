@@ -1,0 +1,239 @@
+# Titre du Chapitre
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre, l'étudiant sera capable de :
+
+1. Maîtriser la syntaxe avancée et la structuration sous Quarto.
+2. Intégrer des formules mathématiques, figures, tableaux et algorithmes numérotés.
+3. Exploiter le référencement croisé (`@`) et la gestion des citations bibliographiques.
+:::
+
+---
+
+## 1. Mises en valeur et Bloc-Notes (*Callouts*)
+
+Quarto propose 5 types de blocs d'avertissement stylisés avec option de pliage (`collapse="true"`).
+
+::: {.callout-note title="Note d'information"}
+Une remarque générale pour apporter du contexte supplémentaire ou une précision historique.
+:::
+
+::: {.callout-warning title="Attention au Piège"}
+Avertissement concernant une erreur fréquente (ex: fuite de données entre Train et Test).
+:::
+
+::: {.callout-important title="À retenir absolument"}
+Point central du cours indispensable pour les examens et les travaux pratiques.
+:::
+
+::: {.callout-caution title="Avertissement technique"}
+Avertissement sur la compatibilité d'une bibliothèque Python ou la puissance de calcul.
+:::
+
+::: {.callout-tip collapse="true" title="Astuce interactive (cliquer pour dérouler)"}
+Ce bloc est masqué par défaut sur le site web pour alléger la lecture, mais sera affiché étendu dans le PDF.
+:::
+
+---
+
+## 2. Formules Mathématiques et Démonstrations
+
+### 2.1 Équations en ligne et hors-texte
+
+L'équation en ligne $f(x) = w^T x + b$ s'écrit avec un seul `$`. Pour une équation numérotée à référencer plus tard, utilisez `$$` suivi d'une étiquette `{#eq-label}`.
+
+$$\mathcal{L}(\theta) = \frac{1}{2n} \sum_{i=1}^{n} \left( h_\theta(x^{(i)}) - y^{(i)} \right)^2$$
+{#eq-mse}
+
+On peut faire référence à l'@eq-mse dans le texte explicatif.
+
+### 2.2 Alignement de calculs multi-lignes
+
+Pour dériver une fonction étape par étape, utilisez l'environnement `align*` :
+
+$$\begin{aligned} \nabla_\theta \mathcal{L}(\theta) &= \frac{\partial}{\partial \theta} \left( \frac{1}{2n} \Vert{} X\theta - y \Vert{}^2 \right) \\ &= \frac{1}{n} X^T (X\theta - y) \end{aligned}$$
+{#eq-gradient-descent}
+
+L'opérateur d'optimisation s'écrit proprement avec `\operatorname` :
+
+$$\hat{\theta} := \operatorname{argmin}_{\theta \in \mathbb{R}^d} \; \mathcal{L}(\theta)$$
+
+---
+
+## 3. Théorèmes, Démonstrations et Exercices
+
+Quarto gère nativement la numérotation automatique des théorèmes, lemmes et exercices.
+
+::: {#thm-bayes name="Théorème de Bayes"}
+Pour deux événements $A$ et $B$ avec $P(B) > 0$ :
+
+$$P(A \mid B) = \frac{P(B \mid A) \cdot P(A)}{P(B)}$$
+:::
+
+::: {.proof}
+La démonstration repose sur la définition de la probabilité conditionnelle $P(A \cap B) = P(A \mid B)P(B) = P(B \mid A)P(A)$.
+:::
+
+Le @thm-bayes est fondamental en classification bayésienne.
+
+::: {#exr-calcul-gradient}
+Calculer le gradient de la fonction de coût pour une observation individuelle $x_i \in \mathbb{R}^d$.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-calcul-gradient"}
+**Corrigé :**  
+La dérivée partielle par rapport au poids $w_j$ donne :
+$$\frac{\partial \mathcal{L}_i}{\partial w_j} = (h_w(x_i) - y_i) \cdot x_{ij}$$
+:::
+
+---
+
+## 4. Figures et Multi-Figures
+
+### 4.1 Figure simple numérotée
+
+![Logo de l'établissement support du cours](images/logo.png){#fig-logo fig-align="center" width="40%"}
+
+Voir la @fig-logo pour l'illustration.
+
+### 4.2 Sub-figures (Disposition en colonnes)
+
+::: {#fig-comparaison layout-ncol=2}
+![Sous-figure A : Distribution initiale](images/fig_a.png){#fig-dist-a}
+
+![Sous-figure B : Distribution normalisée](images/fig_b.png){#fig-dist-b}
+
+Comparaison de l'effet de la standardisation sur les variables.
+:::
+
+La @fig-comparaison présente la différence, où la @fig-dist-a montre les données brutes et la @fig-dist-b montre les données centrées réduites.
+
+---
+
+## 5. Tableaux Structurés
+
+| Algorithme | Type d'apprentissage | Complexité Entraînement | Sensible à l'échelle |
+|:---|:---:|:---:|:---:|
+| **Régression Linéaire** | Supervisé | $\mathcal{O}(d^3 + n d^2)$ | Oui |
+| **k-NN** | Supervisé | $\mathcal{O}(1)$ | Oui |
+| **K-Means** | Non supervisé | $\mathcal{O}(n \cdot k \cdot d \cdot i)$ | Oui |
+| **Arbres de Décision** | Supervisé | $\mathcal{O}(n \cdot d \log n)$ | Non |
+
+: Comparaison synthétique des algorithmes étudiés {#tbl-comparatif}
+
+Comme le montre le @tbl-comparatif, les arbres de décision ne nécessitent pas de mise à l'échelle préalable.
+
+---
+
+## 6. Code Source, Annotations et Algorithmes
+
+### 6.1 Bloc de code explicatif avec numéros de lignes et annotations
+
+```python {filename="model_pipeline.py" code-line-numbers="true"}
+import numpy as np
+from sklearn.linear_model import Ridge # <1>
+from sklearn.preprocessing import StandardScaler # <2>
+
+scaler = StandardScaler()
+model = Ridge(alpha=1.0) # <3>
+```
+1. Importation du régresseur ridge avec régularisation $\ell_2$.
+2. Importation du transformateur pour la standardisation des variables.
+3. Instanciation du modèle avec le paramètre de pénalité $\alpha=1.0$.
+
+### 6.2 Cellule exécutable Python (avec options Quarto)
+
+```{python}
+#| label: fig-sinus
+#| fig-cap: "Génération automatique d'un graphique via Matplotlib"
+#| echo: true
+#| eval: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2 * np.pi, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(6, 3))
+plt.plot(x, y, label="$\sin(x)$", color="blue")
+plt.grid(True)
+plt.legend()
+plt.show()
+```
+
+### 6.3 Algorithme (Pseudo-code)
+
+::: {.proof title="Algorithme 1 : Descente de gradient stochastique (SGD)"}
+1. **Entrées :** Données $(X, y)$, taux d'apprentissage $\alpha$, nombre d'époques $E$.
+2. **Initialisation :** Vecteur de poids $w_0 \sim \mathcal{N}(0, I)$.
+3. **Pour** $e = 1 \dots E$ **faire :**
+   - Mélanger aléatoirement le jeu de données.
+   - **Pour chaque** échantillon $(x_i, y_i)$ **faire :**
+     $$w \leftarrow w - \alpha \cdot (h_w(x_i) - y_i) x_i$$
+4. **Retourner :** Poids optimaux $w^*$.
+:::
+
+---
+
+## 7. Contenus Onglets (*Tabsets*) et Vues Multi-Langages
+
+::: {.panel-tabset}
+## Scikit-Learn (Python)
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+clf = KNeighborsClassifier(n_neighbors=5)
+clf.fit(X_train, y_train)
+```
+
+## PyTorch (Deep Learning)
+```python
+import torch
+import torch.nn as nn
+
+model = nn.Sequential(nn.Linear(d_in, 64), nn.ReLU(), nn.Linear(64, n_classes))
+```
+
+## R (`stats`)
+```r
+fit <- lm(y ~ x1 + x2, data = df)
+summary(fit)
+```
+:::
+
+---
+
+## 8. Liens Externes, Glossaire et Citations Bibliographiques
+
+### 8.1 Liens web et notes de bas de page
+
+* Lien vers une ressource externe : Consultez la [Documentation officielle de Scikit-Learn](https://scikit-learn.org){target="_blank"}.
+* Utilisation d'une note de bas de page pour clarifier un point[^note-validation].
+
+[^note-validation]: La validation croisée $k$-fold permet d'évaluer la stabilité de la métrique sans sacrifier trop de données d'entraînement.
+
+### 8.2 Abréviations et termes techniques
+
+Utilisez des balises HTML légères pour définir des acronymes :  
+Le domaine de l'<abbr title="Intelligence Artificielle">IA</abbr> englobe le <abbr title="Machine Learning">ML</abbr> et le <abbr title="Deep Learning">DL</abbr>.
+
+Terme avec définition
+: Famille d'algorithmes apprenant une fonction d'itération sans intervention humaine explicite.
+
+### 8.3 Citations bibliographiques
+
+Vous pouvez citer des articles ou livres référencés dans votre fichier `references.bib` :
+
+* Citation parentPartagée : L'apprentissage profond a révolutionné le traitement d'images [@goodfellow2016].
+* Citation directe : Selon @vaswani2017, l'architecture Transformer élimine le besoin de récurrence dans les séries temporelles et le texte.
+
+---
+
+## 9. Résumé du Chapitre
+
+::: {.callout-important title="Points Clés à Retenir"}
+- **Formulation :** Tout problème de ML revient à minimiser un risque empirique.
+- **Régularisation :** Permet d'éviter le sur-apprentissage en contrôlant la complexité $\theta$.
+- **Outils :** Transition progressive des Notebooks vers des scripts Python modulaires sous VS Code.
+:::

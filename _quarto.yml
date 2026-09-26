@@ -32,10 +32,16 @@ book:
     - preface.qmd
     - chapitres/00_intro_ml.qmd
     - chapitres/01_ecosysteme_ml.qmd
-    # Ajoutez vos autres chapitres ici au fur et à mesure :
-    # - chapitres/02_regression_lineaire.qmd
-    # - chapitres/03_classification.qmd
+    - chapitres/02_pretraitement_donnees.qmd
+    - chapitres/03_regression_lineaire.qmd
+    - chapitres/04_classification.qmd
+    - chapitres/04_ml_non_supervise.qmd
     - references.qmd
+    - tp/lab0_environnement_python.qmd
+    - tp/lab1_fondements_sklearn.qmd
+    - tp/lab2_collecte_pretraitement.qmd
+    - tp/lab3_regression.qmd
+    - tp/lab4_classification.qmd
 
 # Configuration pour le code Python
 execute:

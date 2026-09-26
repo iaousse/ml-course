@@ -1,0 +1,696 @@
+# Régression
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre, l'étudiant sera capable de :
+
+- distinguer clairement une tâche de régression d'une tâche de classification ;
+- formuler une régression linéaire simple et multiple ;
+- interpréter les coefficients, les résidus et les prédictions ;
+- calculer les paramètres d'une régression par les moindres carrés ordinaires ;
+- expliquer le principe de la descente de gradient ;
+- choisir des métriques adaptées à un problème de régression ;
+- utiliser `scikit-learn` pour ajuster un modèle linéaire simple ;
+- diagnostiquer les limites d'un modèle de régression.
+:::
+
+## 1. Régression ou classification ?
+
+La **régression** et la **classification** sont deux tâches d'apprentissage supervisé. Dans les deux cas, on dispose d'observations décrites par des variables explicatives $X$ et d'une cible connue $y$. La différence essentielle est la nature de la cible.
+
+| Aspect | Régression | Classification |
+|---|---|---|
+| Nature de la cible $y$ | Numérique, continue | Catégorielle |
+| Exemple | Prix, température, durée | Spam / non spam, animal |
+| Sortie du modèle | Une valeur réelle $\hat{y}$ | Une classe ou une probabilité |
+| Métriques courantes | MAE, MSE, RMSE, $R^2$ | Accuracy, précision, rappel, F1 |
+| Question posée | « Combien ? » | « Quelle catégorie ? » |
+
+### 1.1. Régression
+
+On cherche à approximer une fonction inconnue $f$ telle que :
+
+$$
+y = f(x) + \varepsilon
+$$
+
+Ici, $\varepsilon$ représente le bruit, c'est-à-dire la part imprévisible du phénomène. Le modèle apprend une approximation $\hat{f}$ et produit :
+
+$$
+\hat{y} = \hat{f}(x)
+$$
+
+Exemples :
+
+- prévoir le prix d'un appartement ;
+- estimer la consommation d'électricité ;
+- prédire le temps de livraison ;
+- estimer la quantité mensuelle.
+
+Une régression est dite **simple** si elle utilise une seule variable explicative, et **multiple** si elle en utilise plusieurs.
+
+### 1.2. Classification
+
+En classification, la cible appartient à un ensemble fini de catégories. Par exemple, pour une classification binaire :
+
+$$
+y \in \{0,1\}
+$$
+
+Le modèle peut produire une probabilité :
+
+$$
+\hat{p}(y=1 \mid x)
+$$
+
+Puis, selon un seuil, il choisit une classe. Ainsi, une probabilité de $0{,}82$ peut conduire à la classe « oui » si le seuil est fixé à $0{,}5$.
+
+La distinction est donc claire : en régression, on cherche une valeur numérique ; en classification, on cherche une catégorie.
+
+::: {.callout-important title="La frontière n'est pas toujours absolue"}
+Une variable numérique peut parfois être utilisée comme cible d'une régression même si elle est discrète, comme le nombre de commandes ou le nombre d'accidents. La vraie question est de savoir si l'objectif consiste à prédire une quantité numérique ou une catégorie.
+:::
+
+## 2. Données et notation
+
+Chaque observation $i$ est décrite par un vecteur de $p$ variables explicatives :
+
+$$
+x_i = (x_{i1}, x_{i2}, \ldots, x_{ip})
+$$
+
+et par une valeur cible numérique $y_i$. Pour $n$ observations, on écrit :
+
+$$
+X = \begin{pmatrix}
+ x_{11} & x_{12} & \cdots & x_{1p} \\
+ x_{21} & x_{22} & \cdots & x_{2p} \\
+ \vdots & \vdots & \ddots & \vdots \\
+ x_{n1} & x_{n2} & \cdots & x_{np}
+\end{pmatrix} \in \mathbb{R}^{n \times p},
+\qquad
+y = \begin{pmatrix}
+ y_1 \\
+ y_2 \\
+ \vdots \\
+ y_n
+\end{pmatrix} \in \mathbb{R}^{n}
+$$
+
+Les quantités importantes sont :
+
+| Symbole | Signification |
+|---|---|
+| $n$ | Nombre d'observations |
+| $p$ | Nombre de variables explicatives |
+| $X$ | Matrice des caractéristiques |
+| $x_i$ | Vecteur des caractéristiques de l'observation $i$ |
+| $y$ | Vecteur des réponses observées |
+| $\hat{y}_i$ | Prédiction du modèle pour l'observation $i$ |
+| $e_i = y_i - \hat{y}_i$ | Résidu de l'observation $i$ |
+
+Le rôle du modèle est d'apprendre à associer des valeurs de $x$ à des valeurs de $y$ en minimisant l'erreur de prédiction.
+
+::: {.callout-note title="Paramètre, hyperparamètre et prédiction"}
+Dans un modèle linéaire, les coefficients $\beta_0,\beta_1,\ldots$ sont des **paramètres** appris sur les données. Un **hyperparamètre** est choisi avant l'apprentissage, comme le nombre d'itérations d'un algorithme. Une **prédiction** $\hat{y}$ est la valeur calculée par le modèle à partir des paramètres appris.
+:::
+
+## 3. Modèle de régression linéaire
+
+### 3.1. Régression linéaire simple
+
+Avec une seule variable explicative $x$, le modèle linéaire s'écrit :
+
+$$
+\hat{y}_i = \beta_0 + \beta_1 x_i
+$$
+
+- $\beta_0$ est l'ordonnée à l'origine ;
+- $\beta_1$ est la pente ;
+- $\hat{y}_i$ est la valeur prédite.
+
+On peut aussi écrire le modèle statistique :
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
+$$
+
+Le terme $\varepsilon_i$ tient compte de l'écart entre la relation moyenne et les observations réelles. Le but n'est pas d'ajuster une droite parfaite, mais une tendance utile.
+
+### 3.2. Régression linéaire multiple
+
+Avec $p$ variables explicatives :
+
+$$
+\hat{y}_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip}
+$$
+
+Le coefficient $\beta_j$ représente l'effet moyen d'une variation d'une unité de $x_j$ sur la cible, en gardant les autres variables constantes.
+
+Par exemple, pour le prix d'un appartement :
+
+$$
+\widehat{\text{prix}} = \beta_0 + \beta_1 \times \text{surface} + \beta_2 \times \text{nombre de chambres}
+$$
+
+Si $\beta_1 = 1200$, alors une surface supplémentaire de $1\,m^2$ est associée, toutes choses égales par ailleurs, à une augmentation moyenne de $1200$ de la valeur prédite.
+
+### 3.3. Écriture matricielle
+
+Pour inclure l'interception, on ajoute une colonne de $1$ à $X$. On obtient :
+
+$$
+\widetilde{X} = \begin{pmatrix}
+1 & x_{11} & \cdots & x_{1p} \\
+1 & x_{21} & \cdots & x_{2p} \\
+\vdots & \vdots & \ddots & \vdots \\
+1 & x_{n1} & \cdots & x_{np}
+\end{pmatrix}
+\in \mathbb{R}^{n \times (p+1)}
+$$
+
+Le vecteur des coefficients est :
+
+$$
+\beta = \begin{pmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_p
+\end{pmatrix}
+\in \mathbb{R}^{p+1}
+$$
+
+Le modèle devient :
+
+$$
+\hat{y} = \widetilde{X}\beta
+$$
+
+Cette écriture compacte est très utile pour le calcul et la compréhension mathématique du modèle.
+
+### 3.4. Fonction de coût
+
+Le résidu de l'observation $i$ est :
+
+$$
+e_i = y_i - \hat{y}_i
+$$
+
+Pour mesurer l'erreur globale, on utilise souvent la somme des carrés des erreurs :
+
+$$
+SSE(\beta)=\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+$$
+
+ou la moyenne des carrés des erreurs :
+
+$$
+MSE(\beta)=\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+$$
+
+Le modèle linéaire cherche les coefficients qui minimisent cette quantité :
+
+$$
+\hat{\beta} = \underset{\beta}{\operatorname{argmin}}\; MSE(\beta)
+$$
+
+Le carré fait deux choses :
+
+1. les erreurs positives et négatives ne s'annulent pas ;
+2. les grandes erreurs sont pénalisées davantage que les petites.
+
+### 3.5. Hypothèses et limites
+
+La régression linéaire reste utile même si toutes ses hypothèses ne sont pas parfaitement vérifiées. Mais il faut connaître les conditions qui soutiennent son interprétation :
+
+| Hypothèse | Signification |
+|---|---|
+| Linéarité | La relation moyenne entre $x$ et $y$ est approximativement linéaire |
+| Indépendance | Les observations ne dépendent pas les unes des autres |
+| Homoscédasticité | La dispersion des erreurs est à peu près constante |
+| Absence de multicolinéarité forte | Les variables explicatives ne sont pas presque redondantes |
+| Normalité des erreurs | Utile pour certains intervalles de confiance, pas indispensable pour la prédiction |
+
+Une relation non linéaire peut souvent être approchée par des transformations, comme $x^2$, $\log(x)$ ou des interactions. Mais si le modèle devient trop complexe, il peut sur-apprendre.
+
+::: {.callout-warning title="Extrapolation"}
+Une droite peut avoir une bonne performance autour des données observées, mais devenir peu fiable en dehors de cette plage. Une prédiction faite très loin des valeurs d'entraînement est une extrapolation.
+:::
+
+## 4. Calcul des paramètres par les MCO
+
+### 4.1. Principe
+
+Les **moindres carrés ordinaires** (MCO) choisissent les coefficients qui minimisent la somme des carrés des résidus :
+
+$$
+\hat{\beta} = \underset{\beta}{\operatorname{argmin}}\; \sum_{i=1}^{n}\left(y_i-\beta_0-\sum_{j=1}^{p}\beta_jx_{ij}\right)^2
+$$
+
+En notation matricielle :
+
+$$
+J(\beta)=\|y-\widetilde{X}\beta\|_2^2 = (y-\widetilde{X}\beta)^\top(y-\widetilde{X}\beta)
+$$
+
+### 4.2. Cas de la régression simple
+
+Pour :
+
+$$
+\hat{y}_i = \beta_0 + \beta_1 x_i
+$$
+
+les coefficients MCO sont :
+
+$$
+\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^{n}(x_i-\bar{x})^2}
+$$
+
+et
+
+$$
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+$$
+
+Ici, $\bar{x}$ et $\bar{y}$ sont les moyennes de $x$ et de $y$.
+
+La pente mesure la variation conjointe de $x$ et $y$, normalisée par la variation de $x$. Si toutes les valeurs de $x$ sont identiques, la pente ne peut pas être estimée.
+
+### 4.3. Exemple simple
+
+Considérons les observations :
+
+| $x_i$ | $y_i$ |
+|---:|---:|
+| 1 | 2 |
+| 2 | 3 |
+| 3 | 5 |
+
+Les moyennes sont :
+
+$$
+\bar{x}=2,\qquad \bar{y}=\frac{10}{3}
+$$
+
+Le numérateur de la pente vaut :
+
+$$
+\sum_i(x_i-\bar{x})(y_i-\bar{y}) = (-1)(-\tfrac{4}{3}) + 0(-\tfrac{1}{3}) + 1(\tfrac{5}{3}) = 3
+$$
+
+Le dénominateur vaut :
+
+$$
+\sum_i(x_i-\bar{x})^2 = (-1)^2 + 0^2 + 1^2 = 2
+$$
+
+Donc :
+
+$$
+\hat{\beta}_1 = \frac{3}{2} = 1{,}5
+$$
+
+et :
+
+$$
+\hat{\beta}_0 = \frac{10}{3} - 1{,}5 \times 2 = \frac{1}{3}
+$$
+
+La droite ajustée est donc :
+
+$$
+\hat{y} = \frac{1}{3} + 1{,}5x
+$$
+
+Les prédictions sont :
+
+$$
+\left(\frac{11}{6},\;\frac{10}{3},\;\frac{29}{6}\right)
+$$
+
+et les résidus sont :
+
+$$
+\left(\frac{1}{6},\;-\frac{1}{3},\;\frac{1}{6}\right)
+$$
+
+La somme des résidus est nulle, comme c'est souvent le cas lorsque le modèle contient une ordonnée à l'origine.
+
+### 4.4. Solution matricielle
+
+En annulant le gradient de la fonction de coût, on obtient les **équations normales** :
+
+$$
+\widetilde{X}^{\top}\widetilde{X}\hat{\beta} = \widetilde{X}^{\top}y
+$$
+
+Si la matrice $\widetilde{X}^{\top}\widetilde{X}$ est inversible, alors :
+
+$$
+\boxed{\hat{\beta} = (\widetilde{X}^{\top}\widetilde{X})^{-1}\widetilde{X}^{\top} y}
+$$
+
+Cette formule est centrale en régression linéaire. En pratique, on évite souvent de calculer explicitement l'inverse. Les bibliothèques numériques utilisent des méthodes plus stables, comme QR ou SVD.
+
+Les cas où la solution n'est pas unique ou n'est pas stable se produisent lorsque :
+
+- une variable est une combinaison exacte d'autres variables ;
+- deux colonnes sont redondantes ;
+- le nombre de variables est trop élevé par rapport au nombre d'observations ;
+- les variables sont fortement corrélées.
+
+::: {.callout-note title="MCO, corrélation et causalité"}
+Une régression donne une association entre variables et cible, pas automatiquement un effet causal. Un coefficient important ne prouve pas qu'une variable est la cause de la variation observée de $y$.
+:::
+
+## 5. La descente de gradient
+
+La formule MCO donne une solution directe pour la régression linéaire, mais de nombreux modèles n'ont pas de solution analytique simple. La **descente de gradient** propose une méthode générale d'optimisation.
+
+L'idée est simple :
+
+1. choisir des paramètres initiaux ;
+2. calculer la fonction de coût ;
+3. calculer le gradient ;
+4. se déplacer dans la direction opposée au gradient ;
+5. répéter jusqu'à convergence.
+
+Pour la régression linéaire :
+
+$$
+J(\beta)=\frac{1}{n}\|y-\widetilde{X}\beta\|_2^2
+$$
+
+le gradient est :
+
+$$
+\nabla J(\beta) = \frac{2}{n}\widetilde{X}^{\top}(\widetilde{X}\beta-y)
+$$
+
+La mise à jour est alors :
+
+$$
+\beta^{(t+1)} = \beta^{(t)} - \eta \nabla J(\beta^{(t)})
+$$
+
+avec $\eta>0$ le **taux d'apprentissage**.
+
+### 5.1. Interprétation du taux d'apprentissage
+
+| Valeur de $\eta$ | Comportement |
+|---|---|
+| Trop petite | Convergence très lente |
+| Bien choisie | Réduction régulière du coût |
+| Trop grande | Oscillations ou divergence |
+
+Pour une régression linéaire, la fonction de coût est convexe. Quand le problème est bien posé, elle a un minimum global unique. Un taux trop grand peut empêcher l'algorithme d'atteindre ce minimum.
+
+### 5.2. MCO ou descente de gradient ?
+
+| Critère | MCO | Descente de gradient |
+|---|---|---|
+| Type de solution | Directe | Itérative |
+| Idéal pour | Régression linéaire | Modèles plus complexes |
+| Hyperparamètre important | Peu nombreux | Taux d'apprentissage |
+| Coût | Très efficace sur les petits problèmes | Souvent plus lent |
+
+La régression linéaire de `scikit-learn` utilise généralement des méthodes de moindres carrés, pas une descente de gradient explicite.
+
+## 6. Évaluer une régression
+
+Une métrique doit refléter le coût réel des erreurs. Deux modèles peuvent avoir une RMSE similaire mais des comportements très différents.
+
+### 6.1. MAE
+
+$$
+MAE = \frac{1}{n}\sum_{i=1}^{n}|y_i-\hat{y}_i|
+$$
+
+La MAE mesure l'erreur moyenne en valeur absolue. Elle est exprimée dans la même unité que la cible.
+
+### 6.2. MSE
+
+$$
+MSE = \frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+$$
+
+La MSE pénalise fortement les grandes erreurs. Elle est utile lorsque des erreurs importantes sont particulièrement coûteuses.
+
+### 6.3. RMSE
+
+$$
+RMSE = \sqrt{MSE}
+$$
+
+La RMSE garde la même unité que $y$, tout en continuant à pénaliser les erreurs importantes.
+
+### 6.4. Coefficient de détermination $R^2$
+
+On définit :
+
+$$
+SSE = \sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+$$
+
+$$
+SST = \sum_{i=1}^{n}(y_i-\bar{y})^2
+$$
+
+Alors :
+
+$$
+R^2 = 1 - \frac{SSE}{SST}
+$$
+
+$R^2$ compare le modèle à une baseline qui prédit toujours la moyenne $\bar{y}$.
+
+- $R^2=1$ : prédictions parfaites ;
+- $R^2=0$ : le modèle n'est pas meilleur qu'une prédiction constante ;
+- $R^2<0$ : le modèle est pire que cette baseline.
+
+### 6.5. Exemple
+
+Pour :
+
+$$
+y=(3,5,7),\qquad \hat{y}=(2,6,8)
+$$
+
+les erreurs sont $(1,-1,-1)$ et les erreurs absolues sont $(1,1,1)$. Donc :
+
+$$
+MAE=1,\qquad MSE=1,\qquad RMSE=1
+$$
+
+Comme $\bar{y}=5$, on a :
+
+$$
+SST=(3-5)^2+(5-5)^2+(7-5)^2=8
+$$
+
+$$
+SSE=1^2+(-1)^2+(-1)^2=3
+$$
+
+D'où :
+
+$$
+R^2 = 1 - \frac{3}{8} = 0{,}625
+$$
+
+### 6.6. Choisir une métrique
+
+| Situation | Métrique à privilégier |
+|---|---|
+| Coût proportionnel à l'erreur | MAE |
+| Erreurs très grandes particulièrement coûteuses | MSE ou RMSE |
+| Comparer au modèle de référence à la moyenne | $R^2$ |
+
+::: {.callout-important title="Évaluer sur le bon jeu"}
+Les métriques doivent être calculées sur des données que le modèle n'a pas vues pendant l'apprentissage. La métrique d'entraînement mesure la capacité d'ajustement ; la métrique de validation ou de test mesure la généralisation.
+:::
+
+## 7. Utilisation avec `scikit-learn`
+
+La plupart des modèles de régression de `scikit-learn` partagent une interface simple :
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+X = [[120], [150], [170], [210], [240], [280]]
+y = [1500, 1800, 2100, 2500, 2900, 3400]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+predictions = model.predict(X_test)
+
+mae = mean_absolute_error(y_test, predictions)
+rmse = mean_squared_error(y_test, predictions, squared=False)
+r2 = r2_score(y_test, predictions)
+
+print("MAE:", mae)
+print("RMSE:", rmse)
+print("R2:", r2)
+```
+
+Le schéma général est :
+
+1. définir $X$ et $y$ ;
+2. séparer les données en entraînement et test ;
+3. créer un estimateur ;
+4. appeler `.fit(X_train, y_train)` ;
+5. appeler `.predict(X_test)` ;
+6. calculer une métrique sur les données de test.
+
+### 7.1. Modèle linéaire avec plusieurs variables
+
+On peut aussi utiliser plusieurs variables explicatives :
+
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+X = np.array([
+    [120, 2],
+    [150, 3],
+    [170, 3],
+    [210, 4],
+    [240, 5],
+], dtype=float)
+y = np.array([1500, 1800, 2100, 2500, 2900], dtype=float)
+
+model = LinearRegression()
+model.fit(X, y)
+
+print(model.intercept_)
+print(model.coef_)
+```
+
+Ici, $\text{intercept\_}$ est $\beta_0$ et `coef_` contient les coefficients $\beta_1,\beta_2,\ldots$
+
+### 7.2. Pipeline simple
+
+Quand on a des données incomplètes ou des variables de types différents, il faut souvent préparer les données avant de les donner au modèle. `Pipeline` permet de regrouper les étapes.
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.linear_model import LinearRegression
+
+num_features = ["surface", "age"]
+cat_features = ["quartier"]
+
+num_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()),
+])
+
+cat_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore")),
+])
+
+preprocessor = ColumnTransformer([
+    ("num", num_pipeline, num_features),
+    ("cat", cat_pipeline, cat_features),
+])
+
+model = Pipeline([
+    ("preprocessing", preprocessor),
+    ("regression", LinearRegression()),
+])
+```
+
+Le point important est que les statistiques de préparation sont calculées sur les données d'entraînement uniquement. Cela évite la fuite de données.
+
+### 7.3. Limites de l'approche simple
+
+La régression linéaire est puissante, mais elle n'est pas adaptée à toute situation :
+
+- relation fortement non linéaire ;
+- variables très corrélées ;
+- présence de variables qualitatives nombreuses ;
+- phénomène avec des effets non additifs.
+
+Dans ces cas, il faut parfois transformer les variables, ajouter des caractéristiques, ou utiliser d'autres familles de modèles. Mais la logique centrale reste la même : expliquer une cible numérique par des variables explicatives.
+
+## 8. Exercices théoriques
+
+Les exercices suivants sont purement théoriques. Ils servent à consolider les idées, sans demander de code exécutable.
+
+### Exercice 1. Identifier le type de problème
+
+Pour chaque situation, indique si l'on parle d'une tâche de régression ou de classification :
+
+1. Prédire la température maximale demain.
+2. Déterminer si un email est un spam ou non.
+3. Estimer le montant d'une facture.
+4. Classer une image en "chien" ou "chat".
+5. Prédire le nombre d'accidents pendant un mois.
+
+### Exercice 2. Interpréter un coefficient
+
+On considère le modèle :
+
+$$
+\hat{y} = 50 + 2x_1 - 3x_2
+$$
+
+Interprète le sens de $\beta_1 = 2$ et $\beta_2 = -3$.
+
+### Exercice 3. Calculer une régression simple
+
+On donne les observations suivantes :
+
+| $x_i$ | $y_i$ |
+|---:|---:|
+| 1 | 2 |
+| 2 | 5 |
+| 3 | 6 |
+
+Calculez la pente et l'ordonnée à l'origine de la droite de régression par les MCO.
+
+### Exercice 4. Expliquer le résidu
+
+Pourquoi le résidu $e_i = y_i - \hat{y}_i$ est-il important ? Donnez deux raisons.
+
+### Exercice 5. Choisir une métrique
+
+Un responsable veut éviter les grandes erreurs de prévision, même si elles sont rares. Quelle métrique entre MAE, MSE et RMSE est la plus adaptée ? Justifiez.
+
+### Exercice 6. Vérifier les hypothèses
+
+Donnez une situation où une régression linéaire risque d'être peu adaptée. Expliquez pourquoi.
+
+### Exercice 7. Comprendre le gradient
+
+Expliquez en une phrase le rôle du gradient dans la descente de gradient.
+
+### Exercice 8. Comparer les deux approches
+
+Comparez brièvement la méthode MCO et la descente de gradient pour la régression linéaire.
+
+::: {.callout-tip title="Synthèse"}
+La régression linéaire est le point de départ naturel de l'apprentissage supervisé pour les cibles continues. Sa force est sa simplicité, son interprétabilité et son fondement mathématique solide. Sa limite est qu'elle suppose une dépendance linéaire et qu'elle peut être insuffisante dans des situations plus complexes.
+:::
+
+::: {.callout-note title="Auto-évaluation"}
+- [ ] Je sais distinguer une régression d'une classification.
+- [ ] Je sais écrire un modèle linéaire simple et multiple.
+- [ ] Je sais interpréter les coefficients et les résidus.
+- [ ] Je peux calculer une droite de régression par les MCO.
+- [ ] Je comprends le rôle du gradient et du taux d'apprentissage.
+- [ ] Je sais choisir entre MAE, MSE et RMSE.
+- [ ] Je connais le schéma général d'un modèle `scikit-learn`.
+- [ ] Je peux expliquer pourquoi la validation sur des données non vues est essentielle.
+:::

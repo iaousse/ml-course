@@ -1,0 +1,358 @@
+# Introduction au Machine Learning et à son Écosystème
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre introductif, l'étudiant sera capable de :
+
+- **Définir** formellement le Machine Learning et le **situer** dans l'écosystème de l'Intelligence Artificielle ;
+- **Comparer** le paradigme de programmation classique et l'approche guidée par les données (*Data-Driven*) ;
+- **Identifier** les grandes étapes du cycle de vie d'un projet de Machine Learning ;
+- **Maîtriser** l'écosystème technique (bibliothèques Python, environnements d'exploration et de production).
+:::
+
+## 1. Qu'est-ce que le Machine Learning ? Sa place dans l'écosystème de l'IA
+
+### 1.1. De l'Intelligence Artificielle au Machine Learning
+
+L'**Intelligence Artificielle (IA)** est le champ scientifique le plus large : il regroupe l'ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l'intelligence humaine — raisonner, percevoir, planifier, comprendre le langage, ou encore apprendre.
+
+::: {.callout-note title="Repère historique" collapse="true"}
+Le terme *Artificial Intelligence* est proposé en 1956 lors de la conférence de Dartmouth. Pendant plusieurs décennies, l'IA « symbolique » domine : on cherche à reproduire l'intelligence en manipulant des symboles et des règles logiques explicites. Ce n'est qu'à partir des années 1990-2010, avec l'explosion des données disponibles et de la puissance de calcul, que le **Machine Learning statistique** devient l'approche dominante de l'IA.
+:::
+
+Historiquement, les premiers systèmes d'IA reposaient sur des **systèmes experts** : des ensembles de règles logiques (`SI ... ALORS ...`) écrites explicitement par des humains. Ils fonctionnaient bien dans des domaines circonscrits, mais s'avéraient extrêmement coûteux à maintenir et incapables de s'adapter à des situations non anticipées.
+
+Le **Machine Learning (ML)** constitue une rupture : plutôt que de coder explicitement les règles de décision, on conçoit des algorithmes capables d'**extraire eux-mêmes ces règles à partir de données d'exemples**.
+
+Le **Deep Learning (Apprentissage Profond, DL)** est un **sous-domaine du ML** qui repose sur des réseaux de neurones artificiels comportant de nombreuses couches, performants sur des données non structurées (images, son, texte).
+
+![Intelligence Artificielle, Machine Learning et Deep Learning](../images/venn-ai-ml-dl.svg){#fig-venn-ia-ml-dl}
+
+Comme le montre la @fig-venn-ia-ml-dl, ces trois notions s'emboîtent comme des poupées russes : chaque cercle est un cas particulier du cercle qui l'englobe.
+
+::: {.callout-tip title="À retenir"}
+Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l'IA — mais la réciproque est fausse (ex : un algorithme de recherche aux échecs, comme Minimax, est de l'IA sans être du ML, car il n'apprend rien à partir de données).
+:::
+
+### 1.2. Définition formelle du Machine Learning
+
+La définition de référence est celle de [@mitchell1997machine] :
+
+::: {.callout-tip}
+## Apprentissage Automatique (Machine Learning)
+
+::: {#def-ml}
+On dit qu'un programme informatique apprend à partir d'une expérience E, par rapport à une classe de tâches T et une mesure de performance P, si sa performance aux tâches de T, mesurée par P, s'améliore avec l'expérience E.
+:::
+:::
+
+Cette définition se décompose en trois éléments concrets qui doivent être clairement identifiés **avant** de commencer tout projet :
+
+| Symbole | Signification | Exemple : filtre anti-spam |
+|:---:|---|---|
+| **T** (Task) | La tâche que le système doit accomplir | Classer un e-mail comme *spam* ou *non-spam* |
+| **P** (Performance) | La métrique d'évaluation | Proportion d'e-mails correctement classés |
+| **E** (Experience) | Les données d'apprentissage | Une base d'e-mails déjà étiquetés |
+
+: Le cadre TPE de @mitchell1997machine appliqué au filtre anti-spam {#tbl-mitchell}
+
+::: {.callout-important title="Exemple guidé"}
+Reprenons ce triplet pour un second cas d'usage : un système destiné à **prédire si un client va résilier son abonnement téléphonique** (*churn*).
+
+- **T** : prédire, pour chaque client, s'il résiliera dans les 30 prochains jours (classification binaire) ;
+- **P** : le taux de bonnes prédictions sur des clients dont on connaît déjà l'issue réelle (mesuré sur des données jamais utilisées pour l'entraînement) ;
+- **E** : l'historique des abonnements passés (durée, factures, appels au service client, résiliations effectives).
+
+Cette grille de lecture (T, P, E) est fondamentale : avant même de choisir un algorithme, tout projet ML doit répondre clairement à ces trois questions.
+:::
+
+### 1.3. Un aperçu des grandes familles du Machine Learning
+
+Le chapitre suivant détaillera en profondeur les paradigmes d'apprentissage. Retenons pour l'instant que la première distinction à connaître oppose :
+
+- **L'apprentissage supervisé**, où le système dispose des « bonnes réponses » pendant l'entraînement (ex. régression, classification) ;
+- **L'apprentissage non-supervisé**, où le système ne dispose que des données brutes, sans réponse attendue (ex. clustering).
+
+## 2. Programmation classique vs. approche Data-Driven
+
+### 2.1. Le paradigme classique
+
+Dans le paradigme **classique** (déductif), le développeur déduit un ensemble de **règles explicites**, puis les traduit en code. Le programme prend des **données** en entrée et produit des **résultats** en appliquant mécaniquement ces règles.
+
+Prenons l'exemple simple d'un filtre anti-spam **codé « à la main »** :
+
+```python
+def est_spam(email: str) -> bool:
+    """
+    Approche par règles explicites (programmation classique).
+    Retourne: 
+    True si l'email contient un mot suspect, 
+    False sinon.
+    """
+    mots_suspects = ["gratuit", "gagner", "urgent", "viagra"]
+    email_minuscule = email.lower()
+    return any(mot in email_minuscule for mot in mots_suspects)
+```
+
+Ce type d'approche est idéal lorsque les règles métier sont **stables, peu nombreuses et bien comprises** (ex. calcul d'un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être **réécrite manuellement** — le programme n'apprend rien de lui-même.
+
+### 2.2. Le paradigme Data-Driven
+
+Le Machine Learning **inverse la logique** : on fournit au système des **données** et les **résultats attendus** correspondants. Un **algorithme d'apprentissage** analyse les régularités statistiques entre les deux pour produire un **modèle** — un programme *appris automatiquement*, capable de généraliser à de nouvelles données jamais vues.
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+# Approche Data-Driven (Machine Learning) 
+modele = LogisticRegression()
+modele.fit(X_entrainement, y_entrainement) 
+# le modèle "apprend" les règles
+prediction = modele.predict(nouvel_email)     
+# il les applique à un cas inédit
+```
+
+Ici, personne n'a écrit explicitement la règle « si le mot X apparaît, alors spam » : c'est l'algorithme `fit()` qui l'a **déduite statistiquement** à partir des exemples fournis.
+
+![Comparaison entre la programmation classique et l'approche Data-Driven](../images/paradigme-programmation.svg){#fig-paradigme-programmation}
+
+La @fig-paradigme-programmation résume visuellement cette inversion : ce qui était une **sortie** (les résultats) dans la programmation classique devient une **entrée** (les résultats attendus, ou étiquettes) dans le paradigme Data-Driven.
+
+| Critère | Programmation classique | Machine Learning |
+|---|---|---|
+| Fourni par l'humain | Règles + Données | Données + Résultats attendus (exemples) |
+| Produit par le système | Résultats | Un modèle (règles apprises) |
+| Adaptation | Faible (réécriture du code) | Élevée (réentraînement) |
+| Interprétabilité | Totale | Variable selon le modèle |
+| Besoin en données | Faible | Généralement élevé |
+
+: Comparaison synthétique des deux paradigmes {#tbl-comparaison-paradigmes}
+
+::: {.callout-warning title="Remarque"}
+Le Machine Learning **n'est pas une solution universelle**. Si un problème admet une règle simple, déterministe et bien comprise (ex. conversion d'unités), la programmation classique reste souvent plus fiable, plus rapide à développer et plus facile à auditer qu'un modèle statistique.
+:::
+
+## 3. Le cycle de vie d'un projet de Machine Learning
+
+Entraîner un modèle ne représente qu'une fraction du travail réel. Un projet ML se décompose en sept étapes itératives [@geron2022] :
+
+![Le cycle de vie d'un projet de Machine Learning](../images/cycle-vie-ml.svg){#fig-cycle-vie-ml}
+
+1. **Cadrage du problème métier** : traduire un besoin en problème ML via la grille (T, P, E) — voir @def-ml.
+2. **Collecte des données** : rassembler un jeu de données représentatif du phénomène à modéliser.
+3. **Préparation et nettoyage** : étape la plus chronophage (souvent 60-80 % du temps réel du projet). Traitement des valeurs manquantes, encodage des variables catégorielles, création de nouvelles variables (*`feature engineering`*).
+4. **Modélisation** : choix des algorithmes et entraînement sur les données pour minimiser une erreur.
+5. **Évaluation** : mesurer objectivement la performance sur des données jamais vues (jeu de test).
+6. **Déploiement** : intégrer le modèle dans un système opérationnel (application, API, tableau de bord).
+7. **Monitoring** : surveiller les performances en production pour détecter la **dérive des données** (*data drift*) et déclencher un réentraînement si nécessaire.
+
+Pour ancrer ces sept étapes, suivons un exemple concret :
+
+::: {.callout-important title="Étude de cas : prédire les prix immobiliers à Casablanca"}
+
+1. **Cadrage** : une agence immobilière veut estimer automatiquement le prix d'un bien à partir de ses caractéristiques (T = régression ; P = erreur moyenne en MAD ; E = annonces passées).
+2. **Collecte** : extraction de 15 000 annonces publiées sur les 3 dernières années (surface, quartier, étage, prix de vente réel).
+3. **Préparation** : suppression des annonces dupliquées, traitement des surfaces manquantes, encodage du quartier.
+4. **Modélisation** : entraînement d'une régression linéaire (chapitre 3) sur 80 % des données.
+5. **Évaluation** : mesure de l'erreur sur les 20 % restants, jamais vus pendant l'entraînement.
+6. **Déploiement** : intégration du modèle dans le simulateur de prix du site web de l'agence.
+7. **Monitoring** : si le marché immobilier casablancais évolue fortement (nouvelle infrastructure, crise économique), les prix prédits deviendront obsolètes — d'où la nécessité d'un suivi continu.
+:::
+
+Il est essentiel de comprendre que ce cycle **n'est presque jamais parcouru une seule fois de façon linéaire**. Une évaluation décevante à l'étape 5 renvoie très souvent vers l'étape 3 (améliorer les variables) ou l'étape 4 (changer d'algorithme), plus rarement vers l'étape 1.
+
+## 4. L'écosystème et les outils du développeur ML
+
+Pour mener à bien ce cycle, le développeur s'appuie sur la *stack* Python, standard de l'industrie.
+
+### 4.1. Les bibliothèques scientifiques incontournables
+
+| Bibliothèque | Rôle dans le cycle de vie du projet |
+|---|---|
+| `pandas` / `polars` | Manipulation et nettoyage de tableaux de données (DataFrames). |
+| `numpy` | Calcul matriciel et opérations mathématiques optimisées. |
+| `matplotlib` / `seaborn` | Visualisation et exploration visuelle des données. |
+| `scikit-learn` | La référence pour le Machine Learning classique et l'ingénierie des *features*. |
+| `xgboost` / `lightgbm` | Algorithmes avancés (*boosting*), standards pour les données tabulaires. |
+| `pytorch` / `tensorflow` | Deep Learning (réseaux de neurones profonds). |
+
+: Principales bibliothèques de l'écosystème Python {#tbl-ecosysteme}
+
+Chaque bibliothèque de la @tbl-ecosysteme correspond typiquement à une ou plusieurs étapes du cycle de vie présenté en @fig-cycle-vie-ml : `pandas`/`polars` interviennent surtout aux étapes 2-3, `scikit-learn` et `xgboost` à l'étape 4, tandis que `matplotlib` accompagne l'ensemble du processus.
+
+### 4.2. Environnements de développement : Exploration vs Production {#sec-outils}
+
+Il est crucial de distinguer la phase d'exploration (prototypage) de la phase de production (déploiement) : les outils utilisés ne sont pas les mêmes.
+
+::: {.panel-tabset}
+## 🔎 Exploration
+
+**JupyterLab**
+: Interface basée sur des *notebooks* (cellules de texte/code exécutables indépendamment). Parfait pour explorer un jeu de données, afficher des graphiques et documenter un raisonnement pas à pas. C'est l'outil principal des travaux pratiques de ce cours.
+
+**Google Colab**
+: Notebooks hébergés dans le cloud, accessibles sans aucune installation locale, avec accès gratuit (et limité) à des GPU. Idéal pour partager rapidement du code ou tester un modèle sans configurer son poste, mais l'environnement est **éphémère** (les fichiers ne sont pas conservés entre deux sessions sans sauvegarde explicite).
+
+## 🏗️ Production
+
+**Visual Studio Code (VS Code)**
+: Éditeur de code généraliste et robuste. Indispensable pour transformer le code exploratoire d'un notebook en **scripts modulaires orientés objet**, gérer les versions avec Git, écrire des tests automatisés, et préparer le déploiement d'un modèle (API, service web).
+:::
+
+::: {.callout-note title="Pourquoi ne pas tout faire dans un seul notebook ?"}
+Un notebook favorise l'expérimentation rapide et désordonnée (cellules exécutées dans le désordre, état caché), ce qui le rend difficile à tester, versionner proprement et déployer tel quel. La pratique professionnelle consiste donc à **explorer dans un notebook**, puis à **consolider le code validé dans des scripts `.py` structurés** une fois la logique stabilisée.
+:::
+
+### 4.3. Gestion de projet avec `uv`
+
+**`uv`** est un outil moderne de gestion des environnements et des dépendances Python. Il garantit la **reproductibilité** en déclarant les bibliothèques utilisées dans `pyproject.toml` et en fixant précisément leurs versions via `uv.lock` — un fichier qui permet à n'importe qui de reconstruire un environnement strictement identique.
+
+```bash
+uv init                                     # initialise un nouveau projet
+uv add numpy pandas scikit-learn jupyterlab # ajoute des dépendances
+uv run jupyter lab                          # lance JupyterLab dans l'environnement du projet
+```
+
+::: {.callout-tip title="À retenir"}
+Sans un gestionnaire d'environnement comme `uv`, deux personnes exécutant le même notebook sur des versions différentes de `scikit-learn` peuvent obtenir des résultats légèrement différents — un problème de **reproductibilité** que nous retrouverons au chapitre 2.
+:::
+
+
+::: {.callout-note title="Auto-évaluation" collapse="true"}
+Avant de passer au chapitre suivant, assurez-vous de pouvoir répondre « oui » aux questions suivantes :
+
+- [ ] Je peux expliquer, avec un exemple, pourquoi le Deep Learning est un sous-ensemble du Machine Learning et non l'inverse.
+- [ ] Je peux formuler le triplet (T, P, E) pour un problème que je choisis moi-même.
+- [ ] Je sais dire, pour un problème donné, s'il relève plutôt de la programmation classique ou du Machine Learning.
+- [ ] Je peux citer les sept étapes du cycle de vie d'un projet ML, dans l'ordre.
+- [ ] Je sais dans quel contexte utiliser JupyterLab plutôt que VS Code (et inversement).
+:::
+
+## Exercices
+
+::: {.callout-note title="Consigne"}
+Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit **avant** de les consulter.
+:::
+
+::: {#exr-intro-1}
+### Vrai ou Faux
+
+Indiquez si chaque affirmation est vraie ou fausse, en justifiant brièvement.
+
+a. Tout système d'Intelligence Artificielle est un système de Machine Learning.
+b. Tout algorithme de Deep Learning est un algorithme de Machine Learning.
+c. Un système expert à base de règles `SI ... ALORS ...` relève du Machine Learning.
+d. Un modèle de Machine Learning peut être vu comme un « programme appris automatiquement ».
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-1"}
+a. **Faux.** C'est l'inverse : tout système de ML est un système d'IA, mais l'IA contient aussi des approches qui ne relèvent pas du ML (systèmes experts, algorithmes de recherche...).
+b. **Vrai.** Le Deep Learning est défini comme un sous-domaine du Machine Learning (@fig-venn-ia-ml-dl).
+c. **Faux.** Un système expert applique des règles écrites par un humain ; il n'apprend rien à partir de données.
+d. **Vrai.** C'est exactement la définition du paradigme Data-Driven en §2.2 : le modèle résulte de l'algorithme d'apprentissage plutôt que d'être écrit à la main.
+:::
+
+::: {#exr-intro-2}
+### QCM
+
+Dans la définition de [@mitchell1997machine] (@def-ml), que représente la lettre **E** ?
+
+1. L'erreur (*Error*) commise par le modèle
+2. L'expérience (*Experience*), c'est-à-dire les données utilisées pour apprendre
+3. L'ensemble (*Ensemble*) des hyperparamètres du modèle
+4. L'évaluation (*Evaluation*) finale du système
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-2"}
+**Réponse : 2.** D'après la @tbl-mitchell, E désigne l'**Expérience**, c'est-à-dire les données (par exemple les e-mails déjà étiquetés) à partir desquelles le système améliore sa performance P sur la tâche T.
+:::
+
+::: {#exr-intro-3}
+### Formuler le triplet (T, P, E)
+
+Une chaîne de supermarchés marocaine souhaite développer un système capable de **prédire, pour chaque client fidèle, le montant qu'il dépensera lors de sa prochaine visite**, à partir de son historique d'achats des deux dernières années.
+
+Formulez le triplet (T, P, E) pour ce projet.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-3"}
+- **T** : prédire le montant de la prochaine dépense d'un client donné — une tâche de **régression** (sortie numérique continue).
+- **P** : une métrique de régression telle que la RMSE ou la MAE, calculée entre le montant prédit et le montant réellement dépensé sur des clients dont on connaît déjà la dépense réelle.
+- **E** : l'historique des transactions des deux dernières années (montants, fréquence des visites, produits achetés).
+:::
+
+::: {#exr-intro-4}
+### Programmation classique ou Machine Learning ?
+
+Pour chaque situation, indiquez l'approche la plus appropriée et justifiez en une phrase.
+
+a. Convertir un montant de dirhams marocains (MAD) en euros à un taux de change fixé.
+b. Détecter automatiquement si un commentaire posté sur un réseau social est injurieux.
+c. Calculer la date du dernier jour du mois, pour n'importe quel mois de l'année.
+d. Estimer, à partir d'une radiographie, si un patient présente une fracture osseuse.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-4"}
+a. **Programmation classique** : la règle de conversion est fixe et purement arithmétique.
+b. **Machine Learning** : il n'existe pas de règle exhaustive couvrant toute la diversité linguistique et contextuelle des insultes.
+c. **Programmation classique** : le calcul obéit à des règles calendaires fixes et entièrement déterministes.
+d. **Machine Learning** : la reconnaissance de motifs visuels complexes est très difficile à coder sous forme de règles explicites — un cas typique du Deep Learning appliqué à l'imagerie médicale.
+:::
+
+::: {#exr-intro-5}
+### Reconstituer le schéma Data-Driven
+
+En vous appuyant sur la @fig-paradigme-programmation, reconstituez sous la forme `A → B` l'enchaînement correct des quatre éléments suivants du paradigme Machine Learning : **Modèle**, **Données**, **Algorithme d'apprentissage**, **Résultats attendus**.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-5"}
+```
+Données + Résultats attendus → Algorithme d'apprentissage → Modèle
+```
+Les données et les résultats attendus (étiquettes) sont fournis conjointement en entrée de l'algorithme d'apprentissage, qui produit en sortie le modèle.
+:::
+
+::: {#exr-intro-6}
+### Remettre les étapes dans l'ordre
+
+Voici, dans le désordre, les sept étapes du cycle de vie d'un projet de Machine Learning :
+
+Évaluation du modèle · Cadrage du problème métier · Monitoring · Modélisation · Préparation et nettoyage · Déploiement · Collecte des données
+
+Remettez-les dans l'ordre correct.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-6"}
+1. Cadrage du problème métier
+2. Collecte des données
+3. Préparation et nettoyage
+4. Modélisation
+5. Évaluation du modèle
+6. Déploiement
+7. Monitoring
+:::
+
+::: {#exr-intro-7}
+### Étude de cas : dérive du modèle
+
+Une banque a déployé, en janvier, un modèle de scoring de crédit qui obtenait d'excellents résultats en test. Six mois plus tard, le modèle rejette de plus en plus de dossiers qui se révèlent être de bons payeurs.
+
+a. Comment nomme-t-on ce phénomène dans le cours ?
+b. À quelle(s) étape(s) du cycle de vie ce constat doit-il renvoyer l'équipe ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-7"}
+a. Il s'agit d'un phénomène de **dérive des données** (*data drift*) : la distribution des données réelles s'est écartée de celle des données d'entraînement.
+b. Ce constat relève de l'étape **7 (Monitoring)**, qui doit précisément détecter ce type de dérive, puis renvoie vers les étapes **2-3** (nouvelles données) et **4** (réentraînement).
+:::
+
+::: {#exr-intro-8}
+### Outils et bibliothèques
+
+a. Associez chaque bibliothèque à son rôle principal : `pandas`, `scikit-learn`, `pytorch`, `xgboost`.
+   Rôles : (i) modélisation classique (régression/classification) ; (ii) réseaux de neurones profonds ; (iii) manipulation de tableaux de données ; (iv) boosting de gradients pour données tabulaires.
+b. Un étudiant veut explorer rapidement un nouveau jeu de données et visualiser quelques graphiques avant de structurer un vrai projet. Quel outil de la section @sec-outils lui conseillez-vous, et pourquoi ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-8"}
+a. `pandas` → (iii) ; `scikit-learn` → (i) ; `pytorch` → (ii) ; `xgboost` → (iv).
+b. **JupyterLab** (ou Google Colab pour éviter toute installation) : ces outils sont conçus pour l'exploration rapide et itérative, avec affichage immédiat des graphiques cellule par cellule — contrairement à VS Code, davantage orienté vers la structuration d'un projet en production.
+:::

@@ -1,0 +1,2018 @@
+# Apprentissage non supervisé : ACP, K-Means et autres méthodes
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre, l'étudiant sera capable de :
+
+- **Distinguer** l'apprentissage non supervisé de l'apprentissage supervisé ;
+- **Comprendre** ce que signifie apprendre une structure sans variable cible ;
+- **Formaliser** l'analyse en composantes principales (ACP) avec une notation matricielle ;
+- **Calculer** une moyenne, une covariance, une composante principale et une variance expliquée ;
+- **Expliquer** l'algorithme K-Means et calculer une affectation, un centroïde et une inertie ;
+- **Choisir** une méthode de réduction de dimension ou de clustering selon la forme des données ;
+- **Évaluer** la qualité d'un regroupement avec des indicateurs adaptés ;
+- **Construire** une analyse non supervisée correcte avec `scikit-learn` ;
+- **Éviter** les interprétations abusives, les effets d'échelle et les fuites d'information.
+:::
+
+::: {.callout-note title="Lien avec les chapitres précédents"}
+Les chapitres de régression et de classification ont étudié l'apprentissage supervisé : le modèle dispose d'une cible $y$ et apprend à prédire cette cible à partir de $X$.
+
+Dans ce chapitre, nous réutilisons les notions de matrice de données, de normalisation, de pipeline, d'hyperparamètre et de généralisation. La différence fondamentale est qu'il n'existe pas de cible $y$ utilisée pour guider directement l'apprentissage :
+
+$$
+\text{Apprentissage non supervisé :}\qquad X\longrightarrow\text{structure découverte}
+$$
+
+Les deux méthodes développées mathématiquement sont :
+
+- l'**analyse en composantes principales** (ACP), principalement utilisée pour réduire la dimension et résumer la variance ;
+- **K-Means**, principalement utilisé pour regrouper les observations en clusters.
+:::
+
+## 1. Qu'est-ce que l'apprentissage non supervisé ?
+
+Dans l'apprentissage non supervisé, on dispose d'observations décrites par une matrice $X$, mais pas d'une cible fournie à l'avance :
+
+$$
+X=
+\begin{pmatrix}
+x_{11}&\cdots&x_{1p}\\
+\vdots&\ddots&\vdots\\
+x_{n1}&\cdots&x_{np}
+\end{pmatrix}
+\in\mathbb{R}^{n\times p}
+$$
+
+L'objectif n'est pas de prédire une étiquette connue, mais de découvrir une structure utile dans les données.
+
+Les principales tâches sont :
+
+| Tâche | Objectif | Exemple |
+|---|---|---|
+| Clustering | Regrouper les observations similaires | Segmenter des clients |
+| Réduction de dimension | Représenter les données avec moins de variables | Visualiser des données en 2D |
+| Détection d'anomalies | Repérer des observations inhabituelles | Identifier des comportements rares |
+| Estimation de densité | Décrire où les observations sont concentrées | Estimer une distribution |
+| Extraction de facteurs | Résumer plusieurs variables par des facteurs latents | Résumer des indicateurs économiques |
+
+### 1.1. Une structure découverte n'est pas une vérité connue
+
+En classification, la cible indique explicitement ce qui est considéré comme une classe. En apprentissage non supervisé, les groupes ou les axes sont construits à partir d'un critère choisi par l'algorithme.
+
+Un cluster n'est donc pas automatiquement une catégorie naturelle. Il peut dépendre :
+
+- des variables utilisées ;
+- de leur échelle ;
+- de la métrique de distance ;
+- du nombre de groupes demandé ;
+- de l'algorithme ;
+- du bruit et des valeurs atypiques.
+
+::: {.callout-important title="Un cluster n'est pas une étiquette"}
+Si K-Means sépare des clients en trois groupes, cela ne signifie pas que la nature possède réellement trois catégories de clients. Cela signifie que, selon les variables et la distance choisies, trois centres représentent raisonnablement les observations.
+:::
+
+### 1.2. Deux familles complémentaires
+
+L'ACP et K-Means ne répondent pas à la même question :
+
+| Méthode | Question principale |
+|---|---|
+| ACP | Quelles directions résument le mieux la variabilité des données ? |
+| K-Means | Quels groupes d'observations sont proches selon une distance ? |
+
+On peut les utiliser ensemble, mais il faut comprendre le rôle de chacune. L'ACP transforme les variables ; K-Means attribue des observations à des groupes.
+
+### 1.3. Exemple introductif
+
+On observe des clients décrits par :
+
+- le nombre d'achats ;
+- le montant total dépensé ;
+- la fréquence de visite ;
+- le nombre de catégories achetées.
+
+Sans étiquette « client fidèle » ou « client occasionnel », on peut :
+
+1. utiliser l'ACP pour visualiser les profils dans deux dimensions ;
+2. utiliser K-Means pour rechercher des groupes de clients similaires ;
+3. interpréter ensuite les groupes à partir de leurs caractéristiques moyennes.
+
+L'algorithme ne prouve pas qu'un groupe possède une signification commerciale. Cette interprétation vient après l'analyse, grâce au contexte métier.
+
+## 2. Préparer les données sans cible
+
+### 2.1. Types de variables
+
+Les méthodes numériques comme l'ACP et K-Means travaillent directement avec des distances, des produits scalaires et des variances. Il faut donc examiner les colonnes avant de les appliquer :
+
+- variables quantitatives continues ;
+- variables quantitatives discrètes ;
+- variables catégorielles ;
+- identifiants ;
+- dates ;
+- valeurs manquantes ;
+- variables mesurées dans des unités très différentes.
+
+Un identifiant ne doit généralement pas être utilisé comme une variable explicative : son numéro peut créer des distances artificielles sans signification.
+
+### 2.2. Centrage et réduction
+
+Pour une variable $j$, le centrage consiste à soustraire sa moyenne :
+
+$$
+x_{ij}^{(c)}=x_{ij}-\bar{x}_j
+$$
+
+La réduction consiste ensuite à diviser par son écart-type :
+
+$$
+x_{ij}^{(s)}
+=
+\frac{x_{ij}-\bar{x}_j}{s_j}
+$$
+
+Après standardisation, chaque variable possède approximativement :
+
+$$
+\text{moyenne}=0,\qquad \text{écart-type}=1
+$$
+
+Le centrage est essentiel en ACP. La réduction dépend du contexte :
+
+- si les variables ont des unités comparables, on peut parfois centrer seulement ;
+- si les variables ont des unités ou des amplitudes très différentes, la réduction est souvent préférable ;
+- pour K-Means, la standardisation est généralement importante car les distances dépendent des échelles.
+
+### 2.3. Valeurs manquantes et variables catégorielles
+
+L'ACP et K-Means ne traitent pas directement les valeurs manquantes dans leur forme classique. Il faut :
+
+- imputer les valeurs numériques ;
+- encoder les variables catégorielles ;
+- vérifier que l'encodage ne crée pas une distance artificielle ;
+- intégrer ces opérations dans un pipeline.
+
+Un encodage one-hot transforme une catégorie en plusieurs colonnes binaires. Cette représentation peut être adaptée à certains modèles, mais la distance euclidienne entre catégories encodées doit être interprétée avec prudence.
+
+### 2.4. Fuite de données en non supervisé
+
+Même sans variable cible, une fuite de données reste possible. Par exemple, si l'on calcule une moyenne ou un écart-type en utilisant des données qui devraient simuler le futur, la transformation a vu des informations indisponibles au moment réel de l'analyse.
+
+Pour une analyse exploratoire descriptive sur un seul jeu historique, utiliser toutes les données peut être acceptable. Pour évaluer une méthode ou simuler une utilisation future, le prétraitement doit être ajusté uniquement sur la partie d'entraînement.
+
+::: {.callout-warning title="La réduction de dimension peut aussi fuir"}
+Si l'ACP est ajustée sur toutes les observations avant une séparation train/test, les directions principales ont utilisé indirectement les observations de test. Pour une évaluation prédictive ou une simulation de production, l'ACP doit être placée dans un pipeline.
+:::
+
+## 3. Analyse en composantes principales — ACP
+
+L'analyse en composantes principales, appelée **ACP** ou **PCA** en anglais, transforme $p$ variables initiales en nouvelles variables appelées **composantes principales**.
+
+Les composantes sont choisies pour :
+
+1. être orthogonales entre elles ;
+2. expliquer le plus possible la variance des données ;
+3. fournir une représentation de dimension plus faible lorsque l'on ne conserve que les premières composantes.
+
+### 3.1. Intuition géométrique
+
+Imaginons un nuage de points presque aligné selon une direction oblique. Les deux coordonnées originales peuvent être nécessaires pour décrire les points, mais une seule direction résume l'essentiel de leur variation.
+
+L'ACP cherche cette direction :
+
+- la première composante suit la direction de variance maximale ;
+- la deuxième est orthogonale à la première et explique la variance restante la plus importante ;
+- les composantes suivantes suivent la même logique.
+
+L'ACP ne cherche pas des groupes et n'utilise pas de classes. Elle cherche des **axes de variation**.
+
+### 3.2. Centrage de la matrice
+
+On part de la matrice $X\in\mathbb{R}^{n\times p}$. On calcule la moyenne de chaque variable :
+
+$$
+\bar{x}_j=\frac{1}{n}\sum_{i=1}^{n}x_{ij}
+$$
+
+On construit la matrice centrée $X_c$ :
+
+$$
+(X_c)_{ij}=x_{ij}-\bar{x}_j
+$$
+
+Sous forme matricielle :
+
+$$
+X_c=X-\mathbf{1}\bar{x}^{\top}
+$$
+
+où $\mathbf{1}$ est un vecteur colonne de $n$ valeurs égales à 1 et $\bar{x}$ est le vecteur des moyennes.
+
+Après centrage, chaque colonne de $X_c$ a une moyenne nulle.
+
+### 3.3. Matrice de covariance
+
+La matrice de covariance empirique est :
+
+$$
+\boxed{
+\Sigma=\frac{1}{n-1}X_c^{\top}X_c
+}
+$$
+
+Elle est de dimension $p\times p$.
+
+Ses éléments sont :
+
+$$
+\Sigma_{jk}
+=
+\frac{1}{n-1}
+\sum_{i=1}^{n}
+(x_{ij}-\bar{x}_j)(x_{ik}-\bar{x}_k)
+$$
+
+Sur la diagonale, on trouve les variances :
+
+$$
+\Sigma_{jj}=\operatorname{Var}(X_j)
+$$
+
+En dehors de la diagonale, on trouve les covariances entre variables.
+
+Une covariance positive indique que les deux variables ont tendance à augmenter ensemble. Une covariance négative indique qu'une variable augmente lorsque l'autre diminue. Une covariance proche de zéro indique une absence de relation linéaire apparente, sans prouver l'indépendance.
+
+### 3.4. Direction de variance maximale
+
+On cherche un vecteur unitaire $w$ qui maximise la variance des données projetées :
+
+$$
+\max_{w}\operatorname{Var}(X_cw)
+\qquad\text{sous la contrainte}\qquad
+\|w\|_2=1
+$$
+
+La variance projetée vaut :
+
+$$
+\operatorname{Var}(X_cw)
+=
+\frac{1}{n-1}(X_cw)^{\top}(X_cw)
+$$
+
+Donc :
+
+$$
+\operatorname{Var}(X_cw)
+=
+w^{\top}\Sigma w
+$$
+
+Le problème devient :
+
+$$
+\max_w w^{\top}\Sigma w
+\qquad\text{sous}\qquad
+w^{\top}w=1
+$$
+
+La solution est le vecteur propre associé à la plus grande valeur propre de $\Sigma$.
+
+### 3.5. Valeurs propres et vecteurs propres
+
+Les valeurs propres et vecteurs propres vérifient :
+
+$$
+\Sigma w_j=\lambda_jw_j
+$$
+
+où :
+
+- $w_j$ est le vecteur propre de la composante $j$ ;
+- $\lambda_j$ est la valeur propre associée ;
+- $\lambda_j$ représente la variance expliquée par cette composante.
+
+On ordonne les valeurs propres :
+
+$$
+\lambda_1\geq\lambda_2\geq\cdots\geq\lambda_p\geq0
+$$
+
+Les composantes principales sont les directions $w_1,\ldots,w_p$.
+
+Les vecteurs propres sont orthogonaux lorsque la matrice de covariance est symétrique, ce qui est le cas ici :
+
+$$
+w_j^{\top}w_k=0\qquad\text{si }j\neq k
+$$
+
+### 3.6. Projection sur les composantes
+
+Si l'on conserve les $m$ premières composantes, on regroupe leurs vecteurs propres dans :
+
+$$
+W_m=
+\begin{pmatrix}
+|&|&&|\\
+w_1&w_2&\cdots&w_m\\
+|&|&&|
+\end{pmatrix}
+\in\mathbb{R}^{p\times m}
+$$
+
+La représentation des observations dans ce nouvel espace est :
+
+$$
+\boxed{
+Z=X_cW_m
+}
+$$
+
+où :
+
+$$
+Z\in\mathbb{R}^{n\times m}
+$$
+
+Si $m<p$, on a réduit la dimension.
+
+Pour une observation centrée $x_{c,i}$, sa coordonnée sur la composante $j$ est :
+
+$$
+z_{ij}=x_{c,i}^{\top}w_j
+$$
+
+Il s'agit de la projection du point sur la direction $w_j$.
+
+### 3.7. Variance expliquée
+
+La variance totale des données est liée à la somme des valeurs propres :
+
+$$
+\operatorname{Var}_{\text{totale}}
+=
+\sum_{j=1}^{p}\lambda_j
+$$
+
+La proportion de variance expliquée par la composante $j$ est :
+
+$$
+\boxed{
+EVR_j
+=
+\frac{\lambda_j}{\sum_{\ell=1}^{p}\lambda_\ell}
+}
+$$
+
+La variance expliquée cumulée par les $m$ premières composantes est :
+
+$$
+\boxed{
+EVR_{\text{cumulée}}(m)
+=
+\sum_{j=1}^{m}EVR_j
+}
+$$
+
+Si les valeurs propres sont $(6,3,1)$ :
+
+$$
+EVR_1=\frac{6}{10}=60\%
+$$
+
+et :
+
+$$
+EVR_{\text{cumulée}}(2)
+=\frac{6+3}{10}=90\%
+$$
+
+Deux composantes résument donc 90 % de la variance totale.
+
+### 3.8. Reconstruction approchée
+
+Après projection dans un espace de dimension réduite, on peut reconstruire une approximation des données centrées :
+
+$$
+\widehat{X_c}=ZW_m^{\top}
+$$
+
+En ajoutant les moyennes :
+
+$$
+\boxed{
+\widehat{X}
+=
+ZW_m^{\top}
++
+\mathbf{1}\bar{x}^{\top}
+}
+$$
+
+La reconstruction n'est pas exacte si l'on ne conserve pas toutes les composantes. L'erreur de reconstruction mesure l'information perdue lors de la réduction.
+
+### 3.9. Exemple mathématique simple
+
+Considérons trois observations et deux variables :
+
+| Observation | $x_1$ | $x_2$ |
+|---|---:|---:|
+| 1 | 1 | 1 |
+| 2 | 2 | 2 |
+| 3 | 3 | 3 |
+
+Les moyennes sont :
+
+$$
+\bar{x}_1=2,\qquad \bar{x}_2=2
+$$
+
+La matrice centrée est :
+
+$$
+X_c=
+\begin{pmatrix}
+-1&-1\\
+0&0\\
+1&1
+\end{pmatrix}
+$$
+
+La matrice de covariance vaut :
+
+$$
+\Sigma
+=
+\frac{1}{3-1}
+\begin{pmatrix}
+-1&0&1\\
+-1&0&1
+\end{pmatrix}
+\begin{pmatrix}
+-1&-1\\
+0&0\\
+1&1
+\end{pmatrix}
+$$
+
+Donc :
+
+$$
+\Sigma=
+\frac12
+\begin{pmatrix}
+2&2\\
+2&2
+\end{pmatrix}
+=
+\begin{pmatrix}
+1&1\\
+1&1
+\end{pmatrix}
+$$
+
+Les valeurs propres sont :
+
+$$
+\lambda_1=2,\qquad\lambda_2=0
+$$
+
+Un vecteur propre associé à $\lambda_1$ est :
+
+$$
+w_1=
+\frac{1}{\sqrt2}
+\begin{pmatrix}
+1\\
+1
+\end{pmatrix}
+$$
+
+La première composante suit la direction $(1,1)$, ce qui est logique puisque les deux variables évoluent exactement ensemble.
+
+La variance totale vaut :
+
+$$
+\lambda_1+\lambda_2=2
+$$
+
+Ainsi :
+
+$$
+EVR_1=\frac{2}{2}=100\%
+$$
+
+Une seule composante suffit pour représenter toute la variation de ces données.
+
+### 3.10. ACP sur covariance ou sur corrélation
+
+Deux pratiques sont fréquentes :
+
+| Préparation | Matrice analysée | Situation |
+|---|---|---|
+| Centrage seul | Matrice de covariance | Variables dans des unités comparables |
+| Centrage-réduction | Matrice équivalente à la corrélation | Variables avec échelles différentes |
+
+Si une variable est mesurée en euros et une autre en années, la variance en euros peut dominer l'ACP. La standardisation donne alors à chaque variable une contribution comparable en échelle, mais elle ne signifie pas que chaque variable possède la même importance métier.
+
+### 3.11. Interpréter les composantes
+
+Les coordonnées des variables dans les composantes, souvent appelées **loadings** selon la convention utilisée, indiquent comment chaque variable contribue à un axe.
+
+Une composante avec des coefficients positifs élevés pour plusieurs variables peut représenter une dimension générale commune. Une composante avec des coefficients opposés peut représenter un contraste entre variables.
+
+Il faut éviter de donner un nom définitif à une composante uniquement à partir de son signe :
+
+- le signe d'un vecteur propre est arbitraire ;
+- $w_j$ et $-w_j$ représentent la même direction ;
+- l'interprétation dépend de l'échelle et des variables incluses.
+
+::: {.callout-warning title="L'ACP maximise la variance, pas la pertinence métier"}
+Une direction qui explique beaucoup de variance n'est pas nécessairement la plus utile pour une décision particulière. Une variable importante pour détecter une fraude peut varier peu et être donc peu visible dans les premières composantes.
+:::
+
+### 3.12. Choisir le nombre de composantes
+
+On peut choisir $m$ en utilisant :
+
+- un seuil de variance expliquée cumulée, par exemple 90 % ou 95 % ;
+- un graphique des valeurs propres, appelé scree plot ;
+- l'erreur de reconstruction ;
+- la qualité d'une tâche ultérieure ;
+- la lisibilité et le coût de calcul.
+
+Il n'existe pas de seuil universel. Conserver 95 % de la variance est une règle pratique, pas une preuve que les 5 % restants sont inutiles.
+
+### 3.13. Forces et limites de l'ACP
+
+**Forces :**
+
+- réduction de dimension ;
+- suppression partielle de redondances linéaires ;
+- visualisation ;
+- accélération de certains algorithmes ;
+- calcul mathématique clair et interprétable.
+
+**Limites :**
+
+- uniquement adaptée aux relations linéaires entre variables ;
+- sensible à l'échelle ;
+- sensible aux valeurs atypiques ;
+- composantes parfois difficiles à interpréter ;
+- variance élevée ne signifie pas forcément information prédictive ;
+- les catégories nécessitent un encodage réfléchi.
+
+## 4. K-Means
+
+K-Means est un algorithme de clustering qui cherche à répartir les observations en $K$ groupes autour de $K$ centroïdes.
+
+### 4.1. Objectif
+
+On dispose de $n$ observations $x_1,\ldots,x_n$ et on choisit un nombre de clusters $K$.
+
+Chaque observation reçoit une étiquette :
+
+$$
+c_i\in\{1,\ldots,K\}
+$$
+
+Chaque cluster $k$ possède un centroïde $\mu_k$.
+
+L'objectif de K-Means est de minimiser la somme des distances quadratiques entre chaque observation et le centroïde de son cluster :
+
+$$
+\boxed{
+J(c,\mu)
+=
+\sum_{i=1}^{n}
+\left\|x_i-\mu_{c_i}\right\|_2^2
+}
+$$
+
+Cette quantité est appelée **inertie intra-classe**, **inertie intra-cluster** ou `inertia` dans `scikit-learn`.
+
+### 4.2. Affectation des observations
+
+Si les centroïdes sont connus, chaque observation est affectée au centroïde le plus proche :
+
+$$
+\boxed{
+c_i
+=
+\underset{k\in\{1,\ldots,K\}}{\operatorname{argmin}}
+\left\|x_i-\mu_k\right\|_2^2
+}
+$$
+
+Utiliser la distance ou son carré donne la même affectation, car la fonction carré est croissante pour les distances positives.
+
+### 4.3. Mise à jour des centroïdes
+
+Si les affectations sont connues, le meilleur centroïde d'un cluster est la moyenne des observations qui lui sont affectées :
+
+$$
+\boxed{
+\mu_k
+=
+\frac{1}{n_k}
+\sum_{i:c_i=k}x_i
+}
+$$
+
+où $n_k$ est le nombre d'observations dans le cluster $k$.
+
+Cette moyenne minimise la somme des distances quadratiques à l'intérieur du cluster.
+
+### 4.4. Algorithme itératif
+
+K-Means alterne deux étapes :
+
+1. **Affectation** : affecter chaque observation au centroïde le plus proche ;
+2. **Mise à jour** : recalculer chaque centroïde comme la moyenne de son cluster.
+
+On répète ces étapes jusqu'à ce que :
+
+- les affectations ne changent plus ;
+- les centroïdes changent très peu ;
+- la diminution de l'inertie devienne négligeable ;
+- le nombre maximal d'itérations soit atteint.
+
+Pseudo-code :
+
+```text
+Choisir K centroïdes initiaux
+Répéter :
+    Affecter chaque observation au centroïde le plus proche
+    Recalculer chaque centroïde comme la moyenne de son cluster
+Jusqu'à convergence
+```
+
+### 4.5. Exemple d'une itération
+
+Considérons quatre points :
+
+$$
+A=(1,1),\quad B=(1,2),\quad C=(4,4),\quad D=(5,4)
+$$
+
+On choisit $K=2$ et les centroïdes initiaux :
+
+$$
+\mu_1=(1,1),\qquad \mu_2=(5,4)
+$$
+
+Les distances au carré sont :
+
+| Point | Vers $\mu_1=(1,1)$ | Vers $\mu_2=(5,4)$ | Cluster |
+|---|---:|---:|---:|
+| $A=(1,1)$ | $0$ | $25$ | 1 |
+| $B=(1,2)$ | $1$ | $20$ | 1 |
+| $C=(4,4)$ | $18$ | $1$ | 2 |
+| $D=(5,4)$ | $25$ | $0$ | 2 |
+
+Les clusters sont donc :
+
+$$
+C_1=\{A,B\},\qquad C_2=\{C,D\}
+$$
+
+Les nouveaux centroïdes sont :
+
+$$
+\mu_1'
+=
+\frac{(1,1)+(1,2)}{2}
+=
+\left(1,\frac32\right)
+$$
+
+et :
+
+$$
+\mu_2'
+=
+\frac{(4,4)+(5,4)}{2}
+=
+\left(\frac92,4\right)
+$$
+
+On recalcule ensuite les distances avec ces nouveaux centroïdes.
+
+### 4.6. Inertie d'un clustering
+
+L'inertie mesure la dispersion des observations autour de leur centroïde :
+
+$$
+Inertia
+=
+\sum_{k=1}^{K}
+\sum_{i:c_i=k}
+\left\|x_i-\mu_k\right\|_2^2
+$$
+
+Pour l'exemple précédent, avec les centroïdes mis à jour :
+
+$$
+\left\|A-\mu_1'\right\|^2
+=
+\left\|(1,1)-\left(1,\frac32\right)\right\|^2
+=\frac14
+$$
+
+$$
+\left\|B-\mu_1'\right\|^2
+=\frac14
+$$
+
+Pour le deuxième cluster :
+
+$$
+\left\|C-\mu_2'\right\|^2
+=\left\|(4,4)-\left(\frac92,4\right)\right\|^2
+=\frac14
+$$
+
+$$
+\left\|D-\mu_2'\right\|^2
+=\frac14
+$$
+
+L'inertie totale vaut donc :
+
+$$
+Inertia=\frac14+\frac14+\frac14+\frac14=1
+$$
+
+Une inertie plus faible indique des clusters plus compacts, mais elle diminue presque toujours lorsque $K$ augmente. Elle ne suffit donc pas seule à choisir $K$.
+
+### 4.7. Initialisation et minima locaux
+
+K-Means dépend de l'initialisation des centroïdes. Deux initialisations peuvent conduire à deux solutions différentes.
+
+L'algorithme minimise généralement l'inertie à partir de l'initialisation choisie, mais il ne garantit pas de trouver la meilleure solution globale.
+
+Pour limiter ce problème :
+
+- utiliser plusieurs initialisations ;
+- conserver la meilleure solution ;
+- fixer `random_state` pour la reproductibilité ;
+- utiliser l'initialisation `k-means++`.
+
+Dans `scikit-learn`, `n_init` indique le nombre d'exécutions avec différentes initialisations.
+
+### 4.8. Choisir le nombre de clusters
+
+Le nombre $K$ est un hyperparamètre. Plusieurs approches sont possibles.
+
+#### Méthode du coude
+
+On calcule l'inertie pour plusieurs valeurs de $K$. L'inertie diminue lorsque $K$ augmente. On cherche un point où la diminution devient moins importante :
+
+```text
+Inertie
+   |
+   |\
+   | \
+   |  \__
+   |     \___
+   |________________ Nombre de clusters
+```
+
+Le « coude » est une zone de compromis entre compacité et simplicité.
+
+#### Score de silhouette
+
+Pour une observation $i$ :
+
+- $a(i)$ est la distance moyenne aux observations de son propre cluster ;
+- $b(i)$ est la plus petite distance moyenne aux observations d'un autre cluster.
+
+Le score de silhouette est :
+
+$$
+\boxed{
+s(i)
+=
+\frac{b(i)-a(i)}
+{\max(a(i),b(i))}
+}
+$$
+
+Le score global est la moyenne des scores individuels.
+
+Interprétation :
+
+- proche de 1 : observation bien placée ;
+- proche de 0 : observation proche d'une frontière ;
+- négatif : observation possiblement mal affectée.
+
+#### Connaissance métier
+
+Lorsque les clusters doivent correspondre à des catégories opérationnelles, le choix de $K$ doit aussi respecter la capacité de l'organisation à utiliser les groupes.
+
+::: {.callout-warning title="Une bonne silhouette ne garantit pas l'utilité métier"}
+Un clustering peut être géométriquement cohérent mais inutilisable en pratique. La qualité doit être examinée à la fois avec des indicateurs numériques, des visualisations et une interprétation métier.
+:::
+
+### 4.9. Importance de l'échelle
+
+K-Means utilise une distance. Si une variable est exprimée en milliers et une autre entre 0 et 1, la première peut dominer totalement le regroupement.
+
+Exemple :
+
+$$
+x=(50\,000,\;0{,}8)
+$$
+
+Une variation de 10 000 unités sur la première variable peut rendre négligeable une variation de 0,5 sur la seconde.
+
+La standardisation est donc souvent indispensable avant K-Means :
+
+$$
+X_s=
+\frac{X-\mu}{\sigma}
+$$
+
+Le choix de standardiser modifie la notion de similarité. Il doit être justifié par le contexte, et non appliqué mécaniquement.
+
+### 4.10. Forces et limites
+
+**Forces :**
+
+- algorithme simple à comprendre ;
+- rapide sur de nombreux jeux numériques ;
+- centroïdes faciles à résumer ;
+- utile pour une première segmentation ;
+- objectif mathématique explicite.
+
+**Limites :**
+
+- il faut choisir $K$ ;
+- sensible à l'échelle ;
+- sensible aux valeurs atypiques ;
+- préfère des clusters approximativement sphériques et de taille comparable ;
+- peut échouer sur des groupes allongés ou de densités différentes ;
+- dépend de l'initialisation ;
+- les catégories nécessitent un encodage prudent.
+
+### 4.11. Quand ne pas utiliser K-Means ?
+
+K-Means est peu adapté lorsque :
+
+- les clusters sont en forme de croissant ou de cercle concentrique ;
+- les groupes ont des densités très différentes ;
+- les groupes possèdent des tailles très différentes ;
+- les données contiennent beaucoup d'outliers ;
+- la distance euclidienne n'a pas de signification ;
+- certaines variables sont catégorielles sans représentation géométrique pertinente.
+
+Dans ces situations, DBSCAN, le clustering hiérarchique, les mélanges gaussiens ou des méthodes spécialisées peuvent être plus adaptés.
+
+## 5. Autres méthodes de réduction de dimension
+
+L'ACP est une méthode linéaire importante, mais d'autres méthodes existent.
+
+### 5.1. Truncated SVD
+
+`TruncatedSVD` réalise une réduction de dimension sans centrer explicitement la matrice. Elle est particulièrement utile pour les matrices creuses, par exemple :
+
+- matrice documents-termes ;
+- données issues d'un encodage TF-IDF ;
+- matrices de recommandation.
+
+Elle est proche de la décomposition en valeurs singulières, mais adaptée à des matrices de grande dimension et souvent creuses.
+
+### 5.2. Analyse en composantes indépendantes — ICA
+
+`FastICA` cherche des composantes statistiquement indépendantes plutôt que des directions de variance maximale.
+
+Elle peut être utilisée pour :
+
+- séparer des signaux mélangés ;
+- analyser des sources indépendantes ;
+- traiter certains signaux audio ou biologiques.
+
+La question posée n'est pas « quelles directions expliquent le plus de variance ? », mais « quelles sources indépendantes peuvent expliquer les observations ? ».
+
+### 5.3. NMF
+
+La factorisation matricielle non négative (`NMF`) décompose une matrice non négative en facteurs également non négatifs.
+
+Elle est utile lorsque l'addition de composantes positives a une interprétation naturelle :
+
+- sujets dans des documents ;
+- parties d'une image ;
+- profils de consommation.
+
+Contrairement à l'ACP, les composantes NMF sont souvent plus faciles à interpréter comme des contributions additives, mais la méthode exige des données non négatives.
+
+### 5.4. t-SNE
+
+`TSNE` cherche une représentation de faible dimension qui préserve surtout les voisinages locaux.
+
+Usage principal :
+
+- visualiser des données complexes en 2D ou 3D ;
+- explorer la présence de groupes locaux.
+
+Limites :
+
+- principalement destiné à la visualisation ;
+- distances globales difficiles à interpréter ;
+- résultats sensibles aux hyperparamètres et à l'initialisation ;
+- transformation de nouvelles observations moins directe que pour l'ACP ;
+- peut créer visuellement des groupes qui ne sont pas réellement séparés globalement.
+
+### 5.5. UMAP
+
+UMAP est une méthode non linéaire de réduction de dimension qui cherche à préserver une structure de voisinage.
+
+Elle est souvent utilisée pour :
+
+- visualiser des données de grande dimension ;
+- explorer des représentations de textes ou d'images ;
+- compléter une ACP ou un clustering.
+
+Comme t-SNE, UMAP est avant tout un outil d'exploration et sa carte ne doit pas être interprétée comme une preuve absolue de la structure globale.
+
+### 5.6. Comparaison des réductions de dimension
+
+| Méthode | Type | Usage principal | Limite importante |
+|---|---|---|---|
+| ACP | Linéaire | Résumé de variance et visualisation | Ne capture pas les relations non linéaires |
+| Truncated SVD | Linéaire | Matrices creuses | Interprétation dépendante des données |
+| ICA | Linéaire | Sources indépendantes | Hypothèses fortes sur les sources |
+| NMF | Factorisation non négative | Composantes additives | Données non négatives nécessaires |
+| t-SNE | Non linéaire | Visualisation locale | Distances globales difficiles à interpréter |
+| UMAP | Non linéaire | Visualisation et voisinages | Sensibilité aux hyperparamètres |
+
+## 6. Autres méthodes de clustering
+
+### 6.1. Clustering hiérarchique
+
+Le clustering hiérarchique construit une hiérarchie de groupes, souvent représentée par un dendrogramme.
+
+Deux approches principales :
+
+- **agglomérative** : commencer avec un cluster par observation puis fusionner progressivement ;
+- **divisive** : commencer avec un grand cluster puis le diviser.
+
+Le nombre de groupes peut être choisi en coupant le dendrogramme à une certaine hauteur.
+
+Le résultat dépend de la méthode de liaison :
+
+- `single` : distance minimale ;
+- `complete` : distance maximale ;
+- `average` : distance moyenne ;
+- `ward` : réduction de la variance intra-cluster.
+
+Avantages :
+
+- pas besoin de choisir le nombre de clusters au départ dans la construction de la hiérarchie ;
+- dendrogramme interprétable ;
+- adapté à l'exploration.
+
+Limites :
+
+- coût potentiellement élevé ;
+- choix de la liaison influent ;
+- les fusions initiales ne sont généralement pas annulées.
+
+### 6.2. DBSCAN
+
+`DBSCAN` regroupe les observations selon leur densité locale.
+
+Il utilise principalement :
+
+- `eps` : rayon de voisinage ;
+- `min_samples` : nombre minimal de voisins pour constituer une zone dense.
+
+Il identifie :
+
+- des points centraux ;
+- des points de bordure ;
+- des points considérés comme du bruit.
+
+Avantages :
+
+- pas besoin de choisir directement le nombre de clusters ;
+- peut découvrir des groupes de forme non sphérique ;
+- identifie les outliers.
+
+Limites :
+
+- sensible au choix de `eps` ;
+- difficulté lorsque les clusters ont des densités très différentes ;
+- performances sensibles à l'échelle et à la dimension.
+
+### 6.3. OPTICS
+
+`OPTICS` est proche de DBSCAN, mais cherche à représenter plusieurs niveaux de densité. Il est utile lorsque la structure contient des clusters de densités différentes.
+
+Il produit un ordre des observations et des informations de distance de portée permettant d'explorer plusieurs regroupements.
+
+### 6.4. Mélanges gaussiens
+
+`GaussianMixture` suppose que les données proviennent d'un mélange de plusieurs distributions gaussiennes.
+
+Contrairement à K-Means, il fournit une appartenance probabiliste :
+
+$$
+p(z_i=k\mid x_i)
+$$
+
+Une observation peut donc appartenir à plusieurs clusters avec des niveaux de confiance différents.
+
+Les mélanges gaussiens sont adaptés lorsque les groupes peuvent être elliptiques et lorsque l'on souhaite des probabilités d'appartenance.
+
+Hyperparamètres importants :
+
+- `n_components` ;
+- `covariance_type` ;
+- `reg_covar` ;
+- `n_init`.
+
+### 6.5. Spectral clustering
+
+`SpectralClustering` construit un graphe de similarité entre observations, puis utilise une représentation spectrale de ce graphe pour effectuer le regroupement.
+
+Il peut découvrir des structures non convexes difficiles à trouver avec K-Means. En revanche, il peut être plus coûteux et dépend fortement du graphe de voisinage ou de la matrice d'affinité.
+
+### 6.6. Mean Shift
+
+`MeanShift` cherche les modes de densité et déplace les points vers les zones de forte concentration.
+
+Avantages :
+
+- le nombre de clusters peut être découvert automatiquement ;
+- approche fondée sur la densité.
+
+Limites :
+
+- coûteuse sur de grands jeux ;
+- choix de la bande passante important ;
+- sensible à l'échelle.
+
+### 6.7. BIRCH
+
+`Birch` construit une structure compacte de sous-clusters afin de traiter des jeux de données volumineux.
+
+Il peut être utile lorsque :
+
+- le nombre d'observations est très grand ;
+- on veut réduire d'abord les données en sous-clusters ;
+- un algorithme final doit être appliqué sur une représentation plus petite.
+
+### 6.8. Comparaison synthétique
+
+| Méthode | Forme des groupes | Outliers | Nombre de clusters fixé ? | Usage |
+|---|---|---|---|---|
+| K-Means | Sphérique ou compacte | Sensible | Oui | Segmentation simple |
+| Hiérarchique | Dépend de la liaison | Sensible | Non au départ | Exploration et dendrogramme |
+| DBSCAN | Formes variées, denses | Oui | Non | Groupes par densité |
+| OPTICS | Densités variées | Oui | Non | Exploration de densités |
+| Mélange gaussien | Elliptique | Limité | Oui | Appartenance probabiliste |
+| Spectral clustering | Formes non convexes | Limité | Souvent oui | Graphe de similarité |
+| Mean Shift | Modes de densité | Partiellement | Non | Détection de modes |
+| BIRCH | Sous-clusters compacts | Dépend de l'étape finale | Selon usage | Très grands jeux |
+
+## 7. Évaluer une analyse non supervisée
+
+L'évaluation non supervisée est plus délicate que l'évaluation supervisée : il n'existe pas toujours de vérité terrain.
+
+### 7.1. Métriques internes
+
+Les métriques internes utilisent uniquement les données et les clusters produits.
+
+#### Inertie
+
+Pour K-Means :
+
+$$
+Inertia
+=
+\sum_{k=1}^{K}
+\sum_{i:c_i=k}
+\|x_i-\mu_k\|^2
+$$
+
+Elle mesure la compacité, mais diminue lorsque le nombre de clusters augmente. Elle est surtout utilisée avec la méthode du coude.
+
+#### Silhouette
+
+Pour une observation :
+
+$$
+s(i)
+=
+\frac{b(i)-a(i)}
+{\max(a(i),b(i))}
+$$
+
+Elle prend des valeurs entre -1 et 1 et combine cohésion interne et séparation externe.
+
+#### Indice de Calinski-Harabasz
+
+Cet indice compare la dispersion entre les clusters à la dispersion à l'intérieur des clusters. Une valeur élevée indique généralement des groupes compacts et bien séparés.
+
+#### Indice de Davies-Bouldin
+
+Cet indice mesure la similarité moyenne entre chaque cluster et le cluster le plus similaire. Une valeur faible est préférable.
+
+Ces métriques peuvent donner des recommandations différentes. Elles ne remplacent pas l'interprétation du problème.
+
+### 7.2. Métriques externes
+
+Si des étiquettes réelles existent mais n'ont pas été utilisées pour l'apprentissage, on peut comparer les clusters aux étiquettes après coup :
+
+- adjusted Rand index ;
+- normalized mutual information ;
+- homogeneity ;
+- completeness ;
+- v-measure.
+
+Ces scores évaluent la correspondance avec une référence externe. Ils transforment alors l'évaluation en comparaison supervisée, mais l'apprentissage peut rester non supervisé.
+
+### 7.3. Stabilité
+
+Un clustering utile doit être suffisamment stable :
+
+- vis-à-vis d'une nouvelle initialisation ;
+- vis-à-vis d'un échantillon légèrement différent ;
+- vis-à-vis d'une variation raisonnable des hyperparamètres ;
+- vis-à-vis d'un petit bruit de mesure.
+
+Si les groupes changent complètement selon l'initialisation ou le sous-échantillon, l'interprétation doit être prudente.
+
+### 7.4. Interprétation des clusters
+
+Après avoir construit les clusters, on peut calculer pour chacun :
+
+- le nombre d'observations ;
+- la moyenne et la médiane des variables ;
+- les quantiles ;
+- les variables les plus distinctives ;
+- les taux d'absence ou de valeurs manquantes ;
+- les évolutions temporelles ;
+- les caractéristiques métier.
+
+Une comparaison de moyennes ne suffit pas toujours. Il faut examiner la dispersion et les observations atypiques dans chaque groupe.
+
+::: {.callout-important title="L'évaluation ne crée pas la signification"}
+Un score de silhouette élevé signifie que les groupes sont cohérents selon une métrique donnée. Il ne signifie pas qu'ils représentent des catégories causales, naturelles ou directement actionnables.
+:::
+
+## 8. Syntaxe générale avec `scikit-learn`
+
+### 8.1. ACP simple
+
+```python
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+print(pca.components_)
+print(pca.explained_variance_)
+print(pca.explained_variance_ratio_)
+print(pca.explained_variance_ratio_.cumsum())
+```
+
+Les attributs principaux sont :
+
+| Attribut | Signification |
+|---|---|
+| `components_` | Directions principales |
+| `explained_variance_` | Variances associées aux composantes |
+| `explained_variance_ratio_` | Proportions de variance expliquée |
+| `mean_` | Moyennes utilisées pour le centrage |
+| `singular_values_` | Valeurs singulières liées à la décomposition |
+
+### 8.2. Choisir le nombre de composantes
+
+Pour conserver un certain pourcentage de variance :
+
+```python
+pca = PCA(n_components=0.95)
+X_reduced = pca.fit_transform(X_scaled)
+
+print(pca.n_components_)
+print(pca.explained_variance_ratio_.sum())
+```
+
+Avec `n_components=0.95`, `scikit-learn` choisit suffisamment de composantes pour expliquer au moins 95 % de la variance, selon les données.
+
+### 8.3. ACP dans un pipeline
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+pca_pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("pca", PCA(n_components=0.95)),
+])
+
+X_reduced = pca_pipeline.fit_transform(X_train)
+X_test_reduced = pca_pipeline.transform(X_test)
+```
+
+Le pipeline garantit que les moyennes, les écarts-types et les directions principales sont ajustés sur `X_train`, puis appliqués aux autres données.
+
+### 8.4. K-Means simple
+
+```python
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+kmeans = KMeans(
+    n_clusters=3,
+    init="k-means++",
+    n_init=10,
+    random_state=42,
+)
+
+labels = kmeans.fit_predict(X_scaled)
+
+centers = kmeans.cluster_centers_
+inertia = kmeans.inertia_
+```
+
+Les attributs principaux sont :
+
+| Attribut | Signification |
+|---|---|
+| `labels_` | Cluster attribué à chaque observation |
+| `cluster_centers_` | Centroïdes |
+| `inertia_` | Inertie finale |
+| `n_iter_` | Nombre d'itérations effectuées |
+
+Les numéros de clusters sont arbitraires. Le cluster 0 n'est pas naturellement « inférieur » au cluster 1.
+
+### 8.5. Méthode du coude
+
+```python
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+inertias = []
+candidate_k = range(2, 11)
+
+for k in candidate_k:
+    model = KMeans(
+        n_clusters=k,
+        n_init=10,
+        random_state=42,
+    )
+    model.fit(X_scaled)
+    inertias.append(model.inertia_)
+
+plt.plot(candidate_k, inertias, marker="o")
+plt.xlabel("Nombre de clusters K")
+plt.ylabel("Inertie")
+plt.title("Méthode du coude")
+plt.show()
+```
+
+Le graphique doit être complété par une analyse de silhouette et une interprétation du contexte.
+
+### 8.6. Score de silhouette
+
+```python
+from sklearn.metrics import silhouette_score
+
+for k in range(2, 7):
+    model = KMeans(
+        n_clusters=k,
+        n_init=10,
+        random_state=42,
+    )
+    labels = model.fit_predict(X_scaled)
+    score = silhouette_score(X_scaled, labels)
+    print(k, score)
+```
+
+Le score de silhouette ne doit pas être calculé pour un seul cluster. Il est également à interpréter avec prudence lorsque les clusters ont des tailles très différentes ou des formes non sphériques.
+
+### 8.7. Visualiser des clusters après ACP
+
+Une utilisation courante consiste à standardiser les variables, calculer une ACP à deux dimensions, puis colorer les observations selon leur cluster :
+
+```python
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+X_scaled = StandardScaler().fit_transform(X)
+
+labels = KMeans(
+    n_clusters=3,
+    n_init=10,
+    random_state=42,
+).fit_predict(X_scaled)
+
+X_2d = PCA(n_components=2).fit_transform(X_scaled)
+
+plt.scatter(
+    X_2d[:, 0],
+    X_2d[:, 1],
+    c=labels,
+    cmap="viridis",
+)
+plt.xlabel("Composante principale 1")
+plt.ylabel("Composante principale 2")
+plt.title("Visualisation des clusters dans l'espace ACP")
+plt.show()
+```
+
+La visualisation en deux dimensions est une projection. Deux clusters qui se recouvrent sur le graphique peuvent être séparés dans les dimensions non affichées, et deux groupes visuellement éloignés peuvent dépendre de la transformation choisie.
+
+### 8.8. ACP puis K-Means dans un pipeline
+
+On peut enchaîner une réduction de dimension et un clustering :
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("pca", PCA(n_components=0.90)),
+    ("kmeans", KMeans(
+        n_clusters=3,
+        n_init=10,
+        random_state=42,
+    )),
+])
+
+pipeline.fit(X)
+labels = pipeline.named_steps["kmeans"].labels_
+```
+
+Il faut décider si l'ACP est utilisée :
+
+- uniquement pour visualiser ;
+- pour réduire le bruit avant K-Means ;
+- pour accélérer le calcul ;
+- pour changer volontairement la notion de distance.
+
+Réduire les dimensions avant K-Means peut supprimer des variables de faible variance mais potentiellement importantes pour le regroupement.
+
+### 8.9. Clustering hiérarchique
+
+```python
+from sklearn.cluster import AgglomerativeClustering
+
+model = AgglomerativeClustering(
+    n_clusters=3,
+    linkage="ward",
+)
+
+labels = model.fit_predict(X_scaled)
+```
+
+Pour visualiser un dendrogramme, on peut utiliser les outils de `scipy.cluster.hierarchy`, qui ne sont pas nécessaires pour comprendre le fonctionnement de `AgglomerativeClustering`.
+
+### 8.10. DBSCAN
+
+```python
+from sklearn.cluster import DBSCAN
+
+model = DBSCAN(
+    eps=0.5,
+    min_samples=5,
+)
+
+labels = model.fit_predict(X_scaled)
+```
+
+La valeur `-1` représente généralement les observations considérées comme du bruit.
+
+### 8.11. Mélange gaussien
+
+```python
+from sklearn.mixture import GaussianMixture
+
+model = GaussianMixture(
+    n_components=3,
+    covariance_type="full",
+    random_state=42,
+)
+
+labels = model.fit_predict(X_scaled)
+probabilities = model.predict_proba(X_scaled)
+```
+
+`predict_proba()` donne les probabilités d'appartenance aux composantes du mélange.
+
+### 8.12. Réduction non linéaire pour visualisation
+
+```python
+from sklearn.manifold import TSNE
+
+X_2d = TSNE(
+    n_components=2,
+    random_state=42,
+    perplexity=30,
+).fit_transform(X_scaled)
+```
+
+Cette représentation est utile pour explorer les voisinages, mais elle ne doit pas être utilisée comme une preuve directe de l'existence de clusters.
+
+## 9. Maîtriser un projet non supervisé
+
+### 9.1. Procédure recommandée
+
+1. **Définir l'objectif** : visualiser, réduire, segmenter, détecter des anomalies ou résumer.
+2. **Examiner les variables** et retirer les identifiants sans signification.
+3. **Traiter les valeurs manquantes**.
+4. **Choisir une représentation des variables catégorielles**.
+5. **Décider si le centrage et la réduction sont nécessaires**.
+6. **Construire une baseline simple**, par exemple K-Means avec plusieurs valeurs de $K$.
+7. **Comparer plusieurs valeurs d'hyperparamètres**.
+8. **Évaluer avec plusieurs indicateurs internes**.
+9. **Vérifier la stabilité** des groupes ou des composantes.
+10. **Interpréter les résultats dans le contexte métier**.
+11. **Tester les résultats sur une période ou un échantillon différent**.
+12. **Documenter les transformations et les hypothèses**.
+
+### 9.2. Erreurs fréquentes
+
+| Erreur | Conséquence | Correction |
+|---|---|---|
+| Appliquer K-Means sans standardiser | Les variables à grande échelle dominent | Justifier et intégrer la standardisation |
+| Utiliser un identifiant comme variable | Groupes artificiels | Retirer les identifiants |
+| Choisir K uniquement parce que l'inertie est minimale | L'inertie diminue avec K | Utiliser coude, silhouette et contexte |
+| Appeler un cluster une classe réelle | Surinterprétation | Parler de groupe découvert |
+| Utiliser l'ACP comme un outil prédictif automatique | Information potentiellement perdue | Évaluer la tâche finale |
+| Visualiser t-SNE comme une carte fidèle des distances | Distances globales trompeuses | Interpréter surtout les voisinages locaux |
+| Ajuster l'ACP sur toutes les données avant un test | Fuite de données | Mettre l'ACP dans un pipeline |
+| Ignorer les outliers | Centroïdes et axes déformés | Diagnostiquer les valeurs atypiques |
+| Comparer des clusters de numéros différents | Numéros arbitraires | Comparer les profils des clusters |
+
+### 9.3. Stabilité et reproductibilité
+
+Les résultats d'une méthode non supervisée peuvent dépendre :
+
+- de l'initialisation aléatoire ;
+- de l'ordre des observations ;
+- du sous-échantillonnage ;
+- de l'échelle ;
+- des variables conservées ;
+- des hyperparamètres.
+
+Il faut donc fixer `random_state` lorsque cela est possible et documenter :
+
+- les colonnes utilisées ;
+- les transformations ;
+- la métrique de distance ;
+- la valeur de $K$ ;
+- les paramètres d'initialisation ;
+- la méthode d'évaluation.
+
+### 9.4. Interprétation responsable
+
+Un regroupement peut révéler une structure statistique sans expliquer sa cause. Si un cluster possède une consommation moyenne élevée, cela ne prouve pas que l'appartenance au cluster cause cette consommation.
+
+Il faut distinguer :
+
+- une association descriptive ;
+- une structure géométrique ;
+- une segmentation opérationnelle ;
+- une explication causale.
+
+::: {.callout-warning title="Un algorithme non supervisé ne découvre pas automatiquement des causes"}
+L'absence de cible signifie que le modèle n'est pas guidé par une réponse à prédire. Cela ne transforme pas les groupes obtenus en mécanismes causaux ou en catégories naturelles.
+:::
+
+::: {.callout-note title="Auto-évaluation"}
+- [ ] Je sais distinguer apprentissage supervisé et non supervisé.
+- [ ] Je sais expliquer la différence entre ACP et K-Means.
+- [ ] Je peux calculer une matrice de covariance simple.
+- [ ] Je sais relier valeurs propres, vecteurs propres et composantes principales.
+- [ ] Je peux calculer une variance expliquée et une variance expliquée cumulée.
+- [ ] Je sais projeter une observation sur une composante.
+- [ ] Je peux calculer une affectation K-Means à partir de centroïdes.
+- [ ] Je sais recalculer un centroïde.
+- [ ] Je peux calculer l'inertie d'un clustering simple.
+- [ ] Je sais expliquer pourquoi le choix de l'échelle influence K-Means et l'ACP.
+- [ ] Je connais la méthode du coude et le score de silhouette.
+- [ ] Je peux choisir entre K-Means, DBSCAN, clustering hiérarchique et mélange gaussien.
+- [ ] Je sais pourquoi un cluster n'est pas automatiquement une classe réelle.
+- [ ] Je sais construire un pipeline non supervisé avec `scikit-learn`.
+:::
+
+## Exercices
+
+::: {.callout-note title="Consigne"}
+Les exercices portent uniquement sur le calcul et la compréhension. Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit **avant** de les consulter.
+:::
+
+::: {#exr-unsup-1}
+### Supervisé ou non supervisé ?
+
+Pour chaque situation, indiquez s'il s'agit d'un problème supervisé ou non supervisé, puis précisez la tâche principale :
+
+1. prédire le prix d'un appartement à partir d'exemples dont le prix est connu ;
+2. regrouper des clients sans connaître à l'avance leurs segments ;
+3. réduire 20 variables à 2 axes pour visualiser les observations ;
+4. prédire si une transaction est frauduleuse à partir d'exemples étiquetés.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-1"}
+1. **Supervisé, régression** : la cible est le prix connu dans les exemples d'entraînement.
+2. **Non supervisé, clustering** : aucun segment cible n'est fourni.
+3. **Non supervisé, réduction de dimension** : l'objectif est de résumer $X$ sans cible.
+4. **Supervisé, classification** : les transactions possèdent une étiquette fraude ou non-fraude.
+:::
+
+::: {#exr-unsup-2}
+### Centrer une matrice
+
+On considère :
+
+$$
+X=
+\begin{pmatrix}
+1&4\\
+3&2\\
+5&6
+\end{pmatrix}
+$$
+
+1. Calculez la moyenne de chaque variable.
+2. Construisez la matrice centrée $X_c$.
+3. Vérifiez que la moyenne de chaque colonne de $X_c$ est nulle.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-2"}
+1. Les moyennes sont :
+
+$$
+\bar{x}_1=\frac{1+3+5}{3}=3
+$$
+
+et :
+
+$$
+\bar{x}_2=\frac{4+2+6}{3}=4
+$$
+
+2. La matrice centrée est :
+
+$$
+X_c=
+\begin{pmatrix}
+1-3&4-4\\
+3-3&2-4\\
+5-3&6-4
+\end{pmatrix}
+=
+\begin{pmatrix}
+-2&0\\
+0&-2\\
+2&2
+\end{pmatrix}
+$$
+
+3. Les moyennes centrées sont :
+
+$$
+\frac{-2+0+2}{3}=0
+$$
+
+et :
+
+$$
+\frac{0-2+2}{3}=0
+$$
+
+Les deux colonnes sont donc bien centrées.
+:::
+
+::: {#exr-unsup-3}
+### Calcul d'une matrice de covariance
+
+On considère les données centrées :
+
+$$
+X_c=
+\begin{pmatrix}
+-1&-1\\
+0&0\\
+1&1
+\end{pmatrix}
+$$
+
+Calculez :
+
+1. $X_c^{\top}X_c$ ;
+2. la matrice de covariance $\Sigma=\frac{1}{n-1}X_c^{\top}X_c$ ;
+3. la relation entre les deux variables.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-3"}
+1. On a :
+
+$$
+X_c^{\top}
+=
+\begin{pmatrix}
+-1&0&1\\
+-1&0&1
+\end{pmatrix}
+$$
+
+Donc :
+
+$$
+X_c^{\top}X_c
+=
+\begin{pmatrix}
+2&2\\
+2&2
+\end{pmatrix}
+$$
+
+2. Comme $n=3$ :
+
+$$
+\Sigma
+=\frac{1}{3-1}
+\begin{pmatrix}
+2&2\\
+2&2
+\end{pmatrix}
+=
+\begin{pmatrix}
+1&1\\
+1&1
+\end{pmatrix}
+$$
+
+3. Les variances valent 1 et la covariance vaut 1. Les deux variables évoluent parfaitement dans le même sens dans cet exemple.
+:::
+
+::: {#exr-unsup-4}
+### Valeurs propres et variance expliquée
+
+Une matrice de covariance possède les valeurs propres suivantes :
+
+$$
+\lambda_1=6,\qquad\lambda_2=3,\qquad\lambda_3=1
+$$
+
+Calculez :
+
+1. la variance totale ;
+2. la variance expliquée par la première composante ;
+3. la variance expliquée cumulée par les deux premières composantes ;
+4. le nombre minimal de composantes pour dépasser 80 % de variance expliquée.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-4"}
+1. La variance totale vaut :
+
+$$
+\lambda_1+\lambda_2+\lambda_3=6+3+1=10
+$$
+
+2. La première composante explique :
+
+$$
+EVR_1=\frac{6}{10}=0{,}6=60\%
+$$
+
+3. Les deux premières expliquent :
+
+$$
+EVR_{\text{cumulée}}(2)
+=\frac{6+3}{10}=0{,}9=90\%
+$$
+
+4. Une seule composante explique 60 %, ce qui est inférieur à 80 %. Deux composantes expliquent 90 %, donc le nombre minimal est :
+
+$$
+m=2
+$$
+:::
+
+::: {#exr-unsup-5}
+### Projection sur une composante principale
+
+On considère une observation centrée :
+
+$$
+x_c=
+\begin{pmatrix}
+1\\
+1
+\end{pmatrix}
+$$
+
+et une direction principale :
+
+$$
+w_1=
+\frac{1}{\sqrt2}
+\begin{pmatrix}
+1\\
+1
+\end{pmatrix}
+$$
+
+Calculez la coordonnée de l'observation sur la première composante :
+
+$$
+z_1=x_c^{\top}w_1
+$$
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-5"}
+On calcule :
+
+$$
+z_1
+=
+\begin{pmatrix}
+1&1
+\end{pmatrix}
+\frac{1}{\sqrt2}
+\begin{pmatrix}
+1\\
+1
+\end{pmatrix}
+$$
+
+Donc :
+
+$$
+z_1
+=\frac{1+1}{\sqrt2}
+=\frac{2}{\sqrt2}
+=\sqrt2
+$$
+
+La coordonnée de l'observation sur cette direction est donc $\sqrt2$.
+:::
+
+::: {#exr-unsup-6}
+### Comprendre la reconstruction ACP
+
+Une ACP conserve deux composantes sur cinq et explique 92 % de la variance totale.
+
+1. La dimension des données a-t-elle diminué ?
+2. La reconstruction des données originales est-elle exacte ?
+3. Que signifie la perte des 8 % restants ?
+4. Est-il toujours préférable de conserver 92 % plutôt que 80 % ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-6"}
+1. Oui. On passe de 5 variables à 2 composantes.
+2. Non. La reconstruction est approchée car trois composantes ont été supprimées.
+3. Les 8 % correspondent à la variance non représentée par les deux composantes conservées. Cela décrit une perte de variation selon le critère de l'ACP.
+4. Pas nécessairement. Le choix dépend du coût de la dimension, de la visualisation, de la tâche ultérieure et de l'information réellement utile. Une variance faible peut parfois être importante pour une tâche particulière.
+:::
+
+::: {#exr-unsup-7}
+### Affectation K-Means
+
+On considère un point :
+
+$$
+x=(3,2)
+$$
+
+et deux centroïdes :
+
+$$
+\mu_1=(1,1),\qquad\mu_2=(5,3)
+$$
+
+1. Calculez les distances au carré entre $x$ et les deux centroïdes.
+2. À quel cluster le point est-il affecté ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-7"}
+1. Distance au carré vers le premier centroïde :
+
+$$
+\|x-\mu_1\|^2
+=(3-1)^2+(2-1)^2
+=4+1=5
+$$
+
+Distance au carré vers le deuxième centroïde :
+
+$$
+\|x-\mu_2\|^2
+=(3-5)^2+(2-3)^2
+=4+1=5
+$$
+
+2. Les distances sont identiques. Le point est exactement à égale distance des deux centroïdes. Il y a donc une égalité, qui doit être résolue par une règle d'implémentation ou par une convention. Cet exemple montre qu'une frontière de décision peut être ambiguë.
+:::
+
+::: {#exr-unsup-8}
+### Recalculer un centroïde
+
+Un cluster contient les trois observations :
+
+$$
+x_1=(1,2),\qquad x_2=(3,2),\qquad x_3=(2,5)
+$$
+
+Calculez le centroïde du cluster :
+
+$$
+\mu=\frac{x_1+x_2+x_3}{3}
+$$
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-8"}
+On calcule séparément chaque coordonnée :
+
+$$
+\mu_1=\frac{1+3+2}{3}=2
+$$
+
+et :
+
+$$
+\mu_2=\frac{2+2+5}{3}=3
+$$
+
+Le centroïde est donc :
+
+$$
+\mu=(2,3)
+$$
+:::
+
+::: {#exr-unsup-9}
+### Calculer une inertie
+
+Un cluster contient :
+
+$$
+x_1=(1,1),\qquad x_2=(1,3)
+$$
+
+Son centroïde est :
+
+$$
+\mu=(1,2)
+$$
+
+Calculez l'inertie de ce cluster :
+
+$$
+I=\|x_1-\mu\|^2+\|x_2-\mu\|^2
+$$
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-9"}
+Pour le premier point :
+
+$$
+\|x_1-\mu\|^2
+=(1-1)^2+(1-2)^2
+=1
+$$
+
+Pour le deuxième point :
+
+$$
+\|x_2-\mu\|^2
+=(1-1)^2+(3-2)^2
+=1
+$$
+
+L'inertie du cluster vaut :
+
+$$
+I=1+1=2
+$$
+:::
+
+::: {#exr-unsup-10}
+### Score de silhouette
+
+Pour une observation, on mesure :
+
+$$
+a(i)=2,\qquad b(i)=5
+$$
+
+où $a(i)$ est la distance moyenne aux observations de son propre cluster et $b(i)$ la distance moyenne au cluster voisin le plus proche.
+
+Calculez son score de silhouette :
+
+$$
+s(i)=\frac{b(i)-a(i)}{\max(a(i),b(i))}
+$$
+
+Interprétez le résultat.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-10"}
+Comme $b(i)=5$ est supérieur à $a(i)=2$ :
+
+$$
+s(i)
+=\frac{5-2}{\max(2,5)}
+=\frac35
+=0{,}6
+$$
+
+Un score de 0,6 est positif et relativement élevé. L'observation est plus proche, en moyenne, de son propre cluster que du cluster voisin.
+:::
+
+::: {#exr-unsup-11}
+### Choisir un algorithme
+
+Choisissez une méthode raisonnable dans chaque situation :
+
+1. réduire 50 variables numériques corrélées en quelques axes interprétables ;
+2. regrouper des clients en groupes compacts et de taille comparable ;
+3. détecter des groupes de forme irrégulière et isoler les observations bruitées ;
+4. obtenir une appartenance probabiliste à des groupes elliptiques ;
+5. explorer une hiérarchie de groupes sans fixer immédiatement le nombre final.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-11"}
+1. **ACP** : elle résume la variance de variables numériques corrélées.
+2. **K-Means** : il convient comme première méthode pour des groupes compacts et relativement homogènes.
+3. **DBSCAN** : il utilise la densité et peut identifier du bruit ainsi que des formes non sphériques.
+4. **Mélange gaussien** : il fournit des probabilités d'appartenance et peut représenter des groupes elliptiques.
+5. **Clustering hiérarchique** : le dendrogramme permet d'explorer plusieurs niveaux de regroupement.
+:::
+
+::: {#exr-unsup-12}
+### Effet de l'échelle et protocole d'analyse
+
+Une équipe applique K-Means directement à deux variables :
+
+- le revenu annuel, compris entre 20 000 et 200 000 ;
+- un taux, compris entre 0 et 1.
+
+1. Quelle variable risque de dominer la distance euclidienne ?
+2. Quelle transformation peut être envisagée ?
+3. Où les paramètres de cette transformation doivent-ils être calculés dans une évaluation train/test ?
+4. Pourquoi le choix de standardiser change-t-il la notion de similarité ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-12"}
+1. Le revenu risque de dominer la distance car son amplitude numérique est beaucoup plus grande.
+2. On peut centrer-réduire les variables avec `StandardScaler`, après avoir vérifié que cette représentation est pertinente.
+3. Les moyennes et écarts-types doivent être calculés sur le jeu d'entraînement, puis réutilisés sur les données de validation et de test.
+4. Avant standardisation, une différence de revenu peut peser beaucoup plus qu'une différence de taux. Après standardisation, les écarts sont mesurés relativement à la variabilité de chaque variable. On ne mesure donc pas exactement la même similarité.
+:::
+
+::: {#exr-unsup-13}
+### ACP et tâche ultérieure
+
+Une ACP conserve uniquement les composantes qui expliquent 95 % de la variance. Une tâche ultérieure de détection d'anomalies devient moins performante après cette réduction.
+
+1. Est-ce contradictoire avec le fait que 95 % de la variance est conservée ?
+2. Quelle information peut avoir été supprimée ?
+3. Quelle vérification faut-il effectuer avant de retenir définitivement la réduction ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-13"}
+1. Non. L'ACP optimise la variance totale, pas nécessairement la performance de la tâche de détection d'anomalies.
+2. Une direction de faible variance peut contenir des anomalies ou une information discriminante importante.
+3. Il faut évaluer la tâche ultérieure avec et sans réduction, sur une validation indépendante, et examiner les composantes supprimées ainsi que l'effet de la standardisation.
+:::
+
+::: {#exr-unsup-14}
+### Interprétation d'un clustering
+
+K-Means produit trois clusters de clients. Le cluster 2 dépense en moyenne davantage que les deux autres.
+
+Indiquez quelles conclusions sont justifiées et lesquelles sont abusives :
+
+1. le cluster 2 possède une dépense moyenne plus élevée dans les données ;
+2. appartenir au cluster 2 provoque une dépense élevée ;
+3. le cluster 2 peut être décrit comme un groupe de clients à forte dépense selon les variables utilisées ;
+4. le cluster 2 représente une catégorie naturelle et stable de clients.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-unsup-14"}
+1. **Conclusion justifiée** : la dépense moyenne observée dans le cluster 2 est plus élevée.
+2. **Conclusion abusive** : le clustering ne démontre pas de causalité.
+3. **Conclusion raisonnable avec prudence** : on peut décrire le cluster à partir de ses statistiques, en précisant les variables et la méthode utilisées.
+4. **Conclusion non démontrée** : la naturalité et la stabilité du groupe doivent être vérifiées avec d'autres échantillons, périodes et méthodes.
+:::

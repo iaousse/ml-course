@@ -1,0 +1,402 @@
+# Lab 2 — Collecte et prétraitement des données
+
+::: {.callout-tip title="Objectifs du Lab"}
+À la fin de ce Lab, l'étudiant sera capable de :
+
+- **Lire** des données depuis un CSV, une API JSON et une base SQLite ;
+- **Extraire** une information simple depuis une page HTML (*web scraping*) ;
+- **Diagnostiquer** des valeurs manquantes, des doublons et des valeurs aberrantes ;
+- **Comparer** une implémentation *from scratch* de l'imputation et de la standardisation à `scikit-learn` ;
+- **Encoder** correctement des variables catégorielles ordinales et nominales ;
+- **Construire** un pipeline complet (`ColumnTransformer` + `Pipeline`) sans fuite de données.
+:::
+
+::: {.callout-note title="Lien avec le cours"}
+Ce Lab met en pratique le chapitre 3 (*Collecte et Prétraitement des Données*) dans son intégralité : sources de données (§1), valeurs manquantes et MCAR/MAR/MNAR (§3.1), valeurs aberrantes (§3.2), encodage (§4), mise à l'échelle (§5) et pipelines (§6). Les exercices « papier » du chapitre 3 vous ont fait calculer ces transformations à la main sur un jeu minuscule ; ce Lab vous fait passer à l'échelle avec du vrai code, sur des données plus volumineuses et réellement imparfaites.
+:::
+
+## 1. Lire des données depuis plusieurs sources
+
+### 1.1. CSV local
+
+```python
+import pandas as pd
+
+clients = pd.read_csv("data/raw/clients_bruts.csv")
+print(clients.head())
+```
+
+(Nous allons construire ce fichier nous-mêmes en §2.)
+
+### 1.2. Une API JSON
+
+```python
+import requests
+
+repo_url = "https://api.github.com/repos/pandas-dev/pandas"
+response = requests.get(repo_url, timeout=20)
+response.raise_for_status()
+repo = response.json()
+
+print({"étoiles": repo["stargazers_count"], "forks": repo["forks_count"]})
+```
+
+### 1.3. Une base SQLite
+
+```python
+import sqlite3
+
+connexion = sqlite3.connect("data/interim/clients.sqlite")
+
+connexion.execute("""
+CREATE TABLE IF NOT EXISTS clients (
+    client_id INTEGER,
+    ville TEXT,
+    revenu REAL
+)
+""")
+connexion.executemany(
+    "INSERT INTO clients VALUES (?, ?, ?)",
+    [(101, "Rabat", 6500.0), (102, "Casablanca", 12000.0)],
+)
+connexion.commit()
+
+resultat = pd.read_sql_query(
+    "SELECT * FROM clients WHERE revenu >= ?", connexion, params=(7000,),
+)
+print(resultat)
+connexion.close()
+```
+
+::: {.callout-warning title="Paramètres SQL, pas concaténation"}
+`params=(7000,)` évite de construire la requête par concaténation de chaînes — une concaténation directe de données utilisateur peut provoquer une injection SQL, même dans un projet pédagogique.
+:::
+
+### 1.4. Extraire une information depuis une page HTML
+
+```python
+from bs4 import BeautifulSoup
+
+url = "https://books.toscrape.com/"
+response = requests.get(url, headers={"User-Agent": "lab-educational/1.0"}, timeout=20)
+response.raise_for_status()
+
+soup = BeautifulSoup(response.text, "html.parser")
+livres = soup.select("article.product_pod")[:5]
+
+for livre in livres:
+    titre = livre.select_one("h3 a")["title"]
+    prix = livre.select_one(".price_color").get_text(strip=True)
+    print(f"{titre} — {prix}")
+```
+
+::: {.callout-warning title="Éthique et robustesse (rappel chapitre 3, §1.2)"}
+`books.toscrape.com` est un site conçu pour l'entraînement au scraping. Sur un site réel, il faut vérifier `robots.txt`, les conditions d'utilisation, et ajouter un délai entre les requêtes (`time.sleep(1)`). Un scraper de ce type reste fragile : il casse dès que la structure HTML change.
+:::
+
+
+## 2. Construire un jeu de données volontairement imparfait
+
+Pour pratiquer le nettoyage, nous avons besoin de vraies imperfections. Créons-les nous-mêmes, en connaissance de cause :
+
+```python
+from pathlib import Path
+
+Path("data/raw").mkdir(parents=True, exist_ok=True)
+
+clients_bruts = pd.DataFrame({
+    "client_id":       [101, 102, 103, 103, 104, 105, 106, 107, 108],
+    "age":             [25, 41, None, None, 72, 19, 36, 36, 250],
+    "ville":           ["Rabat", "casablanca", "Tanger", "Tanger",
+                         "Casablanca ", "rabat", "Marrakech", "Marrakech", None],
+    "revenu_mensuel":  [6500, 12000, 8300, 8300, 18000, 4200, 7600, 7600, 9100],
+    "nombre_achats":   [4, 12, 8, 8, 20, 1, 6, 6, 5],
+    "montant_total":   [1800.0, 15200.0, 7200.0, 7200.0, 25000.0, 250.0, 5100.0, 5100.0, 6300.0],
+    "client_actif":    ["oui", "oui", "non", "non", "oui", "non", "oui", "oui", "oui"],
+})
+clients_bruts.to_csv("data/raw/clients_bruts.csv", index=False)
+print(clients_bruts)
+```
+
+Ce petit jeu contient, volontairement :
+
+- des **valeurs manquantes** (`age`, `ville`) ;
+- un **doublon** (`client_id = 103`, présent deux fois à l'identique) ;
+- une **valeur aberrante** (`age = 250`) ;
+- des **incohérences de casse et d'espaces** dans `ville` (`"casablanca"`, `"Casablanca "`, `"rabat"`).
+
+C'est exactement le type de désordre décrit au chapitre 3 comme la norme plutôt que l'exception.
+
+
+## 3. Diagnostiquer avant de nettoyer
+
+```python
+clients = pd.read_csv("data/raw/clients_bruts.csv")
+
+print(clients.isna().sum())               # valeurs manquantes par colonne
+print(clients.duplicated().sum())          # nombre de lignes strictement dupliquées
+print(clients.duplicated(subset=["client_id"]).sum())  # doublons sur la clé
+print(clients["age"].describe())            # repère vite les valeurs aberrantes
+```
+
+### 3.1. Supprimer les doublons
+
+```python
+clients = clients.drop_duplicates(subset=["client_id"], keep="first")
+print(clients.shape)
+```
+
+### 3.2. Détecter les valeurs aberrantes (IQR)
+
+```python
+q1 = clients["age"].quantile(0.25)
+q3 = clients["age"].quantile(0.75)
+iqr = q3 - q1
+borne_basse = q1 - 1.5 * iqr
+borne_haute = q3 + 1.5 * iqr
+
+print(f"Intervalle acceptable : [{borne_basse:.1f}, {borne_haute:.1f}]")
+aberrantes = clients[(clients["age"] < borne_basse) | (clients["age"] > borne_haute)]
+print(aberrantes[["client_id", "age"]])
+```
+
+Ici, `age = 250` est manifestement une **erreur de saisie** (un âge humain plausible) plutôt qu'une observation rare et légitime (chapitre 3, §3.2) — on la remplace par une valeur manquante, qui sera traitée comme telle :
+
+```python
+clients.loc[clients["age"] > 120, "age"] = None
+```
+
+### 3.3. Harmoniser les catégories textuelles
+
+```python
+clients["ville"] = clients["ville"].str.strip().str.title()
+print(clients["ville"].value_counts(dropna=False))
+```
+
+## 4. Imputation : à la main, puis avec `scikit-learn`
+
+### 4.1. Calculer une imputation *from scratch*
+
+Avant d'utiliser `SimpleImputer`, calculons la médiane nous-mêmes, pour être certains de comprendre ce que l'outil fait réellement :
+
+```python
+mediane_age = clients["age"].median()
+print("Médiane calculée à la main :", mediane_age)
+
+age_impute_a_la_main = clients["age"].fillna(mediane_age)
+```
+
+### 4.2. La même chose avec `SimpleImputer`
+
+```python
+import numpy as np
+from sklearn.impute import SimpleImputer
+
+imputer = SimpleImputer(strategy="median")
+age_impute_sklearn = imputer.fit_transform(clients[["age"]]).ravel()
+
+print("Résultats identiques :", np.allclose(age_impute_a_la_main.to_numpy(), age_impute_sklearn))
+```
+
+::: {.callout-important title="Pourquoi passer par `scikit-learn` si le résultat est identique ?"}
+Sur une seule colonne, coder l'imputation à la main est simple. L'intérêt de `SimpleImputer` apparaît dès que l'on doit : (1) répéter l'opération sur de nombreuses colonnes, (2) l'intégrer dans un `Pipeline` qui garantit l'ordre `fit` sur train puis `transform` sur test (chapitre 3, §3.1), et (3) la combiner à d'autres étapes via `ColumnTransformer` (§6 de ce Lab).
+:::
+
+### 4.3. Imputation catégorielle
+
+```python
+imputer_ville = SimpleImputer(strategy="most_frequent")
+clients["ville"] = imputer_ville.fit_transform(clients[["ville"]]).ravel()
+```
+
+## 5. Encodage : ne pas confondre `LabelEncoder` et `OrdinalEncoder`
+
+Le chapitre 3 (§4.1) distingue encodage ordinal et One-Hot. En pratique, `scikit-learn` propose deux outils différents pour l'encodage ordinal, à ne pas confondre :
+
+| Outil | Usage prévu |
+|---|---|
+| `LabelEncoder` | Encoder la **cible** $y$ (une seule colonne, en classification) |
+| `OrdinalEncoder` | Encoder des **variables explicatives** ordinales (dans $X$, éventuellement plusieurs colonnes) |
+
+```python
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+
+# Simulons une variable réellement ordinale
+clients["niveau_fidelite"] = pd.cut(
+    clients["nombre_achats"], bins=[-1, 3, 10, 100], labels=["Faible", "Moyen", "Élevé"],
+)
+
+encodeur_ordinal = OrdinalEncoder(categories=[["Faible", "Moyen", "Élevé"]])
+clients["niveau_fidelite_code"] = encodeur_ordinal.fit_transform(clients[["niveau_fidelite"]])
+print(clients[["niveau_fidelite", "niveau_fidelite_code"]].drop_duplicates())
+```
+
+```python
+# ville n'a pas d'ordre naturel : One-Hot Encoding
+encodeur_onehot = OneHotEncoder(sparse_output=False, drop="first")
+ville_encodee = encodeur_onehot.fit_transform(clients[["ville"]])
+colonnes_ville = encodeur_onehot.get_feature_names_out(["ville"])
+print(pd.DataFrame(ville_encodee, columns=colonnes_ville).head())
+```
+
+## 6. Mise à l'échelle : calculer, puis vérifier
+
+### 6.1. Standardisation *from scratch*
+
+```python
+colonne = clients["revenu_mensuel"].to_numpy(dtype=float)
+
+moyenne = colonne.mean()
+ecart_type = colonne.std()
+standardise_a_la_main = (colonne - moyenne) / ecart_type
+
+print("Moyenne après standardisation :", round(standardise_a_la_main.mean(), 10))
+print("Écart-type après standardisation :", round(standardise_a_la_main.std(), 10))
+```
+
+### 6.2. Vérifier avec `StandardScaler`
+
+```python
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+standardise_sklearn = scaler.fit_transform(clients[["revenu_mensuel"]]).ravel()
+
+print("Résultats identiques :", np.allclose(standardise_a_la_main, standardise_sklearn))
+print("Moyenne apprise par le scaler :", scaler.mean_)
+print("Écart-type appris par le scaler :", scaler.scale_)
+```
+
+### 6.3. Et si une variable a des valeurs extrêmes ?
+
+```python
+from sklearn.preprocessing import RobustScaler
+
+# On ajoute une valeur extrême pour simuler une grande fortune
+revenu_avec_extreme = pd.concat([
+    clients["revenu_mensuel"], pd.Series([500_000]),
+], ignore_index=True)
+
+standard = StandardScaler().fit_transform(revenu_avec_extreme.to_frame()).ravel()
+robuste = RobustScaler().fit_transform(revenu_avec_extreme.to_frame()).ravel()
+
+comparaison = pd.DataFrame({"valeur": revenu_avec_extreme, "standard": standard.round(2), "robuste": robuste.round(2)})
+print(comparaison.tail(3))
+```
+
+Observez comme la valeur extrême écrase les autres avec `StandardScaler` (des valeurs standardisées proches de 0 pour presque tout le monde), alors que `RobustScaler` — fondé sur la médiane et l'écart interquartile — reste nettement plus stable (chapitre 3, @tbl-scaling).
+
+## 7. Construire le pipeline complet, sans fuite
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+
+clients_final = pd.read_csv("data/raw/clients_bruts.csv").drop_duplicates(subset=["client_id"])
+clients_final.loc[clients_final["age"] > 120, "age"] = None
+clients_final["ville"] = clients_final["ville"].str.strip().str.title()
+
+X = clients_final[["age", "ville", "revenu_mensuel", "nombre_achats", "montant_total"]]
+y = clients_final["client_actif"].map({"non": 0, "oui": 1})
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y,
+)
+
+colonnes_numeriques = ["age", "revenu_mensuel", "nombre_achats", "montant_total"]
+colonnes_categorielles = ["ville"]
+
+pipeline_numerique = Pipeline([
+    ("imputation", SimpleImputer(strategy="median")),
+    ("mise_a_l_echelle", StandardScaler()),
+])
+
+pipeline_categorielle = Pipeline([
+    ("imputation", SimpleImputer(strategy="most_frequent")),
+    ("encodage", OneHotEncoder(drop="first", handle_unknown="ignore")),
+])
+
+pretraitement = ColumnTransformer([
+    ("num", pipeline_numerique, colonnes_numeriques),
+    ("cat", pipeline_categorielle, colonnes_categorielles),
+])
+
+# fit UNIQUEMENT sur le train (chapitre 3, §5.3 et §3.1)
+X_train_pret = pretraitement.fit_transform(X_train)
+X_test_pret = pretraitement.transform(X_test)
+
+print("Forme de X_train après prétraitement :", X_train_pret.shape)
+```
+
+::: {.callout-tip title="Fonctionnalité récente : sortie en DataFrame"}
+Depuis les versions récentes de Scikit-Learn, l'appel `pretraitement.set_output(transform="pandas")` permet d'obtenir directement un `DataFrame` `pandas` en sortie du pipeline, avec des noms de colonnes explicites plutôt qu'un tableau `numpy` sans noms.
+:::
+
+```python
+pretraitement.set_output(transform="pandas")
+X_train_pret_df = pretraitement.fit_transform(X_train)
+X_test_pret_df = pretraitement.transform(X_test)
+print(X_train_pret_df.head())
+```
+
+## 8. Synthèse
+
+::: {.callout-note title="Auto-évaluation" collapse="true"}
+- [ ] Je sais lire un CSV, appeler une API JSON et interroger une base SQLite avec `pandas`.
+- [ ] Je sais diagnostiquer valeurs manquantes, doublons et valeurs aberrantes avant de nettoyer.
+- [ ] Je sais calculer une imputation et une standardisation *from scratch* et vérifier qu'elles correspondent aux outils `scikit-learn`.
+- [ ] Je sais expliquer la différence d'usage entre `LabelEncoder` et `OrdinalEncoder`.
+- [ ] Je sais construire un `ColumnTransformer` combinant imputation, encodage et mise à l'échelle.
+- [ ] Je sais expliquer pourquoi `fit_transform` s'applique au train et `transform` seul au test.
+:::
+
+## 9. Lab Sheet — Projet guidé {#sec-lab2-projet}
+
+::: {.callout-important title="Jeu de données du projet : le Titanic"}
+Ce projet utilise le célèbre jeu de données des passagers du Titanic, disponible publiquement :
+
+```python
+titanic = pd.read_csv(
+    "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"
+)
+```
+
+C'est un jeu **réel**, avec de véritables valeurs manquantes et un mélange de variables numériques et catégorielles — pas un jeu fabriqué pour l'exercice.
+:::
+
+### Partie A — Diagnostic
+
+1. Chargez le jeu de données. Combien d'observations et de variables contient-il ?
+2. Pour chaque colonne, calculez le pourcentage de valeurs manquantes. Quelle colonne est la plus touchée ? Proposez une hypothèse sur la raison probable de ces absences (est-ce plutôt MCAR, MAR ou MNAR, à votre avis ?).
+3. Y a-t-il des lignes strictement dupliquées ?
+
+### Partie B — Nettoyage et décisions justifiées
+
+4. La colonne `deck` (ou `cabin` selon la source) a un taux de valeurs manquantes très élevé. Que proposez-vous de faire, et pourquoi (référez-vous au tableau des stratégies d'imputation, @tbl-imputation) ?
+5. Choisissez, en le justifiant, comment traiter les valeurs manquantes de `age` : suppression, imputation simple, imputation par groupe (par exemple, par classe de billet) ?
+6. La variable `fare` (prix du billet) contient-elle des valeurs qui pourraient être considérées comme aberrantes selon la méthode IQR ? Affichez-les. S'agit-il probablement d'erreurs ou d'observations réelles mais extrêmes ?
+
+### Partie C — Encodage et mise à l'échelle
+
+7. Parmi les variables catégorielles du jeu (`sex`, `embarked`, `class`...), laquelle est **ordinale** et laquelle est **nominale** ? Justifiez, puis choisissez l'encodage approprié pour chacune.
+8. La variable `fare` a une distribution très asymétrique (quelques billets très chers). Quelle méthode de mise à l'échelle du chapitre 3 (@tbl-scaling) recommanderiez-vous, et pourquoi ?
+
+### Partie D — Pipeline complet
+
+9. Construisez un `ColumnTransformer` complet (imputation + encodage + mise à l'échelle adaptés à chaque type de colonne) pour préparer `X`, avec `survived` comme cible $y$.
+10. Séparez Train/Test (80/20, stratifié sur `survived`), ajustez votre pipeline **uniquement sur le train**, puis transformez le test. Affichez la forme (`shape`) du tableau obtenu.
+11. *(Bonus)* Enchaînez votre `ColumnTransformer` avec un `LogisticRegression` dans un unique `Pipeline`, entraînez-le, et affichez son accuracy sur le jeu de test. Vous retrouverez ce même jeu de données pour aller plus loin au Lab 4 (classification).
+
+### Livrables
+
+- un notebook ou script contenant le code des parties A à D ;
+- un court texte (quelques phrases) justifiant chacune de vos décisions de nettoyage ;
+- le pipeline final, exécutable de bout en bout sur les données brutes.
+
+::: {.callout-tip title="Checklist finale"}
+- [ ] Chaque décision de nettoyage est justifiée, pas seulement appliquée.
+- [ ] Aucune statistique (moyenne, médiane, min/max) n'est calculée sur l'ensemble des données avant le split.
+- [ ] Le pipeline distingue correctement colonnes numériques et catégorielles.
+- [ ] Le pipeline s'exécute sans erreur de bout en bout sur des données brutes jamais vues.
+:::

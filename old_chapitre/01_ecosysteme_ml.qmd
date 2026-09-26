@@ -1,9 +1,9 @@
-# Fondements Théoriques du Machine Learning
+# Fondements Théoriques de l'Apprentissage Automatique
 
 ::: {.callout-tip title="Objectifs du chapitre"}
 À la fin de ce chapitre, l'étudiant sera capable de :
 
-- **Distinguer** l'apprentissage supervisé et non supervisé ;
+- **Identifier** les grandes familles d'algorithmes (supervisé, non-supervisé, renforcement...) ;
 - **Utiliser** le vocabulaire fondamental (matrice de design, vecteur cible, hyperparamètres) ;
 - **Diagnostiquer** le sur-apprentissage et le sous-apprentissage ;
 - **Structurer** correctement un jeu de données (Train/Validation/Test) pour éviter la fuite de données ;
@@ -39,7 +39,7 @@ Pour le jeu de données ci-dessous (2 appartements, 2 variables explicatives num
 | 1 | 65 | 2 | 850 000 |
 | 2 | 42 | 1 | 420 000 |
 
-On note $x_1 = (65, 2)$ et $y_1 = 850\,000$ pour la première observation.
+On note $x_1 = (65, 2)$ et $y_1 = 850\,000$ pour la première observation. 
 
 Les variables explicatives sont regroupées dans la matrice des caractéristiques $X$ (de dimension $2 \times 2$), et les cibles dans le vecteur-colonne $y$ :
 
@@ -50,13 +50,15 @@ $$X = \begin{pmatrix} 65 & 2 \\ 42 & 1 \end{pmatrix} \quad \text{et} \quad y = \
 
 ## 2. Les grandes familles d'apprentissage
 
-Il existe plusieurs façons de classer les méthodes de Machine Learning. Pour ce cours, la distinction fondamentale repose sur la **nature du signal disponible pour l'apprentissage**.
+Il existe plusieurs façons de classer les méthodes de Machine Learning. Une distinction fondamentale repose sur la **nature du signal disponible pour l'apprentissage**.
 
-On retient ici deux **grands paradigmes**, étudiés dans les chapitres suivants :
+On peut retenir trois **grands paradigmes** :
 
 * **l'apprentissage supervisé** ;
 * **l'apprentissage non supervisé** ;
-* **l'apprentissage non supervisé**.
+* **l'apprentissage par renforcement**.
+
+À côté de ces paradigmes, certaines approches utilisent ou combinent différemment les données étiquetées et non étiquetées. Elles sont regroupées ici dans la catégorie **Autres approches**, notamment l'apprentissage semi-supervisé et l'apprentissage auto-supervisé.
 
 :::: {.panel-tabset}
 
@@ -98,16 +100,64 @@ Parmi les tâches courantes :
 
 On dispose principalement des données $X$ sans cible $y$ fournie pour l'apprentissage.
 
+## Par renforcement
+
+Dans l'**apprentissage par renforcement**, un **agent** apprend en interagissant avec un **environnement**.
+
+À chaque étape, l'agent :
+
+1. observe l'état de l'environnement ;
+2. choisit une action ;
+3. reçoit une récompense ;
+4. observe le nouvel état.
+
+L'objectif est d'apprendre une **politique** (*policy*) permettant de maximiser la **récompense cumulée** à long terme.
+
+*Exemples : jeux, robotique, contrôle et problèmes de décision séquentielle.*
+
+Le signal d'apprentissage provient donc principalement des **récompenses obtenues à la suite des actions de l'agent**, et non d'une cible $y$ prédéfinie pour chaque observation.
+
+## Autres
+
+Certaines approches ne correspondent pas simplement au schéma « données étiquetées » contre « données non étiquetées ». Elles exploitent ou combinent différemment les sources de supervision.
+
+### Semi-supervisé
+
+L'apprentissage **semi-supervisé** utilise à la fois :
+
+* des données **étiquetées** ;
+* des données **non étiquetées**.
+
+Il est particulièrement utile lorsque l'annotation des données est coûteuse.
+
+*Exemple : quelques milliers d'images médicales annotées par des spécialistes accompagnées d'un grand nombre d'images non annotées.*
+
+::: {.callout-tip title="Remarque"}
+Le terme « semi-supervisé » décrit la coexistence de données étiquetées et non étiquetées. Il ne signifie pas nécessairement que les données étiquetées sont minoritaires, même si cette situation est fréquente.
+:::
+
+### Auto-supervisé
+
+Dans l'apprentissage **auto-supervisé**, le signal de supervision est **construit automatiquement à partir des données elles-mêmes**, sans annotation humaine explicite.
+
+*Exemple : masquer certains mots d'une phrase et demander au modèle de prédire les mots masqués.*
+
+Cette approche joue notamment un rôle majeur dans le **pré-entraînement de nombreux modèles de langage modernes**.
+
+::: {.callout-tip title="Remarque"}
+selon les sources et le contexte, l'apprentissage auto-supervisé peut être présenté comme une approche particulière de l'apprentissage non supervisé ou comme une catégorie distincte. Les catégories ne sont donc pas nécessairement mutuellement exclusives.
+:::
+
 ::::
 
 
 ::: {.callout-tip title="À retenir"}
-La question à se poser pour choisir un paradigme est toujours la même : **de quelles données est-ce que je dispose ?** Ai-je une cible connue pour chaque observation (supervisé) ou dois-je rechercher une structure sans cible fournie (non supervisé) ?
+La question à se poser pour choisir un paradigme est toujours la même : **de quelles données est-ce que je dispose ?** Ai-je des étiquettes pour toutes mes observations (supervisé), pour aucune (non-supervisé), pour seulement quelques-unes (semi-supervisé) ? Ou bien puis-je générer moi-même une cible à partir des données brutes (auto-supervisé) ? Ou encore, mon problème consiste-t-il à agir séquentiellement dans un environnement (renforcement) ?
 :::
 
 
 ::: {.callout-note title="Périmètre du cours"}
-Le présent cours se concentrera sur une sélection d'algorithmes fondamentaux issus de l'**apprentissage supervisé** et de l'**apprentissage non supervisé**. L'apprentissage par renforcement et les approches semi-supervisées seront seulement mentionnés, car ils dépassent l'objectif de cette introduction.
+Le présent cours se concentrera exclusivement sur une sélection d'algorithmes fondamentaux issus de l'**apprentissage supervisé** et de l'**apprentissage non supervisé**. 
 :::
 
 ## 3. Apprendre et généraliser
@@ -125,7 +175,7 @@ La **généralisation** est la capacité du modèle à produire une prédiction 
 
 ![Évolution de l'erreur d'entraînement et de validation selon la complexité du modèle](../images/overfitting-underfitting.svg){#fig-overfitting}
 
-La @fig-overfitting illustre le compromis entre un modèle trop simple et un modèle trop complexe. L'objectif est de choisir une complexité pour laquelle l'erreur sur des données nouvelles est faible. Le vocabulaire biais-variance pourra être approfondi plus tard ; ici, il suffit de retenir que mémoriser les données d'entraînement ne garantit pas une bonne généralisation.
+La @fig-overfitting illustre le compromis central du Machine Learning, souvent appelé **compromis biais-variance** : un modèle trop simple a un biais élevé (sous-apprentissage), un modèle trop complexe a une variance élevée (sur-apprentissage). L'objectif est de se positionner au point où l'erreur de validation est minimale.
 
 ::: {.callout-note title="Comment détecter concrètement un sur-apprentissage ?" collapse="true"}
 Le signal le plus caractéristique est un **grand écart entre la performance sur le jeu d'entraînement et sur le jeu de validation** : une accuracy de 99 % en entraînement contre 65 % en validation est une signature typique de sur-apprentissage. À l'inverse, une accuracy médiocre et similaire sur les deux jeux (par exemple 55 % partout) évoque plutôt un sous-apprentissage.
@@ -185,8 +235,42 @@ Une **baseline** est une règle de décision extrêmement simple (ex. « toujour
 Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline qui prédit systématiquement « Légitime » obtiendra **99 % d'*accuracy*** (exactitude) — un score en apparence excellent — alors même que le modèle est totalement inutile, puisqu'il ne détecte jamais aucune fraude.
 :::
 
-Pour étudier plus finement les erreurs d'un modèle de classification, on utilise notamment la **matrice de confusion**, qui sera définie et étudiée dans le chapitre consacré à la classification.
+Il faut alors utiliser des métriques plus fines, construites à partir de la **matrice de confusion**, qui croise les prédictions du modèle avec la réalité : ** **ca doit etre dans classification***** **
 
+| | Prédit Négatif | Prédit Positif |
+|---|---:|---:|
+| **Réel Négatif** | Vrai Négatif (VN) | Faux Positif (FP) |
+| **Réel Positif** | Faux Négatif (FN) | Vrai Positif (VP) |
+
+: Structure générale d'une matrice de confusion {#tbl-matrice-confusion}
+
+À partir de la @tbl-matrice-confusion, on définit notamment :
+
+$$
+\text{Précision} = \frac{VP}{VP + FP} \qquad \text{— Parmi les cas prédits positifs, combien le sont réellement ?}
+$$
+
+$$
+\text{Rappel (Sensibilité)} = \frac{VP}{VP + FN} \qquad \text{— Parmi tous les cas réellement positifs, combien ont été détectés ?}
+$$
+
+$$
+\text{Accuracy} = \frac{VP + VN}{VP + VN + FP + FN} \qquad \text{— Proportion totale de prédictions correctes.}
+$$
+
+::: {.callout-note title="Exemple" collapse="true"}
+Pour la matrice de confusion suivante (détection de fraude) :
+
+| | Prédit légitime | Prédit fraude |
+|---|---:|---:|
+| Réel légitime | 940 | 50 |
+| Réel fraude | 5 | 5 |
+
+- **Accuracy** = (940 + 5) / 1000 = **94,5 %**
+- **Rappel (classe fraude)** = 5 / (5 + 5) = **50 %**
+
+Malgré une accuracy en apparence élevée, le modèle ne détecte qu'**une fraude sur deux** — ce que l'accuracy seule ne révèle absolument pas.
+:::
 
 ## 7. Prédiction, Corrélation et Causalité
 
@@ -210,16 +294,16 @@ Avant de transformer une corrélation détectée par un modèle en **décision d
 
 **La Reproductibilité :** un résultat scientifique ou industriel doit pouvoir être relancé à l'identique par une autre personne. Pratiques obligatoires :
 
-1. Figer les versions des bibliothèques utilisées (`uv.lock`, voir le chapitre d'introduction).
+1. Figer les versions des bibliothèques utilisées (`uv.lock`, voir chapitre 1 ****§4.3).
 2. Fixer les « graines aléatoires » (*random seeds*) de tous les processus stochastiques.
 3. Versionner le code (Git) et documenter précisément la pipeline de données.
 
 ::: {.callout-note title="Auto-évaluation" collapse="true"}
 - [ ] Je sais définir $X$ et $y$ pour un jeu de données que je choisis moi-même.
-- [ ] Je peux distinguer l'apprentissage supervisé et non supervisé et donner un exemple pour chacun.
+- [ ] Je peux citer les cinq grandes familles d'apprentissage et donner un exemple pour chacune.
 - [ ] Je sais expliquer, à partir d'un graphique d'erreurs, si un modèle sous-apprend ou sur-apprend.
 - [ ] Je sais pourquoi on ne doit jamais régler un hyperparamètre sur le jeu de test.
-- [ ] Je comprends pourquoi l'accuracy seule peut être trompeuse lorsque les classes sont déséquilibrées.
+- [ ] Je peux calculer une accuracy, une précision et un rappel à partir d'une matrice de confusion.
 :::
 
 ## Exercices
@@ -320,29 +404,36 @@ Dans un jeu de classification de 1 000 observations, la classe A représente 900
 
 1. Quelle accuracy obtient la baseline qui prédit toujours A ?
 2. Pourquoi cette baseline peut-elle être utile malgré sa simplicité ?
-3. Pourquoi faut-il compléter l'accuracy par d'autres mesures lorsque la classe B est minoritaire ?
+3. Quelles métriques de la @tbl-matrice-confusion faudrait-il calculer pour évaluer sérieusement un modèle chargé de détecter la classe B ?
 :::
 
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-5"}
 1. La baseline obtient **90 % d'accuracy** (900 bonnes prédictions sur 1 000), sans avoir rien appris.
 2. Elle est utile car elle fixe un **seuil minimal** que tout modèle plus sophistiqué doit impérativement dépasser pour être considéré comme réellement utile (voir le « piège des classes déséquilibrées », §6).
-3. L'accuracy globale peut rester élevée même si le modèle détecte très peu de cas de la classe B. Il faut donc utiliser des mesures adaptées aux erreurs sur cette classe ; ces mesures seront définies dans le chapitre consacré à la classification.
+3. Il faut calculer la **précision** et le **rappel** de la classe B spécifiquement (et non l'accuracy globale, qui masquerait un modèle incapable de détecter la classe minoritaire).
 :::
 
 ::: {#exr-fond-6}
-### Préparer une évaluation
+### Lire une matrice de confusion
 
-Une banque utilise un modèle pour repérer des demandes de prêt potentiellement frauduleuses. Les fraudes sont rares, mais manquer une fraude peut coûter très cher.
+Un détecteur de fraude donne la matrice de confusion suivante :
 
-1. Pourquoi l'accuracy seule risque-t-elle d'être insuffisante ?
-2. Pourquoi faut-il discuter avec le métier avant de choisir une métrique ?
-3. Dans quel chapitre trouvera-t-on les outils permettant de détailler les erreurs positives et négatives ?
+| | Prédit légitime | Prédit fraude |
+|---|---:|---:|
+| Réel légitime | 940 | 50 |
+| Réel fraude | 5 | 5 |
+
+1. Calculez l'accuracy du modèle.
+2. Calculez le rappel de la classe fraude.
+3. L'accuracy donne-t-elle, à elle seule, une image suffisante du système ?
 :::
 
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-6"}
-1. Si les fraudes sont rares, un modèle qui prédit presque toujours « non fraude » peut obtenir une accuracy élevée tout en étant inutile.
-2. Le choix dépend du coût relatif des erreurs : manquer une fraude et contrôler à tort une demande légitime n'ont pas nécessairement les mêmes conséquences.
-3. Les outils d'analyse détaillée seront présentés dans le chapitre consacré à la classification.
+En appliquant les formules du §6 :
+
+1. **Accuracy** $= \dfrac{940 + 5}{940 + 50 + 5 + 5} = \dfrac{945}{1000} = 94{,}5\,\%$
+2. **Rappel (fraude)** $= \dfrac{VP}{VP+FN} = \dfrac{5}{5+5} = 50\,\%$
+3. **Non.** Une accuracy de 94,5 % paraît excellente, mais le rappel de 50 % révèle que le modèle **ne détecte qu'une fraude sur deux** — l'information la plus critique pour ce cas d'usage métier est masquée par l'accuracy globale.
 :::
 
 ::: {#exr-fond-7}
@@ -360,17 +451,17 @@ Une analyse montre que les personnes qui utilisent davantage une application de 
 :::
 
 ::: {#exr-fond-8}
-### Choisir entre supervisé et non supervisé
+### Choisir un paradigme d'apprentissage
 
-Pour chaque situation, indiquez si elle relève plutôt de l'apprentissage supervisé ou non supervisé, et justifiez brièvement.
+Pour chaque situation, choisissez le paradigme le plus approprié parmi ceux du §2 (supervisé, non-supervisé, semi-supervisé, auto-supervisé, par renforcement) et justifiez brièvement.
 
-1. Prédire le prix d'un logement à partir de sa surface et de son quartier.
-2. Regrouper des clients selon leurs habitudes d'achat sans catégorie connue à l'avance.
-3. Déterminer si un e-mail est un spam à partir d'e-mails déjà étiquetés.
+1. Classer des images dont seulement 5 % ont été annotées par des experts.
+2. Apprendre une représentation de textes en prédisant les mots masqués dans une phrase.
+3. Apprendre à un robot à atteindre une cible grâce à des récompenses.
 :::
 
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-8"}
-1. **Supervisé** : le prix connu dans les exemples d'apprentissage sert de cible.
-2. **Non supervisé** : aucune catégorie n'est fournie ; l'algorithme recherche des groupes.
-3. **Supervisé** : chaque e-mail d'apprentissage possède une étiquette (« spam » ou « non-spam »).
+1. **Semi-supervisé** : très peu d'observations étiquetées (5 %) et une grande majorité non étiquetées — exactement le cas d'usage décrit au §2.
+2. **Auto-supervisé** : la cible (le mot masqué) est construite automatiquement à partir de la donnée brute, sans annotation humaine.
+3. **Par renforcement** : un agent (le robot) agit dans un environnement et apprend via une récompense cumulée, plutôt qu'à partir d'exemples étiquetés à l'avance.
 :::

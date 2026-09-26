@@ -1,0 +1,2107 @@
+# Classification : principes, modèles et évaluation
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre, l'étudiant sera capable de :
+
+- **Distinguer** une classification binaire, multiclasse et multilabel ;
+- **Formuler** mathématiquement une classification supervisée ;
+- **Comprendre** la régression logistique, sa fonction sigmoïde et ses probabilités ;
+- **Calculer** une probabilité, une perte logarithmique et une mise à jour simple ;
+- **Expliquer** le fonctionnement du K-Plus Proches Voisins et calculer des distances ;
+- **Comprendre** la construction d'un arbre de décision à partir de l'impureté de Gini ;
+- **Interpréter** le principe d'une forêt aléatoire et des principaux algorithmes de classification ;
+- **Choisir** des métriques adaptées à une classification équilibrée ou déséquilibrée ;
+- **Construire** une chaîne de classification correcte avec `scikit-learn` ;
+- **Analyser** le rôle du seuil de décision, de la matrice de confusion et de la calibration.
+:::
+
+::: {.callout-note title="Lien avec le chapitre de régression"}
+Ce chapitre suppose déjà maîtrisées les notions introduites dans le chapitre sur la régression : matrice $X$, cible $y$, paramètres et hyperparamètres, séparation Train/Validation/Test, généralisation, fuite de données, pipelines et validation croisée.
+
+Lorsque ces notions sont communes aux deux tâches, elles ne sont pas redéfinies ici. On se concentre sur ce qui est particulier à la **classification** : classes, probabilités, seuils de décision, frontières de décision et métriques construites à partir de la matrice de confusion.
+:::
+
+## 1. Qu'est-ce que la classification ?
+
+En classification, la cible $y$ appartient à un ensemble fini de catégories. Le modèle apprend une fonction qui associe une observation $x$ à une classe :
+
+$$
+\hat{y}=h(x)
+$$
+
+La plupart des classifieurs peuvent également produire des probabilités :
+
+$$
+\hat{p}(y=k\mid x)
+$$
+
+La classe finale est alors obtenue en choisissant la probabilité la plus élevée ou en appliquant un seuil adapté au contexte.
+
+### 1.1. Classification binaire
+
+Dans une classification binaire, la cible possède deux modalités :
+
+$$
+y\in\{0,1\}
+$$
+
+On peut utiliser des étiquettes telles que :
+
+- `0` : transaction légitime et `1` : transaction frauduleuse ;
+- `0` : patient non réadmis et `1` : patient réadmis ;
+- `0` : email normal et `1` : spam.
+
+Le modèle peut produire une probabilité $\hat{p}(y=1\mid x)$. Avec un seuil de $0{,}5$ :
+
+$$
+\hat{y}=
+\begin{cases}
+1 & \text{si } \hat{p}(y=1\mid x)\geq 0{,}5\\
+0 & \text{sinon}
+\end{cases}
+$$
+
+Le seuil de $0{,}5$ n'est pas une loi universelle. Il doit être choisi selon le coût relatif des faux positifs et des faux négatifs.
+
+### 1.2. Classification multiclasse
+
+Dans une classification multiclasse, une observation appartient à une seule classe parmi $K$ :
+
+$$
+y\in\{1,2,\ldots,K\}
+$$
+
+*Exemples :*
+
+- reconnaître un chiffre manuscrit parmi $0,\ldots,9$ ;
+- prédire le type d'un véhicule ;
+- identifier le niveau de risque : faible, moyen ou élevé.
+
+Le modèle produit généralement un vecteur de probabilités :
+
+$$
+\left(
+\hat{p}(y=1\mid x),\ldots,\hat{p}(y=K\mid x)
+\right)
+$$
+
+dont la somme vaut 1. La classe prédite est souvent celle qui possède la plus grande probabilité.
+
+### 1.3. Classification multilabel
+
+Dans une classification **multilabel**, une même observation peut appartenir à plusieurs classes simultanément. Une image peut par exemple contenir à la fois une voiture, une personne et un panneau.
+
+La cible peut alors être représentée par un vecteur binaire :
+
+$$
+y=(y_1,\ldots,y_K),\qquad y_k\in\{0,1\}
+$$
+
+Une probabilité et un seuil sont calculés pour chaque label. Cette situation est différente de la classification multiclasse, où une seule classe est correcte.
+
+### 1.4. Classification ordinale
+
+Dans une classification ordinale, les classes possèdent un ordre naturel :
+
+$$
+\text{faible}<\text{moyen}<\text{élevé}
+$$
+
+Une erreur entre « faible » et « moyen » peut être moins grave qu'une erreur entre « faible » et « élevé ». Il faut tenir compte de cet ordre lors de la modélisation et de l'évaluation ; une classification standard ne l'exploite pas toujours.
+
+::: {.callout-important title="Une probabilité n'est pas une classe"}
+Une probabilité de $0{,}51$ et une probabilité de $0{,}99$ peuvent conduire à la même classe « positive », mais elles ne représentent pas le même niveau de certitude. Il est donc utile de conserver les probabilités, et pas seulement les étiquettes finales.
+:::
+
+## 2. Formalisation d'un problème de classification
+
+On utilise la même représentation des observations que dans le chapitre de régression :
+
+$$
+X\in\mathbb{R}^{n\times p}
+$$
+
+Chaque ligne représente une observation et chaque colonne une variable explicative. La différence concerne principalement la cible :
+
+$$
+y_i\in\{0,1\}
+$$
+
+dans le cas binaire, ou :
+
+$$
+y_i\in\{1,\ldots,K\}
+$$
+
+dans le cas multiclasse.
+
+Un classifieur peut être vu comme la combinaison de deux fonctions :
+
+1. une fonction qui produit un **score** ou une probabilité ;
+2. une règle qui transforme ce score en classe.
+
+Pour une classification binaire :
+
+$$
+s(x)\longrightarrow \hat{p}(y=1\mid x)
+\longrightarrow \hat{y}
+$$
+
+La frontière de décision est l'ensemble des points pour lesquels le modèle hésite entre les classes. Dans une classification binaire à seuil $0{,}5$ :
+
+$$
+\mathcal{F}=
+\left\{x:\hat{p}(y=1\mid x)=0{,}5\right\}
+$$
+
+La forme de cette frontière dépend de l'algorithme :
+
+| Algorithme | Forme intuitive de la frontière |
+|---|---|
+| Régression logistique | Hyperplan, sauf après ajout de transformations |
+| KNN | Frontière locale, potentiellement irrégulière |
+| Arbre de décision | Découpages successifs, souvent rectangulaires |
+| Forêt aléatoire | Combinaison de nombreux découpages |
+| SVM à noyau | Frontière pouvant être non linéaire |
+| Réseau de neurones | Frontière très flexible, selon l'architecture |
+
+## 3. Principes généraux des algorithmes de classification
+
+Un algorithme de classification cherche à séparer ou à ordonner les observations selon leur classe. Les approches diffèrent par la manière dont elles représentent cette séparation.
+
+### 3.1. Modèles discriminants et génératifs
+
+Un modèle **discriminant** apprend directement une frontière ou une probabilité conditionnelle :
+
+$$
+p(y\mid x)
+$$
+
+La régression logistique, les arbres, les forêts et les SVM sont principalement présentés comme des modèles discriminants.
+
+Un modèle **génératif** cherche à modéliser la distribution des variables dans chaque classe :
+
+$$
+p(x\mid y)
+$$
+
+puis utilise cette information pour déduire la classe. Le classifieur naïf bayésien est un exemple classique de modèle génératif.
+
+### 3.2. Paramétrique et non paramétrique
+
+Un modèle **paramétrique** suppose une forme particulière pour la relation et apprend un nombre limité de paramètres. La régression logistique est paramétrique.
+
+Un modèle **non paramétrique** ne fixe pas à l'avance une forme simple de la frontière. Il peut s'adapter davantage aux données, mais il est souvent plus sensible à la taille de l'échantillon et au sur-apprentissage. Le KNN et les arbres sont généralement présentés comme non paramétriques.
+
+### 3.3. Apprentissage et prédiction
+
+Pendant l'entraînement, le modèle utilise les couples $(X,y)$ pour apprendre ses paramètres. En prédiction, il reçoit uniquement une nouvelle observation $x_{\text{new}}$ et produit :
+
+$$
+\hat{p}(y=k\mid x_{\text{new}})
+\quad\text{ou}\quad
+\hat{y}_{\text{new}}
+$$
+
+Il est essentiel de ne pas utiliser les vraies étiquettes du jeu de test pour choisir le modèle, le seuil ou les hyperparamètres. Cette règle est la même que pour la régression.
+
+## 4. Régression logistique
+
+Malgré son nom, la régression logistique est un algorithme de **classification**, généralement binaire. Elle commence par calculer une combinaison linéaire des variables, puis transforme ce score en probabilité grâce à la fonction sigmoïde.
+
+### 4.1. Score linéaire
+
+Pour une observation $x=(x_1,\ldots,x_p)$, le score linéaire est :
+
+$$
+z=\beta_0+\beta_1x_1+\cdots+\beta_px_p
+$$
+
+En notation matricielle, avec une colonne d'interception :
+
+$$
+z=\widetilde{x}^{\top}\beta
+$$
+
+Le score $z$ peut prendre n'importe quelle valeur réelle. Il n'est pas encore une probabilité :
+
+$$
+z\in\mathbb{R}
+$$
+
+### 4.2. Fonction sigmoïde
+
+La fonction sigmoïde, ou fonction logistique, transforme un score réel en une valeur comprise entre 0 et 1 :
+
+$$
+\sigma(z)=\frac{1}{1+e^{-z}}
+$$
+
+La probabilité prédite de la classe 1 est :
+
+$$
+\boxed{
+\hat{p}(y=1\mid x)=\sigma(z)
+}
+$$
+
+Ses principales propriétés sont :
+
+| Valeur du score | Probabilité approximative |
+|---|---:|
+| $z\to-\infty$ | $0$ |
+| $z=0$ | $0{,}5$ |
+| $z\to+\infty$ | $1$ |
+
+La dérivée de la sigmoïde est :
+
+$$
+\sigma'(z)=\sigma(z)(1-\sigma(z))
+$$
+
+Cette forme est utile pour calculer le gradient de la fonction de coût.
+
+### 4.3. Règle de décision
+
+Avec un seuil $t$ :
+
+$$
+\hat{y}=
+\begin{cases}
+1 & \text{si } \hat{p}(y=1\mid x)\geq t\\
+0 & \text{sinon}
+\end{cases}
+$$
+
+Pour $t=0{,}5$, la règle est équivalente à :
+
+$$
+\hat{y}=1\quad\Longleftrightarrow\quad z\geq0
+$$
+
+En effet :
+
+$$
+\sigma(z)\geq0{,}5
+\quad\Longleftrightarrow\quad
+z\geq0
+$$
+
+La frontière de décision est donc :
+
+$$
+\beta_0+\beta_1x_1+\cdots+\beta_px_p=0
+$$
+
+Il s'agit d'un hyperplan dans l'espace des variables.
+
+::: {.callout-important title="Le seuil dépend du problème"}
+Si manquer un cas positif est très coûteux, on peut diminuer le seuil afin d'augmenter le rappel. Si déclencher une alerte est très coûteux, on peut augmenter le seuil afin de réduire les faux positifs. Le modèle peut rester identique tandis que la décision change.
+:::
+
+### 4.4. Interprétation des coefficients
+
+Le coefficient $\beta_j$ agit d'abord sur le score $z$, et non directement sur la probabilité :
+
+$$
+z=\beta_0+\beta_1x_1+\cdots+\beta_px_p
+$$
+
+Un coefficient positif augmente le score et donc, toutes choses égales par ailleurs, la probabilité de la classe 1. Un coefficient négatif la diminue.
+
+L'interprétation la plus naturelle passe par les **log-odds** :
+
+$$
+\operatorname{logit}(p)
+=
+\ln\left(\frac{p}{1-p}\right)
+$$
+
+La régression logistique vérifie :
+
+$$
+\ln\left(
+\frac{p(y=1\mid x)}{1-p(y=1\mid x)}
+\right)
+=
+\beta_0+\beta_1x_1+\cdots+\beta_px_p
+$$
+
+Une augmentation d'une unité de $x_j$ ajoute $\beta_j$ aux log-odds. En exponentiant :
+
+$$
+e^{\beta_j}
+$$
+
+est le facteur multiplicatif des odds associé à une augmentation d'une unité de $x_j$, toutes les autres variables restant constantes.
+
+::: {.callout-note title="Exemple d'interprétation"}
+Si $\beta_j=\ln(2)$, une augmentation d'une unité de $x_j$ multiplie les odds de la classe 1 par $2$. Cela ne signifie pas que la probabilité augmente toujours de 2 points ou qu'elle est multipliée par 2 : le changement de probabilité dépend de la probabilité de départ.
+:::
+
+### 4.5. Fonction de vraisemblance
+
+Pour une observation $i$, on note :
+
+$$
+p_i=\hat{p}(y_i=1\mid x_i)
+$$
+
+La probabilité d'observer $y_i$ peut être écrite :
+
+$$
+p_i^{y_i}(1-p_i)^{1-y_i}
+$$
+
+Cette expression vaut $p_i$ lorsque $y_i=1$ et $1-p_i$ lorsque $y_i=0$.
+
+Pour $n$ observations, la vraisemblance est :
+
+$$
+L(\beta)
+=
+\prod_{i=1}^{n}
+p_i^{y_i}(1-p_i)^{1-y_i}
+$$
+
+On cherche les paramètres qui rendent les observations réellement observées aussi probables que possible. Il est plus pratique de maximiser le logarithme de la vraisemblance :
+
+$$
+\ell(\beta)
+=
+\sum_{i=1}^{n}
+\left[
+y_i\ln(p_i)+(1-y_i)\ln(1-p_i)
+\right]
+$$
+
+### 4.6. Entropie croisée binaire
+
+En minimisation, on utilise la négative de la log-vraisemblance, appelée **log loss** ou **entropie croisée binaire** :
+
+$$
+\boxed{
+J(\beta)
+=
+-\frac{1}{n}
+\sum_{i=1}^{n}
+\left[
+y_i\ln(p_i)+(1-y_i)\ln(1-p_i)
+\right]
+}
+$$
+
+Si le modèle attribue une forte probabilité à la vraie classe, la perte est faible. S'il attribue une probabilité presque nulle à la vraie classe, la pénalité devient très grande.
+
+| Situation pour une observation positive ($y=1$) | Perte $-\ln(p)$ |
+|---|---:|
+| $p=0{,}9$ | Faible |
+| $p=0{,}5$ | Moyenne |
+| $p=0{,}01$ | Très grande |
+
+La log loss évalue donc la qualité des probabilités, pas seulement la classe finale.
+
+### 4.7. Gradient de la régression logistique
+
+Pour $n$ observations, on note :
+
+$$
+p=
+\begin{pmatrix}
+p_1\\
+\vdots\\
+p_n
+\end{pmatrix}
+$$
+
+Le gradient de la log loss par rapport au vecteur des paramètres est :
+
+$$
+\boxed{
+\nabla J(\beta)
+=
+\frac{1}{n}\widetilde{X}^{\top}(p-y)
+}
+$$
+
+La mise à jour par descente de gradient devient :
+
+$$
+\beta^{(t+1)}
+=
+\beta^{(t)}
+-\eta\frac{1}{n}
+\widetilde{X}^{\top}(p-y)
+$$
+
+La structure ressemble à celle de la régression linéaire, mais la prédiction $p$ passe d'abord par la sigmoïde.
+
+### 4.8. Exemple numérique simple
+
+Considérons un modèle avec une seule variable :
+
+$$
+z=-1+0{,}5x
+$$
+
+Pour $x=2$ :
+
+$$
+z=-1+0{,}5\times2=0
+$$
+
+Donc :
+
+$$
+p=\sigma(0)=\frac{1}{2}=0{,}5
+$$
+
+Le modèle est exactement à la frontière avec un seuil de $0{,}5$.
+
+Pour $x=4$ :
+
+$$
+z=-1+0{,}5\times4=1
+$$
+
+et :
+
+$$
+p=\frac{1}{1+e^{-1}}\approx0{,}731
+$$
+
+Pour $x=0$ :
+
+$$
+z=-1
+\qquad\text{et}\qquad
+p=\frac{1}{1+e}\approx0{,}269
+$$
+
+### 4.9. Régularisation
+
+Comme pour Ridge et Lasso en régression, on peut pénaliser les coefficients pour limiter le sur-apprentissage :
+
+- `penalty="l2"` : pénalité de type Ridge ;
+- `penalty="l1"` : pénalité de type Lasso ;
+- `penalty="elasticnet"` : combinaison des deux.
+
+Dans `scikit-learn`, le paramètre `C` est l'inverse de la force de régularisation :
+
+- petit `C` : régularisation plus forte ;
+- grand `C` : régularisation plus faible.
+
+Les variables doivent généralement être standardisées avant une régression logistique régularisée.
+
+## 5. K-Plus Proches Voisins — KNN
+
+Le **K-Plus Proches Voisins**, ou `KNeighborsClassifier`, classe une nouvelle observation en examinant les observations d'entraînement qui lui sont les plus proches.
+
+### 5.1. Principe
+
+Pour une nouvelle observation $x_{\text{new}}$ :
+
+1. calculer sa distance par rapport aux observations d'entraînement ;
+2. sélectionner les $k$ observations les plus proches ;
+3. regarder leurs classes ;
+4. attribuer la classe majoritaire.
+
+Pour $k=5$, si trois voisins appartiennent à la classe 1 et deux à la classe 0, la prédiction est :
+
+$$
+\hat{y}=1
+$$
+
+### 5.2. Distance euclidienne
+
+Pour deux observations $x=(x_1,\ldots,x_p)$ et $z=(z_1,\ldots,z_p)$, la distance euclidienne est :
+
+$$
+d(x,z)
+=
+\sqrt{\sum_{j=1}^{p}(x_j-z_j)^2}
+$$
+
+Pour deux variables :
+
+$$
+d(x,z)=\sqrt{(x_1-z_1)^2+(x_2-z_2)^2}
+$$
+
+On peut utiliser d'autres distances selon la nature des données, mais la distance euclidienne est la plus courante dans les exemples introductifs.
+
+### 5.3. Exemple de calcul
+
+On souhaite classer $x_{\text{new}}=(2,2)$. Les observations connues sont :
+
+| Observation | Coordonnées | Classe |
+|---|---|---|
+| A | $(1,1)$ | 0 |
+| B | $(2,3)$ | 1 |
+| C | $(4,2)$ | 1 |
+| D | $(5,5)$ | 0 |
+
+Les distances sont :
+
+$$
+d(x_{\text{new}},A)
+=\sqrt{(2-1)^2+(2-1)^2}
+=\sqrt{2}
+$$
+
+$$
+d(x_{\text{new}},B)
+=\sqrt{(2-2)^2+(2-3)^2}
+=1
+$$
+
+$$
+d(x_{\text{new}},C)
+=\sqrt{(2-4)^2+(2-2)^2}
+=2
+$$
+
+$$
+d(x_{\text{new}},D)
+=\sqrt{(2-5)^2+(2-5)^2}
+=\sqrt{18}
+$$
+
+Pour $k=3$, les voisins sont B, A et C. Les classes sont $(1,0,1)$ : la majorité est la classe 1. La prédiction vaut donc :
+
+$$
+\hat{y}=1
+$$
+
+### 5.4. Choix de $k$
+
+| Valeur de $k$ | Effet |
+|---|---|
+| Très petite, par exemple $k=1$ | Modèle sensible au bruit et aux observations atypiques |
+| Intermédiaire | Compromis entre flexibilité et stabilité |
+| Très grande | Frontière trop lisse, risque de sous-apprentissage |
+
+Le choix de $k$ est un hyperparamètre. Il doit être réglé par validation croisée sur le jeu d'entraînement.
+
+### 5.5. Vote pondéré
+
+Au lieu de donner le même poids à tous les voisins, on peut donner davantage d'importance aux voisins proches. Une pondération fréquente est :
+
+$$
+w_i=\frac{1}{d_i}
+$$
+
+où $d_i$ est la distance du voisin $i$. La classe ayant le poids total le plus élevé est choisie.
+
+### 5.6. Importance de l'échelle
+
+Le KNN dépend directement des distances. Une variable dont les valeurs vont de 0 à 100 000 peut dominer une variable dont les valeurs vont de 0 à 1, même si la seconde est plus informative.
+
+Il faut donc généralement standardiser :
+
+$$
+x_j^{\text{standardisé}}
+=
+\frac{x_j-\mu_j}{\sigma_j}
+$$
+
+où $\mu_j$ et $\sigma_j$ sont calculés uniquement sur le jeu d'entraînement. Comme dans le chapitre de régression, cette transformation doit être intégrée au pipeline.
+
+### 5.7. Forces et limites
+
+**Avantages :**
+
+- principe simple et intuitif ;
+- peu d'hypothèses sur la forme de la frontière ;
+- utile comme modèle de référence local ;
+- pas de phase d'apprentissage paramétrique complexe.
+
+**Limites :**
+
+- prédictions coûteuses lorsque le jeu est grand ;
+- forte sensibilité à l'échelle ;
+- dégradation dans les espaces de grande dimension ;
+- sensibilité aux observations bruitées et au choix de la distance ;
+- difficultés avec les variables catégorielles mal encodées.
+
+## 6. Arbre de décision
+
+Un arbre de décision construit une suite de questions qui partitionnent l'espace des variables. À chaque nœud, il choisit une variable et un seuil afin de produire des groupes plus homogènes du point de vue de la classe.
+
+### 6.1. Structure d'un arbre
+
+| Élément | Rôle |
+|---|---|
+| Racine | Premier nœud, contenant toutes les observations |
+| Nœud interne | Question ou règle de séparation |
+| Branche | Résultat d'une règle |
+| Feuille | Groupe final auquel une prédiction est associée |
+| Profondeur | Nombre maximal de séparations successives |
+
+Pour une variable numérique, une règle peut être :
+
+$$
+x_j\leq s
+$$
+
+Les observations qui vérifient la règle vont à gauche, les autres à droite.
+
+Pour une variable catégorielle, une règle peut séparer une ou plusieurs modalités :
+
+$$
+\text{quartier}\in\{\text{Centre},\text{Sud}\}
+$$
+
+### 6.2. Impureté d'un nœud
+
+Un nœud est **pur** si toutes ses observations appartiennent à la même classe. Il est impur si plusieurs classes y sont mélangées.
+
+Pour un nœud contenant $K$ classes, on note $p_k$ la proportion d'observations de la classe $k$.
+
+#### Indice de Gini
+
+L'indice de Gini est :
+
+$$
+\boxed{
+Gini=1-\sum_{k=1}^{K}p_k^2
+}
+$$
+
+Pour une classification binaire :
+
+$$
+Gini=1-p_0^2-p_1^2
+$$
+
+Propriétés :
+
+- $Gini=0$ si le nœud est parfaitement pur ;
+- l'impureté est maximale lorsque les classes sont très équilibrées ;
+- une valeur faible est préférable.
+
+#### Entropie
+
+Une autre mesure est l'entropie :
+
+$$
+H=-\sum_{k=1}^{K}p_k\log_2(p_k)
+$$
+
+Par convention, $0\log_2(0)=0$.
+
+Comme pour Gini, l'entropie est nulle dans un nœud pur et élevée lorsque les classes sont mélangées. `scikit-learn` propose notamment les critères `"gini"`, `"entropy"` et, selon la version, `"log_loss"`.
+
+### 6.3. Exemple de calcul de Gini
+
+Un nœud contient 6 observations :
+
+- 4 observations de classe 0 ;
+- 2 observations de classe 1.
+
+Les proportions sont :
+
+$$
+p_0=\frac{4}{6}=\frac{2}{3},
+\qquad
+p_1=\frac{2}{6}=\frac{1}{3}
+$$
+
+L'impureté vaut :
+
+$$
+Gini_{\text{parent}}
+=
+1-\left(\frac{2}{3}\right)^2-\left(\frac{1}{3}\right)^2
+=
+1-\frac{4}{9}-\frac{1}{9}
+=\frac{4}{9}
+$$
+
+Si un nœud est composé uniquement d'observations de classe 0, alors :
+
+$$
+Gini=1-1^2-0^2=0
+$$
+
+Le nœud est parfaitement pur.
+
+### 6.4. Qualité d'une séparation
+
+Une séparation produit un nœud gauche et un nœud droit. L'impureté après séparation est une moyenne pondérée :
+
+$$
+Gini_{\text{split}}
+=
+\frac{n_g}{n}Gini_g
++
+\frac{n_d}{n}Gini_d
+$$
+
+où $n_g$ et $n_d$ sont les tailles des deux sous-nœuds.
+
+Le gain d'impureté est :
+
+$$
+\boxed{
+Gain
+=
+Gini_{\text{parent}}-Gini_{\text{split}}
+}
+$$
+
+L'arbre recherche une séparation qui diminue fortement l'impureté, donc qui possède un gain élevé.
+
+### 6.5. Exemple complet d'une séparation
+
+Le nœud parent contient 6 observations :
+
+- 4 de classe 0 ;
+- 2 de classe 1.
+
+Une séparation donne :
+
+| Sous-nœud | Classe 0 | Classe 1 | Total |
+|---|---:|---:|---:|
+| Gauche | 2 | 0 | 2 |
+| Droit | 2 | 2 | 4 |
+
+Le nœud gauche est pur :
+
+$$
+Gini_g=1-1^2-0^2=0
+$$
+
+Le nœud droit possède deux observations de chaque classe :
+
+$$
+Gini_d=1-\left(\frac12\right)^2-\left(\frac12\right)^2
+=\frac12
+$$
+
+L'impureté après séparation est :
+
+$$
+Gini_{\text{split}}
+=\frac{2}{6}\times0+\frac{4}{6}\times\frac12
+=\frac13
+$$
+
+Le gain vaut :
+
+$$
+Gain
+=\frac49-\frac13
+=\frac19
+$$
+
+L'arbre comparera ce gain à celui d'autres seuils et choisira généralement la séparation la plus avantageuse.
+
+### 6.6. Règle de prédiction d'une feuille
+
+Dans une feuille, la prédiction est souvent la classe majoritaire :
+
+$$
+\hat{y}
+=
+\underset{k}{\operatorname{argmax}}\;p_k
+$$
+
+La probabilité de classe peut être estimée par la proportion des observations de chaque classe dans la feuille :
+
+$$
+\hat{p}(y=k\mid \text{feuille})=p_k
+$$
+
+Une feuille contenant 8 observations de classe 0 et 2 de classe 1 peut donc produire :
+
+$$
+\hat{p}(y=0)=0{,}8,
+\qquad
+\hat{p}(y=1)=0{,}2
+$$
+
+et la classe prédite est 0.
+
+### 6.7. Arrêt et contrôle de la complexité
+
+Un arbre peut continuer à créer des séparations jusqu'à obtenir des feuilles presque parfaitement pures. Il risque alors de mémoriser les données d'entraînement.
+
+Hyperparamètres importants :
+
+| Hyperparamètre | Rôle |
+|---|---|
+| `max_depth` | Profondeur maximale |
+| `min_samples_split` | Nombre minimal d'observations pour diviser un nœud |
+| `min_samples_leaf` | Nombre minimal d'observations dans une feuille |
+| `max_leaf_nodes` | Nombre maximal de feuilles |
+| `criterion` | Mesure d'impureté utilisée |
+| `class_weight` | Pondération des classes |
+
+Une profondeur faible peut provoquer du sous-apprentissage. Une profondeur élevée peut provoquer du sur-apprentissage. Le réglage doit être effectué par validation croisée.
+
+### 6.8. Forces et limites
+
+**Avantages :**
+
+- règles de décision lisibles ;
+- capture des relations non linéaires ;
+- représentation naturelle des interactions ;
+- pas besoin de standardiser les variables numériques ;
+- possibilité de traiter certaines valeurs manquantes selon l'implémentation utilisée.
+
+**Limites :**
+
+- un arbre unique peut être instable ;
+- risque de sur-apprentissage ;
+- prédictions souvent discontinues ;
+- importance des variables parfois trompeuse ;
+- un petit changement dans les données peut modifier la structure de l'arbre.
+
+## 7. Forêt aléatoire
+
+Une **forêt aléatoire** (`RandomForestClassifier`) agrège un grand nombre d'arbres de décision. Chaque arbre est entraîné sur une variation des données et des variables, puis les prédictions sont combinées.
+
+### 7.1. Principe
+
+Pour chaque arbre :
+
+1. on crée un échantillon bootstrap des observations ;
+2. on considère aléatoirement un sous-ensemble de variables lors des séparations ;
+3. on construit un arbre généralement plus profond qu'un arbre régularisé seul ;
+4. on agrège les résultats de tous les arbres.
+
+Pour une classification, l'agrégation se fait par vote majoritaire :
+
+$$
+\hat{y}
+=
+\text{classe ayant reçu le plus de votes}
+$$
+
+Les probabilités sont souvent estimées par la proportion de votes reçus par chaque classe.
+
+### 7.2. Pourquoi plusieurs arbres ?
+
+Un arbre unique possède une variance élevée : il peut changer fortement lorsque les données changent légèrement. La moyenne de nombreux arbres réduit cette instabilité.
+
+La randomisation des observations et des variables rend les arbres moins corrélés. L'agrégation de modèles différents donne généralement une prédiction plus robuste qu'un arbre seul.
+
+### 7.3. Hyperparamètres importants
+
+| Hyperparamètre | Rôle |
+|---|---|
+| `n_estimators` | Nombre d'arbres |
+| `max_depth` | Profondeur maximale de chaque arbre |
+| `min_samples_leaf` | Taille minimale des feuilles |
+| `max_features` | Nombre de variables candidates à chaque séparation |
+| `class_weight` | Compensation d'un déséquilibre entre classes |
+| `random_state` | Reproductibilité |
+| `n_jobs` | Nombre de processeurs utilisés |
+
+Augmenter `n_estimators` stabilise généralement la forêt, mais augmente le coût de calcul. Une forêt trop complexe peut tout de même sur-apprendre, notamment si les feuilles sont très petites.
+
+### 7.4. Échantillons hors bootstrap
+
+Les observations qui ne sont pas sélectionnées pour un arbre donné sont appelées observations **out-of-bag** pour cet arbre. Elles peuvent servir à obtenir une estimation interne de la performance, avec `oob_score=True`, lorsque les conditions d'utilisation sont respectées.
+
+### 7.5. Forces et limites
+
+**Forces :**
+
+- bonne performance sur de nombreuses données tabulaires ;
+- capture des interactions et non-linéarités ;
+- peu sensible à l'échelle des variables ;
+- moins instable qu'un arbre unique ;
+- permet une estimation des probabilités.
+
+**Limites :**
+
+- modèle plus difficile à expliquer qu'un seul arbre ;
+- mémoire et temps de calcul plus importants ;
+- probabilités parfois mal calibrées ;
+- importance des variables à interpréter avec prudence ;
+- moins adaptée lorsque la relation nécessite une extrapolation.
+
+## 8. Autres algorithmes de classification
+
+Les algorithmes suivants sont présentés directement. Leurs mathématiques internes ne sont pas détaillées dans ce chapitre, mais leurs hypothèses, leurs hyperparamètres et leurs usages doivent être connus.
+
+### 8.1. Support Vector Machine — SVM
+
+`SVC` cherche une frontière séparant les classes avec une marge aussi large que possible. Les observations proches de la frontière jouent un rôle particulier : ce sont les vecteurs de support.
+
+Avec un noyau, le modèle peut construire une frontière non linéaire.
+
+Hyperparamètres importants :
+
+- `C` : compromis entre marge large et erreurs d'entraînement ;
+- `kernel` : forme du noyau, par exemple `"linear"`, `"rbf"` ou `"poly"` ;
+- `gamma` : portée d'influence des observations pour certains noyaux ;
+- `class_weight` : pondération des classes.
+
+La standardisation est généralement nécessaire. `SVC(probability=True)` permet d'obtenir des probabilités estimées, mais augmente le coût de calcul.
+
+### 8.2. Naïve Bayes
+
+Les classifieurs naïfs bayésiens utilisent le théorème de Bayes et une hypothèse simplificatrice d'indépendance conditionnelle entre les variables :
+
+$$
+p(y\mid x)\propto p(y)\,p(x\mid y)
+$$
+
+Ils sont rapides et efficaces pour certains problèmes de texte ou de grande dimension.
+
+Variantes courantes :
+
+- `GaussianNB` pour des variables continues approximativement gaussiennes ;
+- `MultinomialNB` pour des comptes ou fréquences, notamment en classification de textes ;
+- `BernoulliNB` pour des variables binaires.
+
+L'hypothèse d'indépendance est souvent irréaliste, mais l'algorithme peut rester performant.
+
+### 8.3. Gradient Boosting
+
+`GradientBoostingClassifier` et `HistGradientBoostingClassifier` construisent séquentiellement des modèles simples. Chaque nouveau modèle cherche à corriger les erreurs des modèles précédents.
+
+Hyperparamètres importants :
+
+- `n_estimators` : nombre d'étapes ;
+- `learning_rate` : contribution de chaque étape ;
+- `max_depth` ou complexité des estimateurs ;
+- `min_samples_leaf` ;
+- `early_stopping`.
+
+Le gradient boosting est souvent très performant sur les données tabulaires, mais il demande un réglage attentif et peut sur-apprendre.
+
+### 8.4. AdaBoost
+
+`AdaBoostClassifier` attribue progressivement davantage d'importance aux observations mal classées. Il combine des modèles faibles, souvent des arbres peu profonds.
+
+Hyperparamètres importants :
+
+- `n_estimators` ;
+- `learning_rate` ;
+- la complexité du modèle de base.
+
+Il peut être sensible aux valeurs aberrantes et aux étiquettes bruitées.
+
+### 8.5. Analyse discriminante linéaire et quadratique
+
+`LinearDiscriminantAnalysis` cherche une séparation linéaire en exploitant la structure statistique des classes. `QuadraticDiscriminantAnalysis` autorise une frontière quadratique grâce à des hypothèses plus souples sur la dispersion des classes.
+
+- LDA : frontière linéaire, souvent efficace lorsque les classes ont des dispersions similaires ;
+- QDA : frontière plus flexible, mais estimation plus exigeante ;
+- les variables doivent être numériques et un prétraitement peut être nécessaire.
+
+### 8.6. Réseaux de neurones
+
+`MLPClassifier` utilise des couches de neurones pour apprendre des frontières complexes.
+
+- grande flexibilité ;
+- utile avec suffisamment de données et de réglage ;
+- standardisation généralement nécessaire ;
+- interprétation plus difficile ;
+- sensibilité à l'architecture, au taux d'apprentissage et à l'initialisation.
+
+### 8.7. Comparaison synthétique
+
+| Algorithme | Standardisation | Non-linéarité | Interprétabilité | Taille typique |
+|---|---|---|---|---|
+| Régression logistique | Souvent oui | Faible sans transformations | Bonne | Petite à grande |
+| KNN | Oui | Oui, locale | Intuitive | Petite à moyenne |
+| Arbre | Non nécessaire | Oui | Bonne à moyenne | Petite à moyenne |
+| Forêt aléatoire | Non nécessaire | Oui | Moyenne | Petite à grande |
+| SVM | Généralement oui | Oui avec noyau | Faible à moyenne | Petite à moyenne |
+| Naïve Bayes | Selon la variante | Limitée par l'hypothèse | Moyenne | Petite à grande |
+| Gradient boosting | Souvent non nécessaire | Oui | Moyenne à faible | Moyenne à grande |
+| Réseau de neurones | Oui | Oui | Faible | Moyenne à grande |
+
+::: {.callout-tip title="Stratégie de comparaison"}
+Une stratégie pédagogique et pratique consiste à commencer par une baseline, puis comparer :
+
+1. un modèle interprétable comme la régression logistique ;
+2. un modèle local comme KNN ;
+3. un arbre ;
+4. un ensemble comme la forêt aléatoire ou le gradient boosting.
+
+La comparaison doit utiliser le même découpage, le même protocole de validation et des métriques choisies avant de regarder les résultats.
+:::
+
+## 9. Évaluer une classification
+
+### 9.1. Matrice de confusion
+
+Pour une classification binaire, on compare la classe réelle à la classe prédite :
+
+| | Prédit négatif | Prédit positif |
+|---|---:|---:|
+| **Réel négatif** | Vrai négatif (VN) | Faux positif (FP) |
+| **Réel positif** | Faux négatif (FN) | Vrai positif (VP) |
+
+Les quatre quantités ont une signification :
+
+- **VP** : un cas positif correctement détecté ;
+- **VN** : un cas négatif correctement reconnu ;
+- **FP** : une fausse alerte ;
+- **FN** : un cas positif manqué.
+
+La signification métier d'un FP ou d'un FN dépend du problème. Dans le dépistage médical, un FN peut être beaucoup plus grave qu'un FP. Dans un système de blocage automatique, un FP peut empêcher à tort une opération légitime.
+
+### 9.2. Accuracy
+
+$$
+Accuracy
+=
+\frac{VP+VN}{VP+VN+FP+FN}
+$$
+
+Elle mesure la proportion totale de prédictions correctes. Elle est pertinente lorsque les classes sont relativement équilibrées et que les erreurs ont des coûts comparables.
+
+Avec une classe représentant 99 % des observations, un modèle qui prédit toujours cette classe obtient 99 % d'accuracy sans détecter la classe minoritaire.
+
+### 9.3. Précision
+
+$$
+Precision
+=
+\frac{VP}{VP+FP}
+$$
+
+Parmi les observations prédites positives, quelle proportion est réellement positive ?
+
+La précision est importante lorsque les faux positifs sont coûteux, par exemple lorsqu'une alerte déclenche une intervention humaine.
+
+### 9.4. Rappel ou sensibilité
+
+$$
+Recall
+=
+\frac{VP}{VP+FN}
+$$
+
+Parmi les observations réellement positives, quelle proportion a été détectée ?
+
+Le rappel est important lorsque manquer un cas positif est coûteux, par exemple dans la détection d'une maladie ou d'une fraude.
+
+### 9.5. Spécificité
+
+$$
+Specificity
+=
+\frac{VN}{VN+FP}
+$$
+
+La spécificité mesure la capacité à reconnaître correctement les cas négatifs.
+
+Le taux de faux positifs est :
+
+$$
+FPR=1-Specificity
+=\frac{FP}{FP+VN}
+$$
+
+### 9.6. F1-score
+
+Le F1-score est la moyenne harmonique de la précision et du rappel :
+
+$$
+\boxed{
+F1
+=
+2\frac{Precision\times Recall}
+{Precision+Recall}
+}
+$$
+
+Il est élevé seulement si la précision et le rappel sont tous les deux élevés. Il est utile lorsque les classes sont déséquilibrées et que l'on souhaite un compromis entre faux positifs et faux négatifs.
+
+### 9.7. Balanced accuracy
+
+La balanced accuracy est la moyenne du rappel de la classe positive et de la spécificité :
+
+$$
+Balanced\ Accuracy
+=
+\frac{Recall+Specificity}{2}
+$$
+
+Elle évite qu'une classe majoritaire domine complètement l'accuracy.
+
+### 9.8. Courbe ROC et AUC
+
+La courbe ROC représente le taux de vrais positifs en fonction du taux de faux positifs lorsque le seuil varie :
+
+$$
+TPR=Recall=\frac{VP}{VP+FN}
+$$
+
+$$
+FPR=\frac{FP}{FP+VN}
+$$
+
+L'aire sous la courbe ROC, ou ROC-AUC, mesure la capacité du modèle à classer les positifs au-dessus des négatifs sur l'ensemble des seuils.
+
+- AUC proche de 1 : très bonne séparation ;
+- AUC proche de 0,5 : performance comparable au hasard ;
+- AUC inférieure à 0,5 : classement systématiquement inversé, dans certains cas.
+
+L'AUC ne remplace pas une analyse du seuil utilisé en production.
+
+### 9.9. Courbe précision-rappel
+
+Lorsque la classe positive est rare, la courbe précision-rappel peut être plus informative que la ROC. Elle montre le compromis entre :
+
+- la proportion de prédictions positives correctes ;
+- la proportion de vrais positifs détectés.
+
+Une forte AUC-ROC peut parfois masquer une précision faible lorsque la classe positive est très rare.
+
+### 9.10. Log loss
+
+Pour une classification binaire, la log loss est l'entropie croisée introduite dans la section sur la régression logistique :
+
+$$
+LogLoss
+=
+-\frac{1}{n}\sum_{i=1}^{n}
+\left[
+y_i\ln(p_i)+(1-y_i)\ln(1-p_i)
+\right]
+$$
+
+Elle évalue la qualité et la confiance des probabilités. Une prédiction correcte mais extrêmement confiante peut être fortement pénalisée si elle se trompe.
+
+### 9.11. Calibration
+
+Un modèle est bien calibré si, parmi les observations auxquelles il attribue une probabilité de $0{,}8$, environ 80 % sont réellement positives.
+
+La discrimination répond à la question :
+
+> Le modèle classe-t-il les positifs avant les négatifs ?
+
+La calibration répond à la question :
+
+> Les probabilités annoncées correspondent-elles aux fréquences observées ?
+
+Une forêt ou un SVM peut bien discriminer les classes tout en produisant des probabilités mal calibrées. Des méthodes comme `CalibratedClassifierCV` peuvent être utilisées.
+
+### 9.12. Exemple de métriques
+
+On considère :
+
+| | Prédit négatif | Prédit positif |
+|---|---:|---:|
+| Réel négatif | 90 | 10 |
+| Réel positif | 5 | 15 |
+
+Alors :
+
+$$
+Accuracy=\frac{90+15}{120}=0{,}875
+$$
+
+$$
+Precision=\frac{15}{15+10}=0{,}6
+$$
+
+$$
+Recall=\frac{15}{15+5}=0{,}75
+$$
+
+$$
+Specificity=\frac{90}{90+10}=0{,}9
+$$
+
+et :
+
+$$
+F1
+=
+2\frac{0{,}6\times0{,}75}{0{,}6+0{,}75}
+\approx0{,}667
+$$
+
+L'accuracy de 87,5 % paraît bonne, mais la précision de 60 % signifie que 4 alertes positives sur 10 sont fausses.
+
+## 10. Classification déséquilibrée
+
+Une classification est déséquilibrée lorsqu'une classe est beaucoup plus fréquente que les autres. Les difficultés principales sont :
+
+- l'accuracy devient peu informative ;
+- le modèle peut ignorer la classe minoritaire ;
+- une séparation aléatoire peut produire des ensembles sans assez d'exemples positifs ;
+- le seuil par défaut peut être inadapté.
+
+### 10.1. Bonnes pratiques
+
+- utiliser `stratify=y` lors d'un découpage train/test lorsque cela est approprié ;
+- examiner la matrice de confusion ;
+- rapporter précision, rappel, F1 et balanced accuracy ;
+- utiliser une validation croisée stratifiée ;
+- ajuster `class_weight="balanced"` pour certains algorithmes ;
+- régler le seuil selon le coût des erreurs ;
+- éviter de modifier le jeu de test pour équilibrer artificiellement l'évaluation.
+
+### 10.2. Pondération des classes
+
+Avec une pondération, les erreurs sur la classe minoritaire reçoivent davantage d'importance dans l'apprentissage. Dans `scikit-learn` :
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression(
+    class_weight="balanced",
+    max_iter=1000,
+    random_state=42,
+)
+```
+
+La pondération ne crée pas de nouvelles observations et ne résout pas automatiquement tous les problèmes. Elle change le compromis appris entre les erreurs.
+
+### 10.3. Sous-échantillonnage et sur-échantillonnage
+
+On peut modifier la composition du jeu d'entraînement :
+
+- **sous-échantillonnage** de la classe majoritaire ;
+- **sur-échantillonnage** de la classe minoritaire ;
+- génération synthétique, par exemple avec des méthodes de type SMOTE.
+
+Ces transformations doivent être appliquées uniquement au jeu d'entraînement et intégrées dans un pipeline adapté. Le jeu de validation et le jeu de test doivent conserver une distribution représentative de la situation réelle.
+
+## 11. Syntaxe générale avec `scikit-learn`
+
+### 11.1. Classification binaire simple
+
+Les estimateurs de classification suivent l'interface générale `.fit()`, `.predict()` et souvent `.predict_proba()` :
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y,
+)
+
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+y_proba = model.predict_proba(X_test)[:, 1]
+
+print(classification_report(y_test, y_pred))
+```
+
+`predict()` retourne une classe. `predict_proba()` retourne une probabilité pour chaque classe. Dans une classification binaire, `[:, 1]` sélectionne généralement la probabilité de la classe positive.
+
+### 11.2. Prétraitement et pipeline
+
+Comme dans le chapitre de régression, le prétraitement doit être ajusté uniquement sur les données d'entraînement. Pour un modèle sensible à l'échelle comme la régression logistique ou le KNN :
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+numeric_features = ["age", "revenu"]
+categorical_features = ["ville", "type_client"]
+
+numeric_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()),
+])
+
+categorical_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore")),
+])
+
+preprocessor = ColumnTransformer([
+    ("numeric", numeric_pipeline, numeric_features),
+    ("categorical", categorical_pipeline, categorical_features),
+])
+
+model = Pipeline([
+    ("preprocessing", preprocessor),
+    ("classifier", LogisticRegression(max_iter=1000)),
+])
+
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+y_proba = model.predict_proba(X_test)[:, 1]
+```
+
+Pour un arbre ou une forêt, le `StandardScaler` n'est généralement pas nécessaire, mais l'imputation et l'encodage restent à gérer.
+
+### 11.3. Remplacer l'algorithme
+
+Le pipeline peut conserver le même prétraitement et changer seulement l'estimateur :
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+models = {
+    "logistic": LogisticRegression(max_iter=1000),
+    "knn": KNeighborsClassifier(n_neighbors=7),
+    "tree": DecisionTreeClassifier(
+        max_depth=5,
+        min_samples_leaf=10,
+        random_state=42,
+    ),
+    "forest": RandomForestClassifier(
+        n_estimators=300,
+        class_weight="balanced",
+        random_state=42,
+        n_jobs=-1,
+    ),
+}
+```
+
+Chaque modèle doit être placé dans un pipeline approprié. Il ne faut pas comparer un KNN standardisé à un arbre entraîné sur des colonnes préparées différemment sans contrôler le protocole.
+
+### 11.4. Matrice de confusion et métriques
+
+```python
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
+
+matrix = confusion_matrix(y_test, y_pred)
+
+accuracy = accuracy_score(y_test, y_pred)
+balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, y_proba)
+
+print(matrix)
+print(classification_report(y_test, y_pred))
+```
+
+Pour une classification multiclasse, il faut préciser une stratégie d'agrégation lorsque cela est nécessaire :
+
+```python
+f1_macro = f1_score(y_test, y_pred, average="macro")
+f1_weighted = f1_score(y_test, y_pred, average="weighted")
+```
+
+- `macro` : moyenne simple des scores de chaque classe ;
+- `weighted` : moyenne pondérée par le nombre d'observations de chaque classe.
+
+### 11.5. Changer le seuil de décision
+
+Le seuil par défaut de `predict()` est souvent équivalent à $0{,}5$ pour une classification binaire. Pour choisir un autre seuil :
+
+```python
+import numpy as np
+
+threshold = 0.30
+y_pred_custom = (y_proba >= threshold).astype(int)
+```
+
+Un seuil plus faible augmente généralement le rappel et peut diminuer la précision. Le seuil doit être choisi sur un jeu de validation ou par validation croisée, jamais en optimisant directement le jeu de test.
+
+### 11.6. Courbes ROC et précision-rappel
+
+```python
+from sklearn.metrics import (
+    PrecisionRecallDisplay,
+    RocCurveDisplay,
+)
+
+RocCurveDisplay.from_predictions(y_test, y_proba)
+PrecisionRecallDisplay.from_predictions(y_test, y_proba)
+```
+
+Ces courbes évaluent les probabilités ou les scores pour différents seuils. Elles ne doivent pas être utilisées pour sélectionner un seuil en consultant plusieurs fois le test final.
+
+### 11.7. Validation croisée stratifiée
+
+Pour préserver approximativement la proportion des classes dans chaque pli :
+
+```python
+from sklearn.model_selection import StratifiedKFold, cross_validate
+
+cv = StratifiedKFold(
+    n_splits=5,
+    shuffle=True,
+    random_state=42,
+)
+
+results = cross_validate(
+    model,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring={
+        "accuracy": "accuracy",
+        "balanced_accuracy": "balanced_accuracy",
+        "f1": "f1",
+        "roc_auc": "roc_auc",
+    },
+    return_train_score=False,
+)
+```
+
+La validation croisée stratifiée est particulièrement utile lorsque la classe positive est minoritaire.
+
+### 11.8. Recherche d'hyperparamètres
+
+```python
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    "classifier__C": [0.01, 0.1, 1.0, 10.0, 100.0],
+}
+
+search = GridSearchCV(
+    model,
+    param_grid=param_grid,
+    scoring="f1",
+    cv=cv,
+    n_jobs=-1,
+)
+
+search.fit(X_train, y_train)
+
+best_model = search.best_estimator_
+best_params = search.best_params_
+```
+
+Pour un pipeline, le nom de l'hyperparamètre commence par le nom de l'étape. Pour une forêt dans une étape appelée `classifier`, on pourrait rechercher :
+
+```python
+param_grid = {
+    "classifier__n_estimators": [100, 300],
+    "classifier__max_depth": [None, 5, 10],
+    "classifier__min_samples_leaf": [1, 5, 10],
+}
+```
+
+Le score à optimiser doit correspondre à l'objectif : `f1`, `recall`, `precision`, `balanced_accuracy`, `roc_auc` ou `neg_log_loss` ne répondent pas à la même question.
+
+### 11.9. Calibration des probabilités
+
+```python
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.svm import SVC
+
+base_model = SVC(kernel="rbf")
+calibrated_model = CalibratedClassifierCV(
+    base_model,
+    method="sigmoid",
+    cv=5,
+)
+
+calibrated_model.fit(X_train, y_train)
+probabilities = calibrated_model.predict_proba(X_test)[:, 1]
+```
+
+La calibration ne garantit pas une meilleure séparation des classes. Elle cherche surtout à rendre les probabilités plus cohérentes avec les fréquences observées.
+
+### 11.10. Interpréter un classifieur
+
+Pour une régression logistique :
+
+```python
+classifier = model.named_steps["classifier"]
+
+coefficients = classifier.coef_
+intercept = classifier.intercept_
+```
+
+Après un `OneHotEncoder`, les variables transformées ne correspondent pas toujours directement aux colonnes initiales. Il faut récupérer les noms des caractéristiques après transformation avant d'interpréter les coefficients.
+
+Pour un arbre :
+
+```python
+tree = model.named_steps["classifier"]
+importance = tree.feature_importances_
+```
+
+Pour une forêt :
+
+```python
+forest = model.named_steps["classifier"]
+importance = forest.feature_importances_
+```
+
+Ces importances indiquent la contribution à la construction des séparations dans le modèle ; elles ne prouvent pas qu'une variable cause la classe prédite.
+
+## 12. Procédure complète pour un projet de classification
+
+### 12.1. Étapes recommandées
+
+1. **Définir précisément les classes** et la classe positive si le problème est binaire.
+2. **Vérifier la qualité des étiquettes** : ambiguïtés, erreurs d'annotation et classes manquantes.
+3. **Examiner la proportion des classes**.
+4. **Construire une baseline** : classe majoritaire ou règle métier.
+5. **Séparer les données**, en conservant les proportions avec une stratification lorsque cela est approprié.
+6. **Identifier les variables disponibles au moment réel de la décision**.
+7. **Construire le prétraitement dans un pipeline**.
+8. **Commencer par une régression logistique** comme modèle interprétable.
+9. **Comparer un modèle local, un arbre et un ensemble**.
+10. **Choisir les métriques avant de comparer les modèles**.
+11. **Régler les hyperparamètres par validation croisée**.
+12. **Choisir éventuellement un seuil différent de $0{,}5$**.
+13. **Évaluer une seule fois sur le test final**.
+14. **Vérifier la calibration et les performances par sous-groupe**.
+15. **Surveiller la dérive des données et des performances après déploiement**.
+
+### 12.2. Erreurs fréquentes
+
+| Erreur | Conséquence | Correction |
+|---|---|---|
+| Utiliser uniquement l'accuracy | Classe minoritaire ignorée | Rappel, précision, F1, balanced accuracy |
+| Standardiser avant le découpage | Fuite de données | Mettre la transformation dans un pipeline |
+| Choisir le seuil sur le test | Test indirectement utilisé pour le réglage | Choisir sur validation ou par CV |
+| Confondre probabilité et classe | Perte d'information sur la confiance | Conserver `predict_proba` |
+| Utiliser KNN sans standardiser | Variable à grande échelle dominante | Standardiser dans un pipeline |
+| Laisser un arbre sans contrainte | Sur-apprentissage | Contrôler profondeur et taille des feuilles |
+| Sur-échantillonner avant le découpage | Doublons ou données synthétiques dans le test | Rééchantillonner uniquement l'entraînement |
+| Interpréter une importance comme une causalité | Conclusion métier injustifiée | Distinguer prédiction et causalité |
+| Utiliser une validation non stratifiée | Plis avec des proportions très différentes | Utiliser `StratifiedKFold` |
+
+### 12.3. Choisir la métrique selon le coût
+
+| Priorité métier | Métrique ou stratégie |
+|---|---|
+| Ne manquer presque aucun positif | Rappel élevé, seuil plus faible |
+| Éviter les fausses alertes | Précision élevée, seuil plus élevé |
+| Équilibrer précision et rappel | F1-score |
+| Classes très déséquilibrées | Balanced accuracy, F1, PR-AUC |
+| Comparer les probabilités | Log loss, calibration |
+| Comparer tous les seuils | ROC-AUC ou PR-AUC |
+| Erreurs de classes toutes aussi importantes | Accuracy, avec vérification de l'équilibre |
+
+::: {.callout-warning title="Il n'existe pas de meilleure métrique universelle"}
+La métrique optimale dépend de la décision prise après la prédiction. Un modèle avec le meilleur F1 n'est pas nécessairement le meilleur modèle si le coût des faux négatifs est beaucoup plus élevé que celui des faux positifs.
+:::
+
+::: {.callout-note title="Auto-évaluation"}
+- [ ] Je sais distinguer classification binaire, multiclasse et multilabel.
+- [ ] Je sais expliquer la différence entre une probabilité et une classe prédite.
+- [ ] Je peux calculer une valeur de la fonction sigmoïde.
+- [ ] Je sais expliquer les log-odds et le rôle des coefficients logistiques.
+- [ ] Je peux calculer une log loss simple.
+- [ ] Je sais calculer des distances et appliquer un vote KNN.
+- [ ] Je peux calculer l'indice de Gini d'un nœud.
+- [ ] Je sais calculer l'impureté pondérée après une séparation d'arbre.
+- [ ] Je peux expliquer pourquoi une forêt est plus stable qu'un arbre unique.
+- [ ] Je sais distinguer précision, rappel, spécificité et F1-score.
+- [ ] Je sais pourquoi l'accuracy est trompeuse sur des classes déséquilibrées.
+- [ ] Je sais modifier un seuil de décision sans réentraîner le modèle.
+- [ ] Je sais construire un pipeline de classification avec `scikit-learn`.
+:::
+
+## Exercices
+
+::: {.callout-note title="Consigne"}
+Les exercices portent uniquement sur le calcul et la compréhension. Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit **avant** de les consulter.
+:::
+
+::: {#exr-class-1}
+### Identifier le type de classification
+
+Indiquez si chaque situation correspond à une classification binaire, multiclasse, multilabel ou ordinale :
+
+1. prédire si un client résiliera son abonnement ;
+2. identifier un chiffre parmi les dix chiffres de 0 à 9 ;
+3. détecter tous les objets présents dans une image ;
+4. prédire un niveau de satisfaction : faible, moyen ou élevé.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-1"}
+1. **Classification binaire** : le client résilie ou ne résilie pas.
+2. **Classification multiclasse** : une seule classe parmi dix est attendue.
+3. **Classification multilabel** : plusieurs objets peuvent être présents simultanément.
+4. **Classification ordinale** : les catégories possèdent un ordre naturel.
+:::
+
+::: {#exr-class-2}
+### Calculer une probabilité logistique
+
+Un modèle logistique est défini par :
+
+$$
+z=-2+x
+$$
+
+1. Calculez $z$ pour $x=2$.
+2. Calculez la probabilité $\sigma(z)$.
+3. Quelle classe est prédite avec un seuil de $0{,}5$ ?
+4. Calculez approximativement la probabilité pour $x=4$.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-2"}
+1. Pour $x=2$ :
+
+$$
+z=-2+2=0
+$$
+
+2. Donc :
+
+$$
+\sigma(0)=\frac{1}{1+e^0}=\frac12=0{,}5
+$$
+
+3. Avec la convention « probabilité supérieure ou égale à $0{,}5$ », la classe prédite est **1**.
+4. Pour $x=4$ :
+
+$$
+z=-2+4=2
+$$
+
+Donc :
+
+$$
+\sigma(2)=\frac{1}{1+e^{-2}}\approx0{,}881
+$$
+
+La probabilité de la classe 1 est donc d'environ 88,1 %.
+:::
+
+::: {#exr-class-3}
+### Log-odds et interprétation d'un coefficient
+
+Dans un modèle logistique, le coefficient d'une variable $x_j$ vaut :
+
+$$
+\beta_j=\ln(3)
+$$
+
+1. Quel est l'effet d'une augmentation d'une unité de $x_j$ sur les log-odds ?
+2. Par quel facteur les odds sont-elles multipliées ?
+3. Peut-on dire que la probabilité est multipliée par 3 ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-3"}
+1. Les log-odds augmentent de $\ln(3)$.
+2. Les odds sont multipliées par :
+
+$$
+e^{\beta_j}=e^{\ln(3)}=3
+$$
+
+3. **Non.** Le facteur 3 s'applique aux odds, pas directement à la probabilité. La variation de probabilité dépend de la probabilité initiale.
+:::
+
+::: {#exr-class-4}
+### Calculer une log loss
+
+Pour une observation positive ($y=1$), un modèle prédit :
+
+1. $p=0{,}9$ ;
+2. $p=0{,}5$ ;
+3. $p=0{,}1$.
+
+La perte est :
+
+$$
+L=-\ln(p)
+$$
+
+Classez ces trois prédictions de la meilleure à la pire et calculez approximativement les pertes en utilisant :
+
+$$
+\ln(0{,}9)\approx-0{,}105,\quad
+\ln(0{,}5)\approx-0{,}693,\quad
+\ln(0{,}1)\approx-2{,}303
+$$
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-4"}
+La meilleure prédiction est $p=0{,}9$, car elle attribue une forte probabilité à la vraie classe :
+
+$$
+L(0{,}9)=-\ln(0{,}9)\approx0{,}105
+$$
+
+Ensuite :
+
+$$
+L(0{,}5)=-\ln(0{,}5)\approx0{,}693
+$$
+
+Enfin :
+
+$$
+L(0{,}1)=-\ln(0{,}1)\approx2{,}303
+$$
+
+L'ordre est donc :
+
+$$
+0{,}9\quad\text{puis}\quad0{,}5\quad\text{puis}\quad0{,}1
+$$
+
+La log loss pénalise fortement une prédiction très confiante dans la mauvaise direction.
+:::
+
+::: {#exr-class-5}
+### Classification par KNN
+
+On souhaite classer $x=(2,2)$ avec les observations suivantes :
+
+| Observation | Coordonnées | Classe |
+|---|---|---|
+| A | $(1,1)$ | 0 |
+| B | $(2,3)$ | 1 |
+| C | $(4,2)$ | 1 |
+| D | $(5,5)$ | 0 |
+
+1. Calculez les distances entre $x$ et les quatre observations.
+2. Quels sont les trois plus proches voisins ?
+3. Quelle classe est prédite pour $k=3$ ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-5"}
+Les distances sont :
+
+$$
+d(x,A)=\sqrt{(2-1)^2+(2-1)^2}=\sqrt{2}
+$$
+
+$$
+d(x,B)=\sqrt{(2-2)^2+(2-3)^2}=1
+$$
+
+$$
+d(x,C)=\sqrt{(2-4)^2+(2-2)^2}=2
+$$
+
+$$
+d(x,D)=\sqrt{(2-5)^2+(2-5)^2}=\sqrt{18}
+$$
+
+Les trois plus proches voisins sont B, A et C. Leurs classes sont :
+
+$$
+(1,0,1)
+$$
+
+La classe 1 obtient deux votes contre un. La prédiction est donc :
+
+$$
+\hat{y}=1
+$$
+:::
+
+::: {#exr-class-6}
+### Calcul de l'indice de Gini
+
+Un nœud contient 10 observations :
+
+- 6 observations de classe 0 ;
+- 4 observations de classe 1.
+
+1. Calculez $p_0$ et $p_1$.
+2. Calculez l'indice de Gini.
+3. Comparez avec un nœud pur contenant 10 observations de classe 0.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-6"}
+1. Les proportions sont :
+
+$$
+p_0=\frac{6}{10}=0{,}6,
+\qquad
+p_1=\frac{4}{10}=0{,}4
+$$
+
+2. L'indice de Gini est :
+
+$$
+Gini=1-0{,}6^2-0{,}4^2
+=1-0{,}36-0{,}16
+=0{,}48
+$$
+
+3. Pour un nœud pur :
+
+$$
+Gini=1-1^2-0^2=0
+$$
+
+Le nœud contenant les deux classes est donc plus impur que le nœud pur.
+:::
+
+::: {#exr-class-7}
+### Évaluer une séparation d'arbre
+
+Un nœud parent contient 8 observations, dont 5 de classe 0 et 3 de classe 1. Une séparation produit :
+
+| Sous-nœud | Classe 0 | Classe 1 | Total |
+|---|---:|---:|---:|
+| Gauche | 4 | 0 | 4 |
+| Droit | 1 | 3 | 4 |
+
+1. Calculez le Gini du parent.
+2. Calculez le Gini de chaque sous-nœud.
+3. Calculez l'impureté pondérée après séparation.
+4. Calculez le gain d'impureté.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-7"}
+1. Pour le parent :
+
+$$
+p_0=\frac58,\qquad p_1=\frac38
+$$
+
+Donc :
+
+$$
+Gini_{\text{parent}}
+=1-\left(\frac58\right)^2-\left(\frac38\right)^2
+=1-\frac{25}{64}-\frac{9}{64}
+=\frac{30}{64}
+=0{,}46875
+$$
+
+2. Le sous-nœud gauche est pur :
+
+$$
+Gini_g=0
+$$
+
+Dans le sous-nœud droit :
+
+$$
+p_0=\frac14,\qquad p_1=\frac34
+$$
+
+Donc :
+
+$$
+Gini_d
+=1-\left(\frac14\right)^2-\left(\frac34\right)^2
+=1-\frac{1}{16}-\frac{9}{16}
+=\frac{6}{16}
+=0{,}375
+$$
+
+3. Les deux sous-nœuds ont chacun 4 observations :
+
+$$
+Gini_{\text{split}}
+=\frac48\times0+\frac48\times0{,}375
+=0{,}1875
+$$
+
+4. Le gain vaut :
+
+$$
+Gain
+=0{,}46875-0{,}1875
+=0{,}28125
+$$
+
+Cette séparation réduit donc l'impureté de $0{,}28125$.
+:::
+
+::: {#exr-class-8}
+### Matrice de confusion
+
+Un modèle de détection donne la matrice suivante :
+
+| | Prédit négatif | Prédit positif |
+|---|---:|---:|
+| Réel négatif | 80 | 20 |
+| Réel positif | 10 | 40 |
+
+Calculez :
+
+1. l'accuracy ;
+2. la précision ;
+3. le rappel ;
+4. la spécificité ;
+5. le F1-score.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-8"}
+On identifie :
+
+$$
+VN=80,\quad FP=20,\quad FN=10,\quad VP=40
+$$
+
+1. Accuracy :
+
+$$
+Accuracy=\frac{40+80}{80+20+10+40}
+=\frac{120}{150}=0{,}8
+$$
+
+2. Précision :
+
+$$
+Precision=\frac{40}{40+20}
+=\frac{40}{60}
+\approx0{,}667
+$$
+
+3. Rappel :
+
+$$
+Recall=\frac{40}{40+10}
+=\frac{40}{50}=0{,}8
+$$
+
+4. Spécificité :
+
+$$
+Specificity=\frac{80}{80+20}
+=\frac{80}{100}=0{,}8
+$$
+
+5. F1-score :
+
+$$
+F1
+=2\frac{0{,}667\times0{,}8}{0{,}667+0{,}8}
+\approx0{,}727
+$$
+:::
+
+::: {#exr-class-9}
+### Effet du seuil de décision
+
+Un modèle produit les probabilités suivantes pour cinq observations :
+
+| Observation | Probabilité de la classe 1 | Vraie classe |
+|---|---:|---:|
+| A | 0,90 | 1 |
+| B | 0,70 | 0 |
+| C | 0,55 | 1 |
+| D | 0,40 | 1 |
+| E | 0,20 | 0 |
+
+1. Donnez les classes prédites avec un seuil de $0{,}5$.
+2. Calculez le rappel avec ce seuil.
+3. Donnez les classes prédites avec un seuil de $0{,}3$.
+4. Expliquez qualitativement l'effet sur le rappel et la précision.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-9"}
+1. Avec un seuil de $0{,}5$, les prédictions sont :
+
+| Observation | Probabilité | Prédiction |
+|---|---:|---:|
+| A | 0,90 | 1 |
+| B | 0,70 | 1 |
+| C | 0,55 | 1 |
+| D | 0,40 | 0 |
+| E | 0,20 | 0 |
+
+Les vrais positifs sont A et C, tandis que D est un faux négatif.
+
+2. Il y a trois vrais positifs et le modèle en détecte deux :
+
+$$
+Recall=\frac{2}{3}\approx0{,}667
+$$
+
+3. Avec un seuil de $0{,}3$, D devient positif. Les prédictions sont :
+
+$$
+(1,1,1,1,0)
+$$
+
+4. Le rappel augmente car le cas D est maintenant détecté. Mais la précision peut diminuer si le fait de prédire davantage de positifs crée davantage de faux positifs. Diminuer le seuil favorise généralement le rappel au détriment de la précision.
+:::
+
+::: {#exr-class-10}
+### Choisir un algorithme de classification
+
+Choisissez un premier algorithme raisonnable dans chaque situation et justifiez :
+
+1. on veut un modèle simple à expliquer et une frontière approximativement linéaire ;
+2. on dispose d'un petit jeu de données et la décision doit dépendre des observations voisines ;
+3. on veut obtenir des règles de décision lisibles sous forme de questions successives ;
+4. on dispose d'un tableau de données avec des interactions complexes et l'interprétabilité d'un seul arbre n'est pas suffisante.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-10"}
+1. **Régression logistique** : elle produit une frontière linéaire et ses coefficients peuvent être interprétés via les log-odds.
+2. **KNN** : il utilise directement les observations voisines, à condition de contrôler l'échelle des variables.
+3. **Arbre de décision** : il produit des règles successives et peut représenter des interactions.
+4. **Forêt aléatoire ou gradient boosting** : ces méthodes d'ensemble capturent des relations complexes et sont généralement plus stables qu'un arbre unique.
+:::
+
+::: {#exr-class-11}
+### Classes déséquilibrées et choix de métrique
+
+Dans un jeu de 1 000 observations, la classe 0 représente 950 observations et la classe 1 représente 50 observations.
+
+Un modèle prédit toujours la classe 0.
+
+1. Quelle accuracy obtient-il ?
+2. Quel est son rappel pour la classe 1 ?
+3. Pourquoi l'accuracy est-elle insuffisante ici ?
+4. Quelles métriques complémentaires faut-il examiner ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-11"}
+1. Le modèle prédit correctement les 950 observations de classe 0 :
+
+$$
+Accuracy=\frac{950}{1000}=95\%
+$$
+
+2. Il ne détecte aucune observation de classe 1 :
+
+$$
+Recall=\frac{VP}{VP+FN}=\frac{0}{0+50}=0
+$$
+
+3. L'accuracy est élevée uniquement parce que la classe 0 est majoritaire. Elle ne mesure pas la capacité à détecter la classe importante ou rare.
+
+4. Il faut examiner au minimum le rappel, la précision, le F1-score, la balanced accuracy et éventuellement la courbe précision-rappel. Le seuil et la pondération des classes peuvent également être étudiés.
+:::
+
+::: {#exr-class-12}
+### Diagnostic d'un protocole d'évaluation
+
+Une équipe réalise les opérations suivantes :
+
+1. elle standardise toutes les observations ;
+2. elle crée des observations synthétiques pour la classe minoritaire ;
+3. elle sépare ensuite les données en entraînement et test ;
+4. elle choisit le seuil qui maximise le F1-score sur le jeu de test.
+
+Identifiez les erreurs méthodologiques et proposez une procédure correcte.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-12"}
+Plusieurs étapes posent problème :
+
+1. La standardisation a utilisé toutes les observations, y compris celles du futur test.
+2. Le sur-échantillonnage a été effectué avant la séparation. Des observations synthétiques ou des informations liées aux observations de test peuvent ainsi contaminer l'évaluation.
+3. Le seuil a été choisi directement sur le test, qui n'est donc plus indépendant.
+
+La procédure correcte consiste à :
+
+1. séparer d'abord les données en entraînement et test ;
+2. placer la standardisation et le sur-échantillonnage dans un pipeline appliqué uniquement aux plis d'entraînement ;
+3. choisir les hyperparamètres et le seuil par validation croisée sur l'entraînement ;
+4. évaluer une seule fois le pipeline final et le seuil final sur le test.
+:::

@@ -1,0 +1,439 @@
+# Lab 0 — Environnement Python et premiers pas avec les données
+
+::: {.callout-tip title="Objectifs du Lab"}
+À la fin de ce Lab, l'étudiant sera capable de :
+
+- **Installer** et utiliser `uv` pour gérer un projet Python reproductible ;
+- **Créer** un projet structuré, sans appeler directement `venv` ou `pip` ;
+- **Installer** et vérifier les bibliothèques nécessaires au cours ;
+- **Charger** des données depuis un fichier local et depuis une API publique ;
+- **Explorer** un premier jeu de données avec `pandas` (aperçu, types, statistiques) ;
+- **Produire** un premier graphique avec `matplotlib` ;
+- **Vérifier** que `scikit-learn` fonctionne, en reprenant l'exemple du filtre anti-spam du chapitre 1.
+:::
+
+::: {.callout-note title="Lien avec le cours"}
+Ce Lab met en pratique le chapitre 1 (*Introduction au Machine Learning et à son écosystème*) : la distinction Exploration/Production (@sec-outils), la gestion de projet avec `uv` (§4.3), et l'exemple du filtre anti-spam (§2.2). Aucune notion de modélisation avancée n'est requise ici — l'objectif est uniquement de disposer d'un environnement de travail fiable et de premiers réflexes de manipulation de données. La théorie de l'apprentissage (§ généralisation, évaluation) sera mise en pratique au Lab 1.
+:::
+
+Ce Lab suit cette progression :
+
+1. installer et vérifier `uv` ;
+2. créer un projet Python reproductible ;
+3. installer et vérifier les bibliothèques ;
+4. organiser le projet avec `pathlib` ;
+5. premier contact avec des données tabulaires locales (`pandas`) ;
+6. récupérer des données réelles via une API publique (météo) ;
+7. vérifier que `scikit-learn` fonctionne (mini filtre anti-spam) ;
+8. **Lab Sheet** — projet guidé à réaliser et à rendre.
+
+## 1. Installer `uv`
+
+### 1.1. Pourquoi `uv` plutôt que `venv` + `pip` ?
+
+`uv` est un outil moderne, rapide, qui gère à la fois la version de Python, l'environnement virtuel et les dépendances d'un projet. Il remplace, dans ce cours :
+
+- `python -m venv` (création manuelle d'environnement) ;
+- `pip install` (installation non tracée des paquets) ;
+- des notes éparses du type « chez moi ça marche ».
+
+::: {.callout-important title="Règle de ce cours"}
+On ne crée jamais un environnement avec `python -m venv` et on n'installe jamais de paquet avec `pip install` directement. Toutes les commandes passent par `uv`.
+:::
+
+### 1.2. Installation
+
+Sur macOS ou Linux, dans un terminal :
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Sur Windows, dans PowerShell :
+
+```powershell
+irm https://astral.sh/uv/install.ps1 | iex
+```
+
+::: {.callout-warning title="Sécurité"}
+Comme pour tout script d'installation téléchargé depuis Internet, vérifiez la source officielle (`astral.sh/uv`) avant d'exécuter la commande. Sur un poste institutionnel, suivez la procédure validée par l'administrateur réseau.
+:::
+
+Fermez puis rouvrez le terminal, puis vérifiez :
+
+```bash
+uv --version
+```
+
+### 1.3. Choisir une version de Python
+
+```bash
+uv python list          # versions disponibles ou déjà installées
+uv python install 3.12  # installe Python 3.12, géré par uv
+```
+
+## 2. Créer le projet
+
+### 2.1. Initialiser avec `uv`
+
+```bash
+mkdir -p cours-machine-learning
+cd cours-machine-learning
+uv init --python 3.12 ml-lab
+cd ml-lab
+```
+
+Cette commande crée un `pyproject.toml` minimal, qui décrira le projet et ses dépendances tout au long du semestre.
+
+### 2.2. Le dossier `.venv`
+
+L'environnement virtuel est créé automatiquement au premier besoin :
+
+```bash
+uv run python --version
+```
+
+Il n'est **jamais nécessaire de l'activer manuellement** : `uv run <commande>` exécute directement la commande dans l'environnement du projet.
+
+```bash
+uv run python script.py   # exécute un script
+uv run python             # lance un interpréteur interactif
+```
+
+::: {.callout-note title="Activation facultative"}
+Si vous préférez activer l'environnement dans votre terminal, c'est possible (`source .venv/bin/activate` sur macOS/Linux, `.venv\Scripts\Activate.ps1` sous PowerShell), mais ce Lab privilégie `uv run` pour éviter toute confusion entre plusieurs environnements installés sur la même machine.
+:::
+
+### 2.3. Installer les bibliothèques du Lab
+
+```bash
+uv add numpy pandas scikit-learn matplotlib requests jupyter ipykernel
+```
+
+| Bibliothèque | Rôle dans ce Lab |
+|---|---|
+| `numpy` | Calcul numérique, tableaux |
+| `pandas` | Données tabulaires, lecture de fichiers |
+| `scikit-learn` | Vérification que le ML fonctionne (mini filtre anti-spam) |
+| `matplotlib` | Premiers graphiques |
+| `requests` | Requêtes HTTP vers une API publique |
+| `jupyter`, `ipykernel` | Exécution en notebook |
+
+### 2.4. Vérifier l'installation
+
+Créez un fichier `check_environment.py` à la racine du projet :
+
+```python
+import sys
+
+import numpy
+import pandas
+import sklearn
+import requests
+import matplotlib
+
+print("Python       :", sys.version.split()[0])
+print("NumPy        :", numpy.__version__)
+print("pandas       :", pandas.__version__)
+print("scikit-learn :", sklearn.__version__)
+print("requests     :", requests.__version__)
+print("matplotlib   :", matplotlib.__version__)
+```
+
+```bash
+uv run python check_environment.py
+```
+
+Si le script s'exécute sans erreur, l'environnement est prêt.
+
+### 2.5. Lancer Jupyter
+
+```bash
+uv run jupyter lab
+```
+
+Pour enregistrer le noyau du projet (utile s'il existe déjà d'autres environnements sur la machine) :
+
+```bash
+uv run python -m ipykernel install --user --name ml-lab --display-name "Python (ml-lab)"
+```
+
+::: {.callout-important title="Reproductibilité — ce qu'on versionne"}
+| Fichier / dossier | À versionner (Git) ? |
+|---|:---:|
+| `pyproject.toml` | ✅ |
+| `uv.lock` | ✅ |
+| `.venv/` | ❌ jamais |
+| `data/raw/` (petits fichiers) | selon le cours |
+
+`uv.lock` fixe les versions exactes de toutes les dépendances : n'importe qui peut reconstruire un environnement strictement identique avec `uv sync`. `.venv/` se reconstruit automatiquement et ne doit jamais être transmis.
+:::
+
+## 3. Organiser le projet
+
+```text
+ml-lab/
+├── pyproject.toml
+├── uv.lock
+├── data/
+│   ├── raw/
+│   └── processed/
+├── notebooks/
+└── outputs/
+```
+
+```bash
+mkdir -p data/raw data/processed notebooks outputs
+```
+
+Utilisez `pathlib` plutôt que des chaînes concaténées pour construire vos chemins — cela évite les problèmes entre Windows, macOS et Linux :
+
+```python
+from pathlib import Path
+
+PROJECT_DIR = Path.cwd()
+RAW_DIR = PROJECT_DIR / "data" / "raw"
+PROCESSED_DIR = PROJECT_DIR / "data" / "processed"
+OUTPUT_DIR = PROJECT_DIR / "outputs"
+
+for directory in (RAW_DIR, PROCESSED_DIR, OUTPUT_DIR):
+    directory.mkdir(parents=True, exist_ok=True)
+```
+
+## 4. Premier contact avec des données tabulaires
+
+Créons un tout petit jeu de données local — quelques annonces immobilières, dans l'esprit de l'exemple fil rouge du chapitre 1 (§3) — pour manipuler `pandas` sans dépendre d'Internet.
+
+```python
+import pandas as pd
+
+annonces = pd.DataFrame({
+    "id": [1, 2, 3, 4, 5, 6],
+    "quartier": ["Maarif", "Hay Riad", "Gueliz", "Maarif", "Agdal", "Hay Riad"],
+    "surface_m2": [65, 90, 120, 48, 75, 110],
+    "nb_chambres": [2, 3, 4, 1, 2, 3],
+    "prix_mad": [850_000, 1_450_000, 1_900_000, 520_000, 980_000, 1_680_000],
+})
+
+annonces.to_csv("data/raw/annonces.csv", index=False)
+print(annonces)
+```
+
+### 4.1. Explorer un `DataFrame`
+
+```python
+df = pd.read_csv("data/raw/annonces.csv")
+
+print(df.head())        # les premières lignes
+print(df.shape)          # (nombre de lignes, nombre de colonnes)
+print(df.dtypes)         # le type de chaque colonne
+print(df.describe())     # statistiques descriptives des colonnes numériques
+```
+
+### 4.2. Sélectionner, filtrer, agréger
+
+```python
+# sélectionner une colonne
+print(df["prix_mad"])
+
+# sélectionner plusieurs colonnes
+print(df[["quartier", "prix_mad"]])
+
+# filtrer des lignes
+grands_biens = df[df["surface_m2"] > 80]
+print(grands_biens)
+
+# prix moyen par quartier
+print(df.groupby("quartier")["prix_mad"].mean().round(0))
+
+# créer une nouvelle colonne
+df["prix_m2"] = (df["prix_mad"] / df["surface_m2"]).round(0)
+print(df.sort_values("prix_m2", ascending=False))
+```
+
+::: {.callout-note title="Remarque"}
+Ce petit jeu de données est directement lisible par des humains — c'est volontaire. Le chapitre 3 (Lab 2) travaillera sur des données plus grandes et volontairement imparfaites (valeurs manquantes, doublons, incohérences).
+:::
+
+### 4.3. Un premier graphique
+
+```python
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.scatter(df["surface_m2"], df["prix_mad"], s=60)
+ax.set_xlabel("Surface (m²)")
+ax.set_ylabel("Prix (MAD)")
+ax.set_title("Prix des annonces selon la surface")
+fig.tight_layout()
+fig.savefig("outputs/prix_vs_surface.png", dpi=150)
+plt.show()
+```
+
+Même avec six observations, la relation entre surface et prix commence déjà à se dessiner à l'œil nu — c'est précisément ce type de relation qu'un modèle de régression (chapitre 4 / Lab 3) apprendra à quantifier.
+
+## 5. Récupérer des données réelles via une API publique
+
+### 5.1. Principe
+
+Une lecture de données en ligne suit toujours le même schéma : construire une URL, envoyer une requête HTTP, vérifier le code de réponse, puis interpréter le contenu (souvent du JSON).
+
+```python
+import requests
+
+response = requests.get("https://example.com", timeout=20)
+response.raise_for_status()   # lève une erreur si le code n'est pas 2xx
+```
+
+::: {.callout-tip title="Toujours fixer un `timeout`"}
+Sans `timeout`, un programme peut rester bloqué indéfiniment si le serveur ne répond jamais. `raise_for_status()` transforme un code d'erreur HTTP (404, 500...) en exception Python explicite, plutôt que de laisser passer silencieusement une réponse invalide.
+:::
+
+### 5.2. Exemple : l'API météo Open-Meteo (sans clé)
+
+```python
+import pandas as pd
+import requests
+
+params = {
+    "latitude": 33.5731,       # Casablanca
+    "longitude": -7.5898,
+    "hourly": "temperature_2m",
+    "timezone": "Africa/Casablanca",
+    "forecast_days": 2,
+}
+
+response = requests.get(
+    "https://api.open-meteo.com/v1/forecast",
+    params=params,
+    timeout=30,
+)
+response.raise_for_status()
+payload = response.json()
+
+meteo = pd.DataFrame(payload["hourly"])
+meteo["time"] = pd.to_datetime(meteo["time"])
+print(meteo.head())
+```
+
+```python
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(meteo["time"], meteo["temperature_2m"])
+ax.set_xlabel("Heure")
+ax.set_ylabel("Température (°C)")
+ax.set_title("Prévisions horaires — Casablanca")
+fig.autofmt_xdate()
+fig.tight_layout()
+fig.savefig("outputs/meteo_casablanca.png", dpi=150)
+plt.show()
+```
+
+::: {.callout-warning title="Une requête peut échouer"}
+URL incorrecte, absence de connexion, délai dépassé, service temporairement indisponible : une requête réseau n'est jamais garantie. Dans un vrai projet, on entoure ce type d'appel d'une gestion d'erreurs (`try`/`except`) et on sauvegarde une copie brute de la réponse pour pouvoir rejouer l'analyse hors ligne.
+:::
+
+## 6. Vérifier que `scikit-learn` fonctionne : le filtre anti-spam du chapitre 1
+
+Le chapitre 1 (§2.2) présente l'idée du filtre anti-spam comme premier exemple du paradigme Data-Driven. Reproduisons-le concrètement, avec un tout petit jeu d'e-mails fait main.
+
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+
+emails_entrainement = [
+    "Gagnez de l'argent facilement, cliquez ici maintenant",
+    "Offre urgente : gagnez un iPhone gratuit aujourd'hui",
+    "Réunion projet reportée à demain 10h",
+    "Voici le compte-rendu de la réunion d'hier",
+    "Urgent : votre compte a gagné un prix, réclamez-le",
+    "Peux-tu relire mon rapport avant vendredi ?",
+]
+
+y_entrainement = ["spam", "spam", "non-spam", "non-spam", "spam", "non-spam"]
+
+vectoriseur = TfidfVectorizer()
+X_entrainement = vectoriseur.fit_transform(emails_entrainement)
+
+modele = LogisticRegression()
+modele.fit(X_entrainement, y_entrainement)
+
+nouveaux_emails = [
+    "Cliquez ici pour gagner un cadeau gratuit",
+    "Peux-tu m'envoyer le fichier avant la réunion ?",
+]
+
+X_nouveaux = vectoriseur.transform(nouveaux_emails)
+predictions = modele.predict(X_nouveaux)
+
+for email, prediction in zip(nouveaux_emails, predictions):
+    print(f"[{prediction}] {email}")
+```
+
+Si ce code s'exécute et affiche une prédiction `spam` ou `non-spam` pour chaque e-mail, votre environnement est prêt pour la suite du cours : `scikit-learn`, comme discuté au chapitre 1, a bien **appris** une règle de décision à partir des six exemples fournis, sans qu'aucune règle `SI ... ALORS ...` n'ait été écrite à la main.
+
+::: {.callout-note title="Pourquoi si peu d'exemples ne suffisent pas en pratique"}
+Six exemples d'entraînement, c'est très peu : le modèle risque de mal généraliser à des e-mails très différents de ceux vus à l'entraînement (voir la notion de généralisation, chapitre 2 / Lab 1). Ce mini-exemple sert uniquement à vérifier que l'environnement fonctionne de bout en bout.
+:::
+
+## 7. Synthèse
+
+::: {.callout-note title="Auto-évaluation" collapse="true"}
+- [ ] `uv --version` fonctionne sur ma machine.
+- [ ] Mon projet possède un `pyproject.toml` et un `uv.lock`.
+- [ ] Je sais lancer une commande avec `uv run` sans activer manuellement `.venv`.
+- [ ] Je sais charger un CSV local avec `pandas` et en afficher un résumé (`head`, `dtypes`, `describe`).
+- [ ] Je sais effectuer une requête HTTP avec `requests` et transformer une réponse JSON en `DataFrame`.
+- [ ] J'ai exécuté avec succès le mini filtre anti-spam et compris ce qu'il illustre.
+:::
+
+## 8. Lab Sheet — Projet guidé {#sec-lab0-projet}
+
+::: {.callout-important title="Ce qui est attendu"}
+Ce projet reprend, sur des données différentes de celles utilisées en cours, les compétences pratiquées dans ce Lab. Répondez aux questions dans un notebook ou un fichier `reponses.md`, et conservez tout le code utilisé pour y répondre.
+:::
+
+### Partie A — Environnement
+
+1. Donnez la sortie de `uv --version` et de `uv python list` sur votre machine.
+2. Exécutez `check_environment.py`. Copiez la sortie obtenue.
+3. Expliquez, en deux phrases, la différence de rôle entre `pyproject.toml` et `uv.lock`.
+
+### Partie B — Météo au Maroc, à vous de jouer
+
+Choisissez **trois villes marocaines différentes** de celle utilisée en exemple (§5.2) et récupérez, pour chacune, les températures horaires prévues sur 2 jours via l'API Open-Meteo.
+
+::: {.callout-tip title="Coordonnées de quelques villes" collapse="true"}
+| Ville | Latitude | Longitude |
+|---|---:|---:|
+| Rabat | 34.020882 | -6.841650 |
+| Marrakech | 31.629472 | -7.981084 |
+| Tanger | 35.759465 | -5.833954 |
+| Fès | 34.033124 | -5.000282 |
+| Agadir | 30.427755 | -9.598107 |
+:::
+
+4. Construisez un seul `DataFrame` combinant les trois villes (ajoutez une colonne `ville`).
+5. Quelle ville affiche la température **moyenne** la plus élevée sur la période ? Et l'**écart** entre température minimale et maximale le plus grand ?
+6. Produisez un graphique superposant les trois courbes de température (une couleur par ville) et sauvegardez-le dans `outputs/`.
+7. En une phrase : que se passerait-il dans votre code si l'API Open-Meteo était temporairement indisponible ? Que faudrait-il ajouter pour s'en protéger ?
+
+### Partie C — Améliorer le mini filtre anti-spam
+
+8. Ajoutez **quatre nouveaux e-mails** à la liste d'entraînement de la §6 (deux spams, deux non-spams), rédigés par vous-même, en français ou en darija translittérée.
+9. Réentraînez le modèle avec ces dix exemples, puis testez-le sur **trois nouveaux e-mails** que vous inventez (non utilisés à l'entraînement).
+10. Le modèle se trompe-t-il sur l'un de vos trois e-mails de test ? Si oui, proposez une explication plausible en vous appuyant sur le fonctionnement de `TfidfVectorizer` (quels mots le modèle a-t-il pu associer à tort au spam ?).
+
+### Livrables
+
+- `pyproject.toml` et `uv.lock` ;
+- un notebook ou script contenant le code des parties A, B et C ;
+- au moins un graphique dans `outputs/` ;
+- vos réponses écrites aux questions 3, 5, 7 et 10.
+
+::: {.callout-tip title="Checklist finale"}
+- [ ] L'environnement est reproductible (`uv sync` fonctionne sur une autre machine).
+- [ ] Les données météo de trois villes sont récupérées et combinées.
+- [ ] Un graphique comparatif est produit et sauvegardé.
+- [ ] Le mini filtre anti-spam est réentraîné avec de nouveaux exemples et testé.
+- [ ] Toutes les questions écrites ont une réponse.
+:::

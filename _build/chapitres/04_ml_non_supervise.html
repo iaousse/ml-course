@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Apprentissage non supervisé – Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../chapitres/04_classification.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/04_ml_non_supervise.html"><span class="chapter-title">Apprentissage non supervisé</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-title">Apprentissage non supervisé</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Recherche"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/03_regression_lineaire.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Régression</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_ml_non_supervise.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Apprentissage non supervisé</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Dans ce chapitre</h2>
+   
+  <ul>
+  <li><a href="#quest-ce-que-lapprentissage-non-supervisé" id="toc-quest-ce-que-lapprentissage-non-supervisé" class="nav-link active" data-scroll-target="#quest-ce-que-lapprentissage-non-supervisé">1. Qu’est-ce que l’apprentissage non supervisé ?</a>
+  <ul class="collapse">
+  <li><a href="#exemple-intuitif" id="toc-exemple-intuitif" class="nav-link" data-scroll-target="#exemple-intuitif">Exemple intuitif</a></li>
+  </ul></li>
+  <li><a href="#préparer-les-données" id="toc-préparer-les-données" class="nav-link" data-scroll-target="#préparer-les-données">2. Préparer les données</a>
+  <ul class="collapse">
+  <li><a href="#variables-numériques-et-variables-qualitatives" id="toc-variables-numériques-et-variables-qualitatives" class="nav-link" data-scroll-target="#variables-numériques-et-variables-qualitatives">2.1. Variables numériques et variables qualitatives</a></li>
+  <li><a href="#centrage-et-réduction" id="toc-centrage-et-réduction" class="nav-link" data-scroll-target="#centrage-et-réduction">2.2. Centrage et réduction</a></li>
+  <li><a href="#exemple-déchelle" id="toc-exemple-déchelle" class="nav-link" data-scroll-target="#exemple-déchelle">2.3. Exemple d’échelle</a></li>
+  </ul></li>
+  <li><a href="#analyse-en-composantes-principales-acp" id="toc-analyse-en-composantes-principales-acp" class="nav-link" data-scroll-target="#analyse-en-composantes-principales-acp">3. Analyse en composantes principales (ACP)</a>
+  <ul class="collapse">
+  <li><a href="#idée-géométrique" id="toc-idée-géométrique" class="nav-link" data-scroll-target="#idée-géométrique">3.1. Idée géométrique</a></li>
+  <li><a href="#matrice-centrée" id="toc-matrice-centrée" class="nav-link" data-scroll-target="#matrice-centrée">3.2. Matrice centrée</a></li>
+  <li><a href="#matrice-de-covariance" id="toc-matrice-de-covariance" class="nav-link" data-scroll-target="#matrice-de-covariance">3.3. Matrice de covariance</a></li>
+  <li><a href="#direction-de-variance-maximale" id="toc-direction-de-variance-maximale" class="nav-link" data-scroll-target="#direction-de-variance-maximale">3.4. Direction de variance maximale</a></li>
+  <li><a href="#valeurs-propres-et-composantes-principales" id="toc-valeurs-propres-et-composantes-principales" class="nav-link" data-scroll-target="#valeurs-propres-et-composantes-principales">3.5. Valeurs propres et composantes principales</a></li>
+  <li><a href="#projection-et-réduction-de-dimension" id="toc-projection-et-réduction-de-dimension" class="nav-link" data-scroll-target="#projection-et-réduction-de-dimension">3.6. Projection et réduction de dimension</a></li>
+  <li><a href="#variance-expliquée" id="toc-variance-expliquée" class="nav-link" data-scroll-target="#variance-expliquée">3.7. Variance expliquée</a></li>
+  <li><a href="#exemple-simple" id="toc-exemple-simple" class="nav-link" data-scroll-target="#exemple-simple">3.8. Exemple simple</a></li>
+  <li><a href="#quand-utiliser-lacp" id="toc-quand-utiliser-lacp" class="nav-link" data-scroll-target="#quand-utiliser-lacp">3.9. Quand utiliser l’ACP ?</a></li>
+  </ul></li>
+  <li><a href="#k-means" id="toc-k-means" class="nav-link" data-scroll-target="#k-means">4. K-Means</a>
+  <ul class="collapse">
+  <li><a href="#objectif" id="toc-objectif" class="nav-link" data-scroll-target="#objectif">4.1. Objectif</a></li>
+  <li><a href="#affectation-des-observations" id="toc-affectation-des-observations" class="nav-link" data-scroll-target="#affectation-des-observations">4.2. Affectation des observations</a></li>
+  <li><a href="#mise-à-jour-des-centroïdes" id="toc-mise-à-jour-des-centroïdes" class="nav-link" data-scroll-target="#mise-à-jour-des-centroïdes">4.3. Mise à jour des centroïdes</a></li>
+  <li><a href="#algorithme-itératif" id="toc-algorithme-itératif" class="nav-link" data-scroll-target="#algorithme-itératif">4.4. Algorithme itératif</a></li>
+  <li><a href="#exemple-simple-1" id="toc-exemple-simple-1" class="nav-link" data-scroll-target="#exemple-simple-1">4.5. Exemple simple</a></li>
+  <li><a href="#inertie-et-choix-du-nombre-de-clusters" id="toc-inertie-et-choix-du-nombre-de-clusters" class="nav-link" data-scroll-target="#inertie-et-choix-du-nombre-de-clusters">4.6. Inertie et choix du nombre de clusters</a></li>
+  <li><a href="#pourquoi-le-choix-de-léchelle-est-crucial" id="toc-pourquoi-le-choix-de-léchelle-est-crucial" class="nav-link" data-scroll-target="#pourquoi-le-choix-de-léchelle-est-crucial">4.7. Pourquoi le choix de l’échelle est crucial ?</a></li>
+  <li><a href="#limites-de-k-means" id="toc-limites-de-k-means" class="nav-link" data-scroll-target="#limites-de-k-means">4.8. Limites de K-Means</a></li>
+  </ul></li>
+  <li><a href="#utilisation-avec-scikit-learn" id="toc-utilisation-avec-scikit-learn" class="nav-link" data-scroll-target="#utilisation-avec-scikit-learn">5. Utilisation avec <code>scikit-learn</code></a>
+  <ul class="collapse">
+  <li><a href="#acp-avec-pca" id="toc-acp-avec-pca" class="nav-link" data-scroll-target="#acp-avec-pca">5.1. ACP avec <code>PCA</code></a></li>
+  <li><a href="#k-means-avec-kmeans" id="toc-k-means-avec-kmeans" class="nav-link" data-scroll-target="#k-means-avec-kmeans">5.2. K-Means avec <code>KMeans</code></a></li>
+  <li><a href="#méthode-du-coude" id="toc-méthode-du-coude" class="nav-link" data-scroll-target="#méthode-du-coude">5.3. Méthode du coude</a></li>
+  <li><a href="#score-de-silhouette" id="toc-score-de-silhouette" class="nav-link" data-scroll-target="#score-de-silhouette">5.4. Score de silhouette</a></li>
+  <li><a href="#pipeline-simple" id="toc-pipeline-simple" class="nav-link" data-scroll-target="#pipeline-simple">5.5. Pipeline simple</a></li>
+  </ul></li>
+  <li><a href="#points-de-vigilance" id="toc-points-de-vigilance" class="nav-link" data-scroll-target="#points-de-vigilance">6. Points de vigilance</a>
+  <ul class="collapse">
+  <li><a href="#ne-pas-surinterpréter-les-résultats" id="toc-ne-pas-surinterpréter-les-résultats" class="nav-link" data-scroll-target="#ne-pas-surinterpréter-les-résultats">6.1. Ne pas surinterpréter les résultats</a></li>
+  <li><a href="#égale-importance-des-variables" id="toc-égale-importance-des-variables" class="nav-link" data-scroll-target="#égale-importance-des-variables">6.2. Égale importance des variables</a></li>
+  <li><a href="#choisir-un-bon-k" id="toc-choisir-un-bon-k" class="nav-link" data-scroll-target="#choisir-un-bon-k">6.3. Choisir un bon <span class="math inline">\(K\)</span></a></li>
+  <li><a href="#acp-et-variance-maximale" id="toc-acp-et-variance-maximale" class="nav-link" data-scroll-target="#acp-et-variance-maximale">6.4. ACP et variance maximale</a></li>
+  </ul></li>
+  <li><a href="#exercices-de-compréhension" id="toc-exercices-de-compréhension" class="nav-link" data-scroll-target="#exercices-de-compréhension">7. Exercices de compréhension</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du chapitre">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Objectifs du chapitre
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>À la fin de ce chapitre, l’étudiant sera capable de :</p>
+<ul>
+<li>distinguer apprentissage supervisé et apprentissage non supervisé ;</li>
+<li>expliquer l’idée d’une structure découverte sans variable cible ;</li>
+<li>comprendre l’ACP comme un outil de réduction de dimension ;</li>
+<li>formuler l’objectif de K-Means et calculer un centroïde ;</li>
+<li>interpréter la variance expliquée et l’inertie ;</li>
+<li>utiliser <code>scikit-learn</code> pour appliquer des méthodes simples ;</li>
+<li>éviter les erreurs fréquentes liées à l’échelle, au nombre de groupes et à l’interprétation.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lien avec les chapitres précédents">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Lien avec les chapitres précédents
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les chapitres précédents ont surtout considéré des problèmes supervisés : on dispose d’une variable cible <span class="math inline">\(y\)</span> et on cherche à prédire cette cible à partir de <span class="math inline">\(X\)</span>.</p>
+<p>Ici, on ne connaît pas de cible. On cherche plutôt à découvrir une structure dans les données :</p>
+<p><span class="math display">\[
+X \longrightarrow \text{structure, regroupement ou projection}
+\]</span></p>
+<p>Dans ce chapitre, nous abordons de manière introductive deux outils très utilisés :</p>
+<ul>
+<li>l’<strong>analyse en composantes principales</strong> (ACP) ;</li>
+<li>le <strong>clustering K-Means</strong>.</li>
+</ul>
+</div>
+</div>
+<section id="quest-ce-que-lapprentissage-non-supervisé" class="level2">
+<h2 class="anchored" data-anchor-id="quest-ce-que-lapprentissage-non-supervisé">1. Qu’est-ce que l’apprentissage non supervisé ?</h2>
+<p>On dispose d’une matrice de données :</p>
+<p><span class="math display">\[
+X =
+\begin{pmatrix}
+x_{11} &amp; \cdots &amp; x_{1p} \\
+\vdots &amp; \ddots &amp; \vdots \\
+x_{n1} &amp; \cdots &amp; x_{np}
+\end{pmatrix}
+\in \mathbb{R}^{n\times p}
+\]</span></p>
+<p>Mais il n’y a pas de variable cible <span class="math inline">\(y\)</span> à prédire. L’objectif est de découvrir une organisation dans les données :</p>
+<ul>
+<li>regrouper des observations semblables ;</li>
+<li>réduire le nombre de variables sans perdre trop d’information ;</li>
+<li>repérer des observations inhabituelles ;</li>
+<li>résumer visuellement les données.</li>
+</ul>
+<p>La différence principale est donc la suivante :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Type d’apprentissage</th>
+<th>Informations disponibles</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Supervisé</td>
+<td><span class="math inline">\(X\)</span> et <span class="math inline">\(y\)</span></td>
+<td>Prédire <span class="math inline">\(y\)</span></td>
+</tr>
+<tr class="even">
+<td>Non supervisé</td>
+<td><span class="math inline">\(X\)</span> seulement</td>
+<td>Découvrir une structure</td>
+</tr>
+</tbody>
+</table>
+<section id="exemple-intuitif" class="level3">
+<h3 class="anchored" data-anchor-id="exemple-intuitif">Exemple intuitif</h3>
+<p>Supposons que l’on observe des clients avec des variables comme :</p>
+<ul>
+<li>le montant total dépensé ;</li>
+<li>le nombre d’achats ;</li>
+<li>la fréquence de visite ;</li>
+<li>la durée moyenne de connexion.</li>
+</ul>
+<p>Sans savoir à l’avance quels sont les clients “fidèles” ou “occasionnels”, on peut :</p>
+<ol type="1">
+<li>chercher des groupes de clients similaires avec K-Means ;</li>
+<li>résumer les données dans un plan 2D avec l’ACP ;</li>
+<li>interpréter ensuite les groupes ou axes dans le contexte métier.</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled" title="Un cluster n'est pas une vérité naturelle">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Un cluster n’est pas une vérité naturelle
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un algorithme ne décide pas seul “ce qui est vraiment vrai”. Il découvre une organisation selon des règles mathématiques. Un cluster est donc une structure utile, pas une catégorie intrinsèque.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="préparer-les-données" class="level2">
+<h2 class="anchored" data-anchor-id="préparer-les-données">2. Préparer les données</h2>
+<p>Avant d’appliquer des méthodes non supervisées, il faut regarder la nature des variables.</p>
+<section id="variables-numériques-et-variables-qualitatives" class="level3">
+<h3 class="anchored" data-anchor-id="variables-numériques-et-variables-qualitatives">2.1. Variables numériques et variables qualitatives</h3>
+<p>Les méthodes comme l’ACP et K-Means travaillent sur des distances et des moyennes. Elles sont donc naturellement adaptées aux variables numériques.</p>
+<p>Les problèmes viennent souvent avec :</p>
+<ul>
+<li>des identifiants sans sens statistique ;</li>
+<li>des variables dans des unités différentes ;</li>
+<li>des valeurs manquantes ;</li>
+<li>des variables qualitatives codées de manière arbitraire.</li>
+</ul>
+</section>
+<section id="centrage-et-réduction" class="level3">
+<h3 class="anchored" data-anchor-id="centrage-et-réduction">2.2. Centrage et réduction</h3>
+<p>Pour une variable <span class="math inline">\(j\)</span>, la moyenne est :</p>
+<p><span class="math display">\[
+\bar{x}_j = \frac{1}{n}\sum_{i=1}^{n} x_{ij}
+\]</span></p>
+<p>Le centrage consiste à retirer cette moyenne :</p>
+<p><span class="math display">\[
+x_{ij}^{(c)} = x_{ij}-\bar{x}_j
+\]</span></p>
+<p>La réduction consiste à diviser par l’écart-type :</p>
+<p><span class="math display">\[
+x_{ij}^{(s)} = \frac{x_{ij}-\bar{x}_j}{s_j}
+\]</span></p>
+<p>Après standardisation, une variable a approximativement :</p>
+<p><span class="math display">\[
+\text{moyenne}=0,\qquad \text{écart-type}=1
+\]</span></p>
+<p>Pourquoi c’est important ?</p>
+<ul>
+<li>en ACP, le centrage est presque toujours nécessaire ;</li>
+<li>en K-Means, la standardisation est souvent essentielle car la distance euclidienne dépend des échelles.</li>
+</ul>
+</section>
+<section id="exemple-déchelle" class="level3">
+<h3 class="anchored" data-anchor-id="exemple-déchelle">2.3. Exemple d’échelle</h3>
+<p>Supposons que l’on compare :</p>
+<ul>
+<li>le revenu annuel, entre 20 000 et 200 000 ;</li>
+<li>un taux, entre 0 et 1.</li>
+</ul>
+<p>La première variable a naturellement une amplitude beaucoup plus grande. Dans une distance euclidienne, elle peut dominer complètement le regroupement. C’est pourquoi on standardise souvent les variables avant K-Means.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Prétraitement et fuite de données">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Prétraitement et fuite de données
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En apprentissage supervisé comme en non supervisé, il faut éviter les fuites d’information. Si on calcule une moyenne ou un écart-type sur l’ensemble des données avant de séparer train/test, on utilise indirectement des informations de validation ou de test. En pratique, le prétraitement doit être ajusté sur le jeu d’entraînement puis appliqué aux autres données.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="analyse-en-composantes-principales-acp" class="level2">
+<h2 class="anchored" data-anchor-id="analyse-en-composantes-principales-acp">3. Analyse en composantes principales (ACP)</h2>
+<p>L’ACP cherche des directions dans lesquelles les données varient le plus. Ce n’est pas un algorithme de clustering ; c’est un outil de réduction de dimension.</p>
+<section id="idée-géométrique" class="level3">
+<h3 class="anchored" data-anchor-id="idée-géométrique">3.1. Idée géométrique</h3>
+<p>Imaginez un nuage de points dans le plan. S’il est presque aligné selon une droite, on peut résumer la variation principale par cette direction.</p>
+<p>L’ACP cherche :</p>
+<ol type="1">
+<li>une première direction de variance maximale ;</li>
+<li>une deuxième direction orthogonale à la première ;</li>
+<li>puis les directions suivantes, si nécessaire.</li>
+</ol>
+<p>La première composante principale correspond à la direction qui explique le plus de variance dans les données.</p>
+</section>
+<section id="matrice-centrée" class="level3">
+<h3 class="anchored" data-anchor-id="matrice-centrée">3.2. Matrice centrée</h3>
+<p>On part de <span class="math inline">\(X \in \mathbb{R}^{n\times p}\)</span> et on calcule la moyenne de chaque colonne :</p>
+<p><span class="math display">\[
+\bar{x}_j = \frac{1}{n}\sum_{i=1}^{n} x_{ij}
+\]</span></p>
+<p>La matrice centrée est :</p>
+<p><span class="math display">\[
+(X_c)_{ij}=x_{ij}-\bar{x}_j
+\]</span></p>
+<p>Sous forme matricielle :</p>
+<p><span class="math display">\[
+X_c = X - \mathbf{1}\bar{x}^{\top}
+\]</span></p>
+<p>Ici, <span class="math inline">\(\mathbf{1}\)</span> est un vecteur colonne de 1 et <span class="math inline">\(\bar{x}\)</span> est le vecteur des moyennes.</p>
+</section>
+<section id="matrice-de-covariance" class="level3">
+<h3 class="anchored" data-anchor-id="matrice-de-covariance">3.3. Matrice de covariance</h3>
+<p>La matrice de covariance empirique est :</p>
+<p><span class="math display">\[
+\boxed{
+\Sigma = \frac{1}{n-1} X_c^{\top} X_c
+}
+\]</span></p>
+<p>Elle contient :</p>
+<ul>
+<li>sur la diagonale : les variances de chaque variable ;</li>
+<li>hors de la diagonale : les covariances entre variables.</li>
+</ul>
+<p>Si deux variables bougent ensemble, leur covariance est positive. Si elles bougent en sens opposé, la covariance est négative.</p>
+</section>
+<section id="direction-de-variance-maximale" class="level3">
+<h3 class="anchored" data-anchor-id="direction-de-variance-maximale">3.4. Direction de variance maximale</h3>
+<p>On cherche un vecteur unitaire <span class="math inline">\(w\)</span> tel que :</p>
+<p><span class="math display">\[
+\max_{\|w\|_2=1} \operatorname{Var}(X_c w)
+\]</span></p>
+<p>Comme :</p>
+<p><span class="math display">\[
+\operatorname{Var}(X_c w) = w^{\top}\Sigma w
+\]</span></p>
+<p>on cherche le vecteur <span class="math inline">\(w\)</span> qui maximise <span class="math inline">\(w^{\top}\Sigma w\)</span> sous la contrainte <span class="math inline">\(w^{\top}w=1\)</span>.</p>
+<p>La solution est le vecteur propre associé à la plus grande valeur propre de <span class="math inline">\(\Sigma\)</span>.</p>
+</section>
+<section id="valeurs-propres-et-composantes-principales" class="level3">
+<h3 class="anchored" data-anchor-id="valeurs-propres-et-composantes-principales">3.5. Valeurs propres et composantes principales</h3>
+<p>Les vecteurs propres <span class="math inline">\(w_j\)</span> et valeurs propres <span class="math inline">\(\lambda_j\)</span> vérifient :</p>
+<p><span class="math display">\[
+\Sigma w_j = \lambda_j w_j
+\]</span></p>
+<p>où :</p>
+<ul>
+<li><span class="math inline">\(w_j\)</span> : direction de la composante principale <span class="math inline">\(j\)</span> ;</li>
+<li><span class="math inline">\(\lambda_j\)</span> : variance expliquée par cette composante.</li>
+</ul>
+<p>On ordonne :</p>
+<p><span class="math display">\[
+\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_p \geq 0
+\]</span></p>
+<p>Les composantes sont orthogonales entre elles :</p>
+<p><span class="math display">\[
+w_j^{\top}w_k = 0 \quad \text{si } j\neq k
+\]</span></p>
+</section>
+<section id="projection-et-réduction-de-dimension" class="level3">
+<h3 class="anchored" data-anchor-id="projection-et-réduction-de-dimension">3.6. Projection et réduction de dimension</h3>
+<p>Si l’on garde les <span class="math inline">\(m\)</span> premières composantes, on construit la matrice :</p>
+<p><span class="math display">\[
+W_m = [w_1, w_2, \ldots, w_m]
+\]</span></p>
+<p>La projection des données centrées est :</p>
+<p><span class="math display">\[
+\boxed{Z = X_c W_m}
+\]</span></p>
+<p>On passe ainsi d’une matrice <span class="math inline">\(n\times p\)</span> à une matrice <span class="math inline">\(n\times m\)</span> avec <span class="math inline">\(m&lt;p\)</span>.</p>
+</section>
+<section id="variance-expliquée" class="level3">
+<h3 class="anchored" data-anchor-id="variance-expliquée">3.7. Variance expliquée</h3>
+<p>La variance totale est la somme des valeurs propres :</p>
+<p><span class="math display">\[
+\sum_{j=1}^{p}\lambda_j
+\]</span></p>
+<p>La proportion de variance expliquée par la composante <span class="math inline">\(j\)</span> est :</p>
+<p><span class="math display">\[
+\boxed{
+EVR_j = \frac{\lambda_j}{\sum_{\ell=1}^{p}\lambda_\ell}
+}
+\]</span></p>
+<p>La variance expliquée cumulée par les <span class="math inline">\(m\)</span> premières composantes est :</p>
+<p><span class="math display">\[
+\boxed{
+EVR_{cum}(m)=\sum_{j=1}^{m} EVR_j
+}
+\]</span></p>
+<p>Exemple : si <span class="math inline">\(\lambda=(6,3,1)\)</span>, alors :</p>
+<p><span class="math display">\[
+EVR_1=\frac{6}{10}=60\%, \qquad EVR_{cum}(2)=\frac{6+3}{10}=90\%
+\]</span></p>
+<p>Donc deux composantes expliquent 90 % de la variance totale.</p>
+</section>
+<section id="exemple-simple" class="level3">
+<h3 class="anchored" data-anchor-id="exemple-simple">3.8. Exemple simple</h3>
+<p>Considérons les données suivantes :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Observation</th>
+<th style="text-align: right;"><span class="math inline">\(x_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(x_2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p>Les moyennes sont :</p>
+<p><span class="math display">\[
+\bar{x}_1=2,\qquad \bar{x}_2=2
+\]</span></p>
+<p>La matrice centrée est :</p>
+<p><span class="math display">\[
+X_c=
+\begin{pmatrix}
+-1 &amp; -1 \\
+0 &amp; 0 \\
+1 &amp; 1
+\end{pmatrix}
+\]</span></p>
+<p>La covariance vaut :</p>
+<p><span class="math display">\[
+\Sigma = \begin{pmatrix} 1 &amp; 1 \\ 1 &amp; 1 \end{pmatrix}
+\]</span></p>
+<p>Les valeurs propres sont :</p>
+<p><span class="math display">\[
+\lambda_1=2,\qquad\lambda_2=0
+\]</span></p>
+<p>La première composante suit la direction <span class="math inline">\((1,1)\)</span> : les deux variables bougent exactement de la même manière. Une seule composante suffit ici pour résumer toute la variation.</p>
+</section>
+<section id="quand-utiliser-lacp" class="level3">
+<h3 class="anchored" data-anchor-id="quand-utiliser-lacp">3.9. Quand utiliser l’ACP ?</h3>
+<p>L’ACP est utile pour :</p>
+<ul>
+<li>réduire la dimension visuellement ;</li>
+<li>supprimer une partie de la redondance linéaire ;</li>
+<li>mieux comprendre la structure des variables ;</li>
+<li>préparer des données avant un autre modèle.</li>
+</ul>
+<p>Elle présente aussi des limites :</p>
+<ul>
+<li>elle ne capte pas forcément des relations non linéaires ;</li>
+<li>elle est sensible à l’échelle ;</li>
+<li>les composantes peuvent être difficiles à interpréter si les variables sont hétérogènes ;</li>
+<li>une grande variance n’est pas toujours synonyme d’information utile pour une tâche précise.</li>
+</ul>
+</section>
+</section>
+<section id="k-means" class="level2">
+<h2 class="anchored" data-anchor-id="k-means">4. K-Means</h2>
+<p>K-Means est un algorithme de clustering. Il cherche à découper les observations en <span class="math inline">\(K\)</span> groupes, ou clusters, autour de <span class="math inline">\(K\)</span> centres appelés centroïdes.</p>
+<section id="objectif" class="level3">
+<h3 class="anchored" data-anchor-id="objectif">4.1. Objectif</h3>
+<p>On a <span class="math inline">\(n\)</span> observations <span class="math inline">\(x_1,\ldots,x_n\)</span> dans <span class="math inline">\(\mathbb{R}^p\)</span>. On choisit un nombre de clusters <span class="math inline">\(K\)</span>.</p>
+<p>Chaque observation reçoit une affectation :</p>
+<p><span class="math display">\[
+c_i \in \{1,\ldots,K\}
+\]</span></p>
+<p>Chaque cluster <span class="math inline">\(k\)</span> a un centroïde <span class="math inline">\(\mu_k\in\mathbb{R}^p\)</span>.</p>
+<p>L’objectif de K-Means est de minimiser l’inertie :</p>
+<p><span class="math display">\[
+\boxed{
+J(c,\mu)=\sum_{i=1}^{n}\left\|x_i-\mu_{c_i}\right\|_2^2
+}
+\]</span></p>
+<p>Cette quantité mesure la somme des carrés des distances entre chaque observation et le centroïde de son cluster.</p>
+</section>
+<section id="affectation-des-observations" class="level3">
+<h3 class="anchored" data-anchor-id="affectation-des-observations">4.2. Affectation des observations</h3>
+<p>Si les centroïdes sont connus, on attribue chaque observation au centroïde le plus proche :</p>
+<p><span class="math display">\[
+\boxed{
+c_i = \arg\min_{k\in\{1,\ldots,K\}} \|x_i-\mu_k\|_2^2
+}
+\]</span></p>
+</section>
+<section id="mise-à-jour-des-centroïdes" class="level3">
+<h3 class="anchored" data-anchor-id="mise-à-jour-des-centroïdes">4.3. Mise à jour des centroïdes</h3>
+<p>Si les affectations sont fixes, le meilleur centroïde d’un cluster est la moyenne des observations qui lui sont affectées :</p>
+<p><span class="math display">\[
+\boxed{
+\mu_k = \frac{1}{n_k}\sum_{i:c_i=k} x_i
+}
+\]</span></p>
+<p>où <span class="math inline">\(n_k\)</span> est le nombre d’observations du cluster <span class="math inline">\(k\)</span>.</p>
+</section>
+<section id="algorithme-itératif" class="level3">
+<h3 class="anchored" data-anchor-id="algorithme-itératif">4.4. Algorithme itératif</h3>
+<p>K-Means alterne donc deux étapes :</p>
+<ol type="1">
+<li>affecter chaque observation au centroïde le plus proche ;</li>
+<li>recalculer chaque centroïde comme la moyenne de son cluster.</li>
+</ol>
+<p>On répète jusqu’à convergence.</p>
+<p>Pseudo-code :</p>
+<pre class="text"><code>Choisir K centroïdes initiaux
+Répéter :
+    affecter chaque point au centroïde le plus proche
+    calculer le nouveau centroïde de chaque cluster
+Jusqu'à ce que les affectations ne changent plus</code></pre>
+</section>
+<section id="exemple-simple-1" class="level3">
+<h3 class="anchored" data-anchor-id="exemple-simple-1">4.5. Exemple simple</h3>
+<p>Considérons quatre points :</p>
+<p><span class="math display">\[
+A=(1,1),\quad B=(1,2),\quad C=(4,4),\quad D=(5,4)
+\]</span></p>
+<p>On prend <span class="math inline">\(K=2\)</span> et des centroïdes initiaux :</p>
+<p><span class="math display">\[
+\mu_1=(1,1),\qquad \mu_2=(5,4)
+\]</span></p>
+<p>Les distances au carré sont :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Point</th>
+<th style="text-align: right;">Vers <span class="math inline">\(\mu_1\)</span></th>
+<th style="text-align: right;">Vers <span class="math inline">\(\mu_2\)</span></th>
+<th style="text-align: right;">Cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A=(1,1)\)</span></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(B=(1,2)\)</span></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(C=(4,4)\)</span></td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(D=(5,4)\)</span></td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>Les clusters sont donc :</p>
+<p><span class="math display">\[
+C_1=\{A,B\},\qquad C_2=\{C,D\}
+\]</span></p>
+<p>Les nouveaux centroïdes deviennent :</p>
+<p><span class="math display">\[
+\mu_1' = \frac{(1,1)+(1,2)}{2} = \left(1,\frac32\right)
+\]</span></p>
+<p>et</p>
+<p><span class="math display">\[
+\mu_2' = \frac{(4,4)+(5,4)}{2} = \left(\frac92,4\right)
+\]</span></p>
+<p>On recommence ensuite jusqu’à ce que les affectations se stabilisent.</p>
+</section>
+<section id="inertie-et-choix-du-nombre-de-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="inertie-et-choix-du-nombre-de-clusters">4.6. Inertie et choix du nombre de clusters</h3>
+<p>L’inertie totale est :</p>
+<p><span class="math display">\[
+\boxed{
+Inertie = \sum_{k=1}^{K}\sum_{i:c_i=k}\|x_i-\mu_k\|_2^2
+}
+\]</span></p>
+<p>Plus l’inertie est petite, plus les clusters sont compacts.</p>
+<p>Cependant, l’inertie diminue presque toujours lorsque <span class="math inline">\(K\)</span> augmente. Elle ne suffit donc pas à choisir <span class="math inline">\(K\)</span>.</p>
+<p>Deux méthodes simples sont souvent utilisées :</p>
+<ul>
+<li>la <strong>méthode du coude</strong> : on regarde la courbe d’inertie en fonction de <span class="math inline">\(K\)</span> ;</li>
+<li>le <strong>score de silhouette</strong> : il compare cohésion interne et séparation entre clusters.</li>
+</ul>
+</section>
+<section id="pourquoi-le-choix-de-léchelle-est-crucial" class="level3">
+<h3 class="anchored" data-anchor-id="pourquoi-le-choix-de-léchelle-est-crucial">4.7. Pourquoi le choix de l’échelle est crucial ?</h3>
+<p>K-Means repose sur une distance euclidienne. Si une variable a des valeurs très grandes, elle peut dominer la distance.</p>
+<p>Par exemple, une variable exprimée en milliers et une autre en unités peuvent ne pas avoir le même poids. La standardisation corrige ce problème en ramenant les variables à une échelle comparable.</p>
+</section>
+<section id="limites-de-k-means" class="level3">
+<h3 class="anchored" data-anchor-id="limites-de-k-means">4.8. Limites de K-Means</h3>
+<p>K-Means est simple et utile, mais il a des limites :</p>
+<ul>
+<li>il faut choisir le nombre <span class="math inline">\(K\)</span> ;</li>
+<li>il dépend de l’initialisation ;</li>
+<li>il est sensible aux outliers ;</li>
+<li>il privilégie des groupes de forme compacte et sphérique ;</li>
+<li>il n’est pas adapté à des groupes de densités très différentes.</li>
+</ul>
+<p>On l’utilise souvent comme première méthode de segmentation, puis on compare à d’autres approches si nécessaire.</p>
+</section>
+</section>
+<section id="utilisation-avec-scikit-learn" class="level2">
+<h2 class="anchored" data-anchor-id="utilisation-avec-scikit-learn">5. Utilisation avec <code>scikit-learn</code></h2>
+<section id="acp-avec-pca" class="level3">
+<h3 class="anchored" data-anchor-id="acp-avec-pca">5.1. ACP avec <code>PCA</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>X_pca <span class="op">=</span> pca.fit_transform(X_scaled)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pca.explained_variance_ratio_)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pca.explained_variance_ratio_.cumsum())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les éléments importants sont :</p>
+<ul>
+<li><code>components_</code> : directions principales ;</li>
+<li><code>explained_variance_</code> : variances associées ;</li>
+<li><code>explained_variance_ratio_</code> : part de variance expliquée ;</li>
+<li><code>mean_</code> : moyenne utilisée pour le centrage.</li>
+</ul>
+</section>
+<section id="k-means-avec-kmeans" class="level3">
+<h3 class="anchored" data-anchor-id="k-means-avec-kmeans">5.2. K-Means avec <code>KMeans</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    n_clusters<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    init<span class="op">=</span><span class="st">"k-means++"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    n_init<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> kmeans.fit_predict(X_scaled)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>centers <span class="op">=</span> kmeans.cluster_centers_</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>inertia <span class="op">=</span> kmeans.inertia_</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les principaux attributs sont :</p>
+<ul>
+<li><code>labels_</code> : cluster attribué à chaque observation ;</li>
+<li><code>cluster_centers_</code> : centroïdes ;</li>
+<li><code>inertia_</code> : inertie finale ;</li>
+<li><code>n_iter_</code> : nombre d’itérations.</li>
+</ul>
+</section>
+<section id="méthode-du-coude" class="level3">
+<h3 class="anchored" data-anchor-id="méthode-du-coude">5.3. Méthode du coude</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>inertias <span class="op">=</span> []</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">11</span>):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    model.fit(X_scaled)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    inertias.append(model.inertia_)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">11</span>), inertias, marker<span class="op">=</span><span class="st">"o"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Nombre de clusters K"</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Inertie"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Méthode du coude"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le coude est un point de compromis : si l’inertie baisse fortement jusqu’à une valeur de <span class="math inline">\(K\)</span>, puis beaucoup moins après, on peut choisir cette valeur comme compromis entre compacité et simplicité.</p>
+</section>
+<section id="score-de-silhouette" class="level3">
+<h3 class="anchored" data-anchor-id="score-de-silhouette">5.4. Score de silhouette</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">7</span>):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit_predict(X_scaled)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    score <span class="op">=</span> silhouette_score(X_scaled, labels)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(k, score)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le score de silhouette est proche de 1 pour de bons clusters, proche de 0 pour des observations frontières, et négatif si le cluster semble mauvais.</p>
+</section>
+<section id="pipeline-simple" class="level3">
+<h3 class="anchored" data-anchor-id="pipeline-simple">5.5. Pipeline simple</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> Pipeline([</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"scaler"</span>, StandardScaler()),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pca"</span>, PCA(n_components<span class="op">=</span><span class="fl">0.95</span>)),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>X_reduced <span class="op">=</span> pipe.fit_transform(X)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le pipeline garantit que la transformation est ajustée sur les données d’entraînement, puis réutilisée sur les données de test ou de validation.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Règle pratique">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Règle pratique
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En non supervisé, la simplicité et la cohérence sont souvent meilleures que la complexité. Pour débuter, il vaut mieux bien maîtriser ACP et K-Means avant d’explorer des méthodes plus avancées.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="points-de-vigilance" class="level2">
+<h2 class="anchored" data-anchor-id="points-de-vigilance">6. Points de vigilance</h2>
+<section id="ne-pas-surinterpréter-les-résultats" class="level3">
+<h3 class="anchored" data-anchor-id="ne-pas-surinterpréter-les-résultats">6.1. Ne pas surinterpréter les résultats</h3>
+<p>Un cluster n’est pas forcément une catégorie naturelle. Il est surtout un regroupement selon une métrique et des variables données.</p>
+</section>
+<section id="égale-importance-des-variables" class="level3">
+<h3 class="anchored" data-anchor-id="égale-importance-des-variables">6.2. Égale importance des variables</h3>
+<p>Si aucune standardisation n’est faite, une variable à grande échelle peut dominer l’analyse.</p>
+</section>
+<section id="choisir-un-bon-k" class="level3">
+<h3 class="anchored" data-anchor-id="choisir-un-bon-k">6.3. Choisir un bon <span class="math inline">\(K\)</span></h3>
+<p>Le bon nombre de clusters dépend du problème, des données et du contexte métier. Un score numérique ne remplace pas l’interprétation.</p>
+</section>
+<section id="acp-et-variance-maximale" class="level3">
+<h3 class="anchored" data-anchor-id="acp-et-variance-maximale">6.4. ACP et variance maximale</h3>
+<p>L’ACP cherche à maximiser la variance, pas à optimiser une performance métier. Une composante de faible variance peut néanmoins contenir une information très importante pour une tâche précise.</p>
+</section>
+</section>
+<section id="exercices-de-compréhension" class="level2">
+<h2 class="anchored" data-anchor-id="exercices-de-compréhension">7. Exercices de compréhension</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Consigne">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Consigne
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les exercices ci-dessous portent sur le calcul et la compréhension. Essayez de répondre par écrit avant de consulter la solution.</p>
+</div>
+</div>
+<div id="exr-unsup-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 1 (1. Supervisé ou non supervisé ?)</strong></span> Pour chaque situation, indiquez s’il s’agit d’un problème supervisé ou non supervisé, puis précisez la tâche principale :</p>
+<ol type="1">
+<li>prédire le prix d’un appartement à partir d’exemples dont le prix est connu ;</li>
+<li>regrouper des clients sans connaître à l’avance leurs segments ;</li>
+<li>réduire 20 variables en 2 axes pour visualiser les données ;</li>
+<li>prédire si une transaction est frauduleuse à partir d’exemples étiquetés.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-1">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-1" class="quarto-xref">Exercice&nbsp;<span>1</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Supervisé, régression.<br>
+</li>
+<li>Non supervisé, clustering.<br>
+</li>
+<li>Non supervisé, réduction de dimension.<br>
+</li>
+<li>Supervisé, classification.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-unsup-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 2 (2. Centrage d’une matrice)</strong></span> On considère :</p>
+<p><span class="math display">\[
+X=
+\begin{pmatrix}
+1&amp;4\\
+3&amp;2\\
+5&amp;6
+\end{pmatrix}
+\]</span></p>
+<ol type="1">
+<li>Calculez la moyenne de chaque colonne.<br>
+</li>
+<li>Construisez la matrice centrée <span class="math inline">\(X_c\)</span>.<br>
+</li>
+<li>Vérifiez que la moyenne de chaque colonne de <span class="math inline">\(X_c\)</span> est nulle.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-2">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-2" class="quarto-xref">Exercice&nbsp;<span>2</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Les moyennes sont :</p>
+<p><span class="math display">\[
+\bar{x}_1 = \frac{1+3+5}{3}=3,
+\qquad
+\bar{x}_2 = \frac{4+2+6}{3}=4
+\]</span></p>
+<p>Donc :</p>
+<p><span class="math display">\[
+X_c=
+\begin{pmatrix}
+-2&amp;0\\
+0&amp;-2\\
+2&amp;2
+\end{pmatrix}
+\]</span></p>
+<p>Les moyennes des colonnes valent :</p>
+<p><span class="math display">\[
+\frac{-2+0+2}{3}=0,
+\qquad
+\frac{0-2+2}{3}=0
+\]</span></p>
+</div>
+</div>
+</div>
+<div id="exr-unsup-3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 3 (3. Matrice de covariance)</strong></span> On considère les données centrées :</p>
+<p><span class="math display">\[
+X_c=
+\begin{pmatrix}
+-1&amp;-1\\
+0&amp;0\\
+1&amp;1
+\end{pmatrix}
+\]</span></p>
+<p>Calculez :</p>
+<ol type="1">
+<li><span class="math inline">\(X_c^{\top}X_c\)</span> ;<br>
+</li>
+<li><span class="math inline">\(\Sigma = \frac{1}{n-1}X_c^{\top}X_c\)</span> ;<br>
+</li>
+<li>la relation entre les deux variables.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-3">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-3" class="quarto-xref">Exercice&nbsp;<span>3</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>On a :</p>
+<p><span class="math display">\[
+X_c^{\top}X_c =
+\begin{pmatrix}
+2&amp;2\\
+2&amp;2
+\end{pmatrix}
+\]</span></p>
+<p>Comme <span class="math inline">\(n=3\)</span>, on obtient :</p>
+<p><span class="math display">\[
+\Sigma = \frac{1}{2}
+\begin{pmatrix}
+2&amp;2\\
+2&amp;2
+\end{pmatrix}
+=
+\begin{pmatrix}
+1&amp;1\\
+1&amp;1
+\end{pmatrix}
+\]</span></p>
+<p>Les deux variables varient donc dans le même sens : leur covariance est positive et forte.</p>
+</div>
+</div>
+</div>
+<div id="exr-unsup-4" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 4 (4. Variance expliquée)</strong></span> Une matrice de covariance possède les valeurs propres suivantes :</p>
+<p><span class="math display">\[
+\lambda_1=6,\quad \lambda_2=3,\quad \lambda_3=1
+\]</span></p>
+<p>Calculez :</p>
+<ol type="1">
+<li>la variance totale ;<br>
+</li>
+<li>la variance expliquée par la première composante ;<br>
+</li>
+<li>la variance expliquée cumulée par les deux premières composantes.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-4">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-4" class="quarto-xref">Exercice&nbsp;<span>4</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Variance totale :</li>
+</ol>
+<p><span class="math display">\[
+6+3+1=10
+\]</span></p>
+<ol start="2" type="1">
+<li>Première composante :</li>
+</ol>
+<p><span class="math display">\[
+EVR_1 = \frac{6}{10}=60\%
+\]</span></p>
+<ol start="3" type="1">
+<li>Deux premières composantes :</li>
+</ol>
+<p><span class="math display">\[
+EVR_{cum}(2)=\frac{6+3}{10}=90\%
+\]</span></p>
+</div>
+</div>
+</div>
+<div id="exr-unsup-5" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 5 (5. Affectation K-Means)</strong></span> On considère un point :</p>
+<p><span class="math display">\[
+x=(3,2)
+\]</span></p>
+<p>et deux centroïdes :</p>
+<p><span class="math display">\[
+\mu_1=(1,1),\qquad \mu_2=(5,3)
+\]</span></p>
+<ol type="1">
+<li>Calculez les distances au carré vers <span class="math inline">\(\mu_1\)</span> et <span class="math inline">\(\mu_2\)</span>.<br>
+</li>
+<li>À quel cluster le point est-il affecté ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-5">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-5" class="quarto-xref">Exercice&nbsp;<span>5</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Distances au carré :</p>
+<p><span class="math display">\[
+\|x-\mu_1\|^2 = (3-1)^2+(2-1)^2=4+1=5
+\]</span></p>
+<p><span class="math display">\[
+\|x-\mu_2\|^2 = (3-5)^2+(2-3)^2=4+1=5
+\]</span></p>
+<p>Le point est à égale distance des deux centroïdes. Il y a donc une égalité. En pratique, une règle d’implémentation décide le cluster.</p>
+</div>
+</div>
+</div>
+<div id="exr-unsup-6" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 6 (6. Recalculer un centroïde)</strong></span> Un cluster contient les observations :</p>
+<p><span class="math display">\[
+(1,2),\quad (3,2),\quad (2,5)
+\]</span></p>
+<p>Calculez le centroïde du cluster.</p>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-6">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-6" class="quarto-xref">Exercice&nbsp;<span>6</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Le centroïde est la moyenne coordonnée par coordonnée :</p>
+<p><span class="math display">\[
+\mu = \left(\frac{1+3+2}{3}, \frac{2+2+5}{3}\right) = (2,3)
+\]</span></p>
+</div>
+</div>
+</div>
+<div id="exr-unsup-7" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 7 (7. Inertie d’un cluster)</strong></span> Un cluster contient :</p>
+<p><span class="math display">\[
+(1,1),\quad (1,3)
+\]</span></p>
+<p>Son centroïde est :</p>
+<p><span class="math display">\[
+\mu=(1,2)
+\]</span></p>
+<p>Calculez son inertie :</p>
+<p><span class="math display">\[
+I=\|x_1-\mu\|^2 + \|x_2-\mu\|^2
+\]</span></p>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-7">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-7" class="quarto-xref">Exercice&nbsp;<span>7</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>On a :</p>
+<p><span class="math display">\[
+\|x_1-\mu\|^2 = (1-1)^2+(1-2)^2=1
+\]</span></p>
+<p><span class="math display">\[
+\|x_2-\mu\|^2 = (1-1)^2+(3-2)^2=1
+\]</span></p>
+<p>Donc :</p>
+<p><span class="math display">\[
+I=1+1=2
+\]</span></p>
+</div>
+</div>
+</div>
+<div id="exr-unsup-8" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 8 (8. Effet de l’échelle)</strong></span> Une équipe applique K-Means à deux variables :</p>
+<ul>
+<li>le revenu annuel, entre 20 000 et 200 000 ;</li>
+<li>un taux, entre 0 et 1.</li>
+</ul>
+<ol type="1">
+<li>Quelle variable risque de dominer la distance euclidienne ?<br>
+</li>
+<li>Quelle transformation peut être envisagée ?<br>
+</li>
+<li>Pourquoi cette transformation modifie-t-elle la notion de similarité ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-8">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-8" class="quarto-xref">Exercice&nbsp;<span>8</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Le revenu annuel risque de dominer la distance, car son amplitude numérique est beaucoup plus grande.<br>
+</li>
+<li>On peut standardiser les variables.<br>
+</li>
+<li>Avant standardisation, une différence sur le revenu pèse plus lourd qu’une différence sur le taux. Après standardisation, les variables sont comparées selon leur variation relative, ce qui change la définition de la similarité.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-unsup-9" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 9 (9. Lecture d’un résultat de clustering)</strong></span> K-Means produit trois groupes de clients. Le groupe 2 a en moyenne une dépense plus élevée que les autres.</p>
+<p>Indiquez quelles conclusions sont justifiées et lesquelles sont abusives :</p>
+<ol type="1">
+<li>le groupe 2 possède une dépense moyenne plus élevée dans les données ;</li>
+<li>appartenir au groupe 2 provoque une dépense élevée ;</li>
+<li>le groupe 2 peut être décrit comme un groupe de clients à forte dépense selon les variables utilisées ;</li>
+<li>le groupe 2 représente une catégorie naturelle et stable de clients.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-unsup-9">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-unsup-9" class="quarto-xref">Exercice&nbsp;<span>9</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Justifié.<br>
+</li>
+<li>Abusif : le clustering ne prouve pas de causalité.<br>
+</li>
+<li>Justifié avec prudence : on peut décrire le groupe selon les variables et la méthode utilisées.<br>
+</li>
+<li>Non démontré : la naturalité et la stabilité du groupe doivent être vérifiées par d’autres analyses et éventuellement d’autres échantillons.</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapitres/04_classification.html" class="pagination-link" aria-label="Classification">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Classification</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

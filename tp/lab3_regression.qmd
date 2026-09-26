@@ -1,0 +1,291 @@
+# Lab 3 — Régression : prédire une valeur numérique
+
+::: {.callout-tip title="Objectifs du Lab"}
+À la fin de ce Lab, l'étudiant sera capable de :
+
+- **Implémenter** une régression linéaire simple *from scratch* et retrouver le même résultat qu'avec `scikit-learn` ;
+- **Entraîner** une régression linéaire multiple sur plusieurs variables ;
+- **Calculer et interpréter** les métriques MAE, MSE, RMSE et $R^2$ ;
+- **Diagnostiquer** un modèle de régression à partir de ses résidus ;
+- **Utiliser** la régularisation (`Ridge`, `Lasso`) pour lutter contre le sur-apprentissage ;
+- **Régler un hyperparamètre proprement** avec `GridSearchCV` et la validation croisée ;
+- **Assembler** un pipeline complet, du prétraitement au modèle final.
+:::
+
+::: {.callout-note title="Lien avec le cours"}
+Ce Lab correspond au chapitre 4 (*Modèles de régression*). Il réutilise directement les compétences des Labs précédents : construction de $X$/$y$ et évaluation (Lab 1, chapitre 2), prétraitement et `ColumnTransformer` (Lab 2, chapitre 3). C'est ici que le réglage d'hyperparamètres, seulement esquissé au Lab 1, est traité **en profondeur** avec `GridSearchCV` — une méthode que vous réutiliserez telle quelle au Lab 4 (classification).
+:::
+
+## 1. Rappel : qu'est-ce qu'apprend une régression linéaire ?
+
+Une régression linéaire simple cherche les coefficients $a$ et $b$ qui minimisent l'erreur quadratique moyenne entre les valeurs prédites $\hat{y} = a x + b$ et les valeurs réelles $y$ :
+
+$$
+\text{MSE}(a, b) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - (a x_i + b) \right)^2
+$$
+
+Pour la régression linéaire, cette minimisation possède une solution exacte, calculable directement (les **équations normales**), que nous allons calculer nous-mêmes avant de laisser `scikit-learn` s'en charger.
+
+### 1.1. Régression linéaire simple, *from scratch*
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(0)
+surface = rng.uniform(30, 180, size=200)
+prix = 8_500 * surface + 120_000 + rng.normal(0, 60_000, size=200)
+
+# Équations normales pour a et b (régression simple)
+x_moyenne, y_moyenne = surface.mean(), prix.mean()
+a_calcule = np.sum((surface - x_moyenne) * (prix - y_moyenne)) / np.sum((surface - x_moyenne) ** 2)
+b_calcule = y_moyenne - a_calcule * x_moyenne
+
+print(f"a (pente)     = {a_calcule:,.1f} MAD par m²")
+print(f"b (ordonnée)  = {b_calcule:,.1f} MAD")
+```
+
+### 1.2. Vérification avec `scikit-learn`
+
+```python
+from sklearn.linear_model import LinearRegression
+
+modele = LinearRegression()
+modele.fit(surface.reshape(-1, 1), prix)
+
+print("a (scikit-learn) :", round(modele.coef_[0], 1))
+print("b (scikit-learn) :", round(modele.intercept_, 1))
+print("Résultats identiques :", np.allclose([a_calcule, b_calcule], [modele.coef_[0], modele.intercept_]))
+```
+
+::: {.callout-tip title="Ce que `.fit()` a fait concrètement"}
+`LinearRegression().fit()` n'est rien d'autre qu'une résolution optimisée des mêmes équations normales que celles calculées à la main ci-dessus. Comprendre ce calcul démystifie ce qui se cache derrière `.fit()`.
+:::
+
+## 2. Passer à la régression multiple
+
+En pratique, un seul prédicteur suffit rarement. Construisons un jeu de données d'annonces immobilières casablancaises plus riche, dans l'esprit du fil rouge du cours (chapitre 1, §3).
+
+```python
+import pandas as pd
+
+n = 300
+rng = np.random.default_rng(7)
+
+quartiers = rng.choice(["Maarif", "Hay Riad", "Gueliz", "Agdal", "Ain Diab"], size=n)
+surface = rng.uniform(30, 220, size=n)
+chambres = rng.integers(1, 6, size=n)
+age_bien = rng.integers(0, 40, size=n)
+etage = rng.integers(0, 12, size=n)
+
+bonus_quartier = pd.Series(quartiers).map({
+    "Maarif": 150_000, "Hay Riad": 260_000, "Gueliz": 90_000,
+    "Agdal": 190_000, "Ain Diab": 320_000,
+}).to_numpy()
+
+prix = (
+    8_200 * surface + 55_000 * chambres - 3_000 * age_bien + 15_000 * etage
+    + bonus_quartier + rng.normal(0, 70_000, size=n)
+)
+
+annonces = pd.DataFrame({
+    "surface_m2": surface.round(0), "nb_chambres": chambres, "age_bien": age_bien,
+    "etage": etage, "quartier": quartiers, "prix_mad": prix.round(0),
+})
+annonces.to_csv("data/processed/annonces_casablanca.csv", index=False)
+print(annonces.head())
+```
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+X = annonces.drop(columns="prix_mad")
+y = annonces["prix_mad"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+colonnes_numeriques = ["surface_m2", "nb_chambres", "age_bien", "etage"]
+colonnes_categorielles = ["quartier"]
+
+pretraitement = ColumnTransformer([
+    ("num", StandardScaler(), colonnes_numeriques),
+    ("cat", OneHotEncoder(drop="first", handle_unknown="ignore"), colonnes_categorielles),
+])
+
+pipeline_regression = Pipeline([
+    ("pretraitement", pretraitement),
+    ("modele", LinearRegression()),
+])
+
+pipeline_regression.fit(X_train, y_train)
+print("R² test :", round(pipeline_regression.score(X_test, y_test), 3))
+```
+
+## 3. Métriques de régression : MAE, MSE, RMSE, $R^2$
+
+```python
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+y_pred = pipeline_regression.predict(X_test)
+
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print(f"MAE  = {mae:,.0f} MAD")
+print(f"MSE  = {mse:,.0f}")
+print(f"RMSE = {rmse:,.0f} MAD")
+print(f"R²   = {r2:.3f}")
+```
+
+| Métrique | Unité | Ce qu'elle mesure | À minimiser ou maximiser ? |
+|---|---|---|---|
+| MAE | Celle de $y$ (MAD) | Erreur absolue moyenne, peu sensible aux valeurs extrêmes | Minimiser |
+| MSE | Celle de $y$ au carré | Pénalise fortement les grosses erreurs | Minimiser |
+| RMSE | Celle de $y$ (MAD) | Racine de la MSE, revient à l'unité d'origine — la plus lisible en pratique | Minimiser |
+| $R^2$ | Sans unité, $\le 1$ | Proportion de variance expliquée par le modèle par rapport à une baseline qui prédit toujours la moyenne | Maximiser |
+
+::: {.callout-note title="R² et baseline (rappel chapitre 2, §6)"}
+Un $R^2$ de 0 correspond exactement à la performance d'une baseline qui prédirait toujours $\bar{y}$ (la moyenne). Un $R^2$ négatif signifie que votre modèle fait **pire** que cette baseline triviale — un signal d'alerte à ne jamais ignorer.
+:::
+
+## 4. Diagnostiquer un modèle par ses résidus
+
+```python
+import matplotlib.pyplot as plt
+
+residus = y_test - y_pred
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+
+axes[0].scatter(y_pred, residus, alpha=0.6)
+axes[0].axhline(0, color="red", linestyle="--")
+axes[0].set_xlabel("Prix prédit (MAD)")
+axes[0].set_ylabel("Résidu (réel − prédit)")
+axes[0].set_title("Résidus vs prédictions")
+
+axes[1].hist(residus, bins=25)
+axes[1].set_xlabel("Résidu (MAD)")
+axes[1].set_title("Distribution des résidus")
+
+fig.tight_layout()
+fig.savefig("outputs/diagnostic_residus.png", dpi=150)
+plt.show()
+```
+
+Un bon modèle produit des résidus répartis **aléatoirement autour de zéro**, sans motif visible. Un nuage en forme d'entonnoir (variance croissante) ou une courbe systématique indique que le modèle rate quelque chose de structurel — une piste pour ajouter des variables ou transformer certaines d'entre elles (par exemple un logarithme sur `prix_mad`).
+
+## 5. Régularisation : `Ridge` et `Lasso`
+
+Avec de nombreuses variables (surtout après un One-Hot Encoding qui crée plusieurs colonnes), une régression linéaire classique peut sur-apprendre. La **régularisation** ajoute une pénalité sur la taille des coefficients :
+
+$$
+\text{Ridge} : \quad \text{MSE}(\beta) + \alpha \sum_{j} \beta_j^2
+\qquad\qquad
+\text{Lasso} : \quad \text{MSE}(\beta) + \alpha \sum_{j} |\beta_j|
+$$
+
+où $\alpha \geq 0$ contrôle l'intensité de la pénalité — un **hyperparamètre**, à ne pas confondre avec les coefficients $\beta_j$, qui restent des paramètres appris.
+
+```python
+from sklearn.linear_model import Lasso, Ridge
+
+for nom, modele_reg in [("Ridge (α=1.0)", Ridge(alpha=1.0)), ("Lasso (α=1.0)", Lasso(alpha=1.0))]:
+    pipeline_test = Pipeline([("pretraitement", pretraitement), ("modele", modele_reg)])
+    pipeline_test.fit(X_train, y_train)
+    print(f"{nom:20s} → R² test = {pipeline_test.score(X_test, y_test):.3f}")
+```
+
+::: {.callout-tip title="Ridge vs Lasso"}
+`Ridge` réduit tous les coefficients sans jamais les annuler complètement. `Lasso` peut ramener certains coefficients **exactement à zéro** — il réalise de fait une sélection de variables automatique, utile quand on soupçonne que certaines colonnes n'apportent rien.
+:::
+
+## 6. Régler $\alpha$ proprement avec `GridSearchCV`
+
+Au Lab 1, nous avions comparé quelques valeurs de $k$ à la main, dans une boucle. `GridSearchCV` automatise entièrement cette démarche : il essaie chaque valeur d'hyperparamètre, évalue chacune par validation croisée, et conserve la meilleure — **sans jamais toucher au jeu de test**.
+
+```python
+from sklearn.model_selection import GridSearchCV
+
+pipeline_ridge = Pipeline([
+    ("pretraitement", pretraitement),
+    ("modele", Ridge()),
+])
+
+grille_parametres = {
+    "modele__alpha": [0.01, 0.1, 1.0, 10.0, 50.0, 100.0, 300.0],
+}
+
+recherche = GridSearchCV(
+    pipeline_ridge,
+    param_grid=grille_parametres,
+    cv=5,
+    scoring="r2",
+)
+recherche.fit(X_train, y_train)
+
+print("Meilleur α :", recherche.best_params_)
+print("Meilleur R² (moyenne CV) :", round(recherche.best_score_, 3))
+print("R² sur le test, avec le meilleur modèle :", round(recherche.score(X_test, y_test), 3))
+```
+
+::: {.callout-important title="Comment lire `param_grid`"}
+`"modele__alpha"` utilise la syntaxe `nom_étape__nom_paramètre` de `scikit-learn` : `modele` est le nom donné à l'étape dans le `Pipeline`, et `alpha` est le paramètre de `Ridge` à faire varier. Cette syntaxe permet de régler des hyperparamètres **à l'intérieur** d'un pipeline complet, prétraitement inclus.
+:::
+
+`recherche` se comporte ensuite exactement comme un modèle entraîné classique : `recherche.predict(...)` et `recherche.score(...)` utilisent automatiquement le meilleur pipeline trouvé.
+
+::: {.callout-note title="Pourquoi une grille plutôt qu'une seule valeur ?"}
+Choisir $\alpha$ à l'œil, ou pire sur le jeu de test, revient à une fuite de données par les hyperparamètres (chapitre 2, §5) : le score obtenu serait artificiellement optimiste et ne refléterait pas la performance réelle attendue en production.
+:::
+
+## 7. Synthèse
+
+::: {.callout-note title="Auto-évaluation" collapse="true"}
+- [ ] Je sais calculer les coefficients d'une régression linéaire simple à la main et retrouver le même résultat avec `scikit-learn`.
+- [ ] Je sais construire une régression multiple avec des variables numériques et catégorielles, via un pipeline.
+- [ ] Je sais calculer et interpréter MAE, RMSE et $R^2$, et dire laquelle privilégier selon le contexte.
+- [ ] Je sais lire un graphique de résidus pour diagnostiquer un modèle.
+- [ ] Je sais expliquer la différence entre `Ridge` et `Lasso`.
+- [ ] Je sais utiliser `GridSearchCV` pour choisir un hyperparamètre par validation croisée, à l'intérieur d'un pipeline complet.
+:::
+
+## 8. Lab Sheet — Projet guidé {#sec-lab3-projet}
+
+::: {.callout-important title="Jeu de données du projet"}
+Ce projet utilise le jeu de données `diabetes` fourni par `scikit-learn` (`from sklearn.datasets import load_diabetes`) : 442 patients, 10 variables physiologiques standardisées, et une cible numérique mesurant la progression de la maladie un an après le diagnostic. C'est un vrai jeu de données médical, utilisé dans de nombreuses publications de référence sur la régression régularisée.
+:::
+
+### Partie A — Prise en main
+
+1. Chargez `load_diabetes(as_frame=True)`. Combien d'observations et de variables explicatives ? Toutes les variables sont-elles déjà numériques ?
+2. Séparez Train (80 %) / Test (20 %) avec un `random_state` fixé.
+
+### Partie B — Une première régression
+
+3. Entraînez une `LinearRegression` simple (sans régularisation). Calculez MAE, RMSE et $R^2$ sur le jeu de test.
+4. Affichez les coefficients appris (`.coef_`) associés à chaque variable. Quelle variable semble avoir le plus d'impact (en valeur absolue) ?
+5. Tracez le graphique résidus vs prédictions (§4). Observez-vous un motif particulier ?
+
+### Partie C — Régularisation et réglage d'hyperparamètre
+
+6. Construisez une grille de valeurs de $\alpha$ pour `Ridge` (au moins 6 valeurs, sur plusieurs ordres de grandeur, par exemple de 0.01 à 100).
+7. Utilisez `GridSearchCV` (5 plis) pour trouver le meilleur $\alpha$. Donnez la valeur retenue et le $R^2$ moyen obtenu en validation croisée.
+8. Comparez le $R^2$ sur le jeu de test entre la régression linéaire simple (question 3) et le meilleur `Ridge` trouvé. La régularisation a-t-elle amélioré la généralisation ? Formulez une explication.
+9. *(Bonus)* Refaites les questions 6-7 avec `Lasso`. Combien de coefficients sont ramenés exactement à zéro avec le meilleur $\alpha$ trouvé ? Quelles variables sont éliminées ?
+
+### Livrables
+
+- un notebook ou script contenant le code des parties A à C ;
+- au moins un graphique de diagnostic dans `outputs/` ;
+- un court paragraphe comparant les modèles testés et justifiant le choix final.
+
+::: {.callout-tip title="Checklist finale"}
+- [ ] Le split Train/Test est effectué avant tout calcul de statistique.
+- [ ] Au moins trois métriques de régression sont calculées et interprétées.
+- [ ] L'hyperparamètre $\alpha$ est choisi par validation croisée, jamais sur le test.
+- [ ] Le jeu de test n'est utilisé qu'une seule fois, pour l'évaluation finale.
+:::

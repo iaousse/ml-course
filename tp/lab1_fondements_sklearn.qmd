@@ -1,0 +1,346 @@
+# Lab 1 — Généralisation et évaluation avec `scikit-learn`
+
+::: {.callout-tip title="Objectifs du Lab"}
+À la fin de ce Lab, l'étudiant sera capable de :
+
+- **Construire** la matrice $X$ et le vecteur $y$ d'un jeu de données avec `pandas`/`scikit-learn` ;
+- **Utiliser** l'API commune de `scikit-learn` (`fit`, `predict`, `score`) ;
+- **Séparer** un jeu de données en Train/Test avec `train_test_split` ;
+- **Observer concrètement** le sur-apprentissage et le sous-apprentissage sur un graphique ;
+- **Mettre en œuvre** une validation croisée (`KFold`, `cross_val_score`) ;
+- **Comparer** un modèle à une baseline (`DummyClassifier`) ;
+- **Calculer** une matrice de confusion et les métriques associées ;
+- **Repérer**, sur un exemple concret, une fuite de données liée à un mauvais ordre des opérations.
+:::
+
+::: {.callout-note title="Lien avec le cours"}
+Ce Lab met en pratique le chapitre 2 (*Fondements Théoriques de l'Apprentissage Automatique*) : notation $X$/$y$ (@tbl-jeu-donnees), généralisation et sur-apprentissage (@fig-overfitting), jeux Train/Validation/Test (@tbl-jeux-evaluation), baseline et matrice de confusion (@tbl-confusion). Le classifieur des k plus proches voisins (`KNeighborsClassifier`) est utilisé ici uniquement comme **véhicule pédagogique** pour manipuler concrètement un hyperparamètre ($k$) — son fonctionnement détaillé est étudié au chapitre 5 (Lab 4). De même, les pipelines de prétraitement complets (imputation, encodage) sont réservés au chapitre 3 (Lab 2) ; nous travaillons ici sur des données déjà numériques et propres, pour isoler les notions d'évaluation.
+:::
+
+## 1. Rappel express : construire $X$ et $y$
+
+Reprenons le petit jeu d'annonces immobilières du Lab 0, mais agrandi et légèrement bruité pour ressembler à un vrai jeu de données.
+
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+
+n = 150
+quartiers = rng.choice(["Maarif", "Hay Riad", "Gueliz", "Agdal"], size=n)
+surface = rng.uniform(30, 180, size=n).round(0)
+chambres = rng.integers(1, 6, size=n)
+
+prix_base = 8_000 * surface + 60_000 * chambres
+bonus_quartier = pd.Series(quartiers).map({
+    "Maarif": 150_000, "Hay Riad": 250_000, "Gueliz": 100_000, "Agdal": 180_000,
+}).to_numpy()
+bruit = rng.normal(0, 60_000, size=n)
+
+annonces = pd.DataFrame({
+    "surface_m2": surface,
+    "nb_chambres": chambres,
+    "quartier": quartiers,
+    "prix_mad": (prix_base + bonus_quartier + bruit).round(0),
+})
+print(annonces.head())
+```
+
+Conformément à la notation du chapitre 2 (@tbl-jeu-donnees), on sépare **variables explicatives** ($X$) et **cible** ($y$). Pour rester sur des variables numériques dans cette première section, on ignore temporairement `quartier` (l'encodage complet est traité au Lab 2) :
+
+```python
+X = annonces[["surface_m2", "nb_chambres"]]
+y = annonces["prix_mad"]
+
+print("X :", X.shape)
+print("y :", y.shape)
+```
+
+### 1.1. L'API commune de `scikit-learn`
+
+Quel que soit l'algorithme utilisé, `scikit-learn` propose toujours la même interface :
+
+```python
+from sklearn.linear_model import LinearRegression
+
+modele = LinearRegression()   # 1. instancier
+modele.fit(X, y)               # 2. apprendre les paramètres à partir de (X, y)
+predictions = modele.predict(X)  # 3. prédire
+score = modele.score(X, y)      # 4. évaluer (ici, le R²)
+
+print("R² sur les données d'entraînement :", round(score, 3))
+```
+
+::: {.callout-warning title="Ce score est trompeur"}
+Ce score est calculé sur les **mêmes données** que celles utilisées pour l'entraînement. Comme vu au chapitre 2, cela ne mesure en rien la capacité de généralisation du modèle — ce n'est qu'une mesure de qualité d'ajustement (*fit*). La suite du Lab corrige ce problème.
+:::
+
+## 2. Séparer Train et Test
+
+```python
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42,
+)
+
+print("Entraînement :", X_train.shape[0], "observations")
+print("Test         :", X_test.shape[0], "observations")
+
+modele = LinearRegression()
+modele.fit(X_train, y_train)
+
+print("R² train :", round(modele.score(X_train, y_train), 3))
+print("R² test  :", round(modele.score(X_test, y_test), 3))
+```
+
+Les deux scores sont proches : c'est un bon signe (voir @fig-overfitting). Un très grand écart entre les deux serait au contraire la signature d'un sur-apprentissage.
+
+::: {.callout-warning title="Règle d'or (rappel du chapitre 2, @tbl-jeux-evaluation)"}
+`random_state=42` fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours **le même** partage Train/Test en réexécutant le code — indispensable pour la reproductibilité (chapitre 1, §4.3).
+:::
+
+## 3. Observer le sur-apprentissage à l'œil nu
+
+Rien ne rend la notion de sur-apprentissage plus concrète que de la provoquer soi-même. Construisons un jeu de données 1D synthétique, où la vraie relation est une courbe, puis ajustons des polynômes de degré croissant.
+
+```python
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import PolynomialFeatures
+
+rng = np.random.default_rng(0)
+x = rng.uniform(0, 1, size=60).reshape(-1, 1)
+y_vrai = np.sin(2 * np.pi * x).ravel()
+y_bruit = y_vrai + rng.normal(0, 0.25, size=60)
+
+x_train, x_val, y_train_1d, y_val_1d = train_test_split(
+    x, y_bruit, test_size=0.3, random_state=0,
+)
+
+degres = range(1, 15)
+erreurs_train, erreurs_val = [], []
+
+for degre in degres:
+    poly = PolynomialFeatures(degree=degre)
+    x_train_poly = poly.fit_transform(x_train)
+    x_val_poly = poly.transform(x_val)
+
+    modele_poly = LinearRegression()
+    modele_poly.fit(x_train_poly, y_train_1d)
+
+    erreurs_train.append(mean_squared_error(y_train_1d, modele_poly.predict(x_train_poly)))
+    erreurs_val.append(mean_squared_error(y_val_1d, modele_poly.predict(x_val_poly)))
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+ax.plot(degres, erreurs_train, marker="o", label="Erreur d'entraînement")
+ax.plot(degres, erreurs_val, marker="o", label="Erreur de validation")
+ax.set_xlabel("Degré du polynôme (complexité du modèle)")
+ax.set_ylabel("Erreur quadratique moyenne (MSE)")
+ax.set_title("Sous-apprentissage ↔ Sur-apprentissage")
+ax.legend()
+fig.tight_layout()
+fig.savefig("outputs/courbe_biais_variance.png", dpi=150)
+plt.show()
+```
+
+Vous devriez observer, comme sur la @fig-overfitting du chapitre 2 :
+
+- pour un **faible degré** (1-2), les deux erreurs sont élevées et proches : c'est du **sous-apprentissage** — le modèle (une droite ou presque) est trop simple pour capturer la courbe sinusoïdale ;
+- pour un **degré intermédiaire**, l'erreur de validation atteint son minimum : c'est le meilleur compromis ;
+- pour un **degré élevé** (10+), l'erreur d'entraînement continue de baisser (le modèle mémorise le bruit) tandis que l'erreur de validation **remonte** : c'est le **sur-apprentissage**.
+
+::: {.callout-tip title="À retenir"}
+Ce graphique est l'un des plus importants du cours. Reproduisez-le mentalement chaque fois que vous choisissez la complexité d'un modèle (profondeur d'un arbre, degré d'un polynôme, valeur de $k$ en KNN, force de régularisation...).
+:::
+
+## 4. La validation croisée
+
+Un unique découpage Train/Validation dépend du hasard du tirage : sur un petit jeu de données, deux découpages différents peuvent donner des résultats sensiblement différents. La **validation croisée** répète l'évaluation sur plusieurs découpages et moyenne les résultats — une notion annoncée mais non détaillée au chapitre 2, que nous mettons ici en pratique.
+
+```python
+from sklearn.model_selection import KFold, cross_val_score
+
+modele = LinearRegression()
+
+kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+scores = cross_val_score(modele, X, y, cv=kfold, scoring="r2")
+
+print("Scores R² sur les 5 plis :", scores.round(3))
+print("Moyenne :", round(scores.mean(), 3), " Écart-type :", round(scores.std(), 3))
+```
+
+Chaque pli (*fold*) sert tour à tour de jeu de validation, pendant que les quatre autres servent à l'entraînement : chaque observation est donc utilisée exactement une fois pour valider, et quatre fois pour entraîner. La moyenne des 5 scores est une estimation plus stable de la performance réelle qu'un unique découpage.
+
+::: {.callout-note title="`StratifiedKFold` pour la classification"}
+Pour une tâche de **classification**, on utilise `StratifiedKFold` plutôt que `KFold` : il garantit que chaque pli conserve la même proportion de chaque classe que le jeu complet — important si les classes sont déséquilibrées (voir le chapitre de classification pour les limites de l'accuracy).
+:::
+
+## 5. Une baseline avant tout modèle
+
+Avant de juger un modèle « bon », il faut le comparer à une règle triviale. Passons à une tâche de **classification** pour illustrer ce point avec le jeu de données `iris` (fourni avec `scikit-learn` — trois espèces de fleurs, décrites par 4 mesures).
+
+```python
+from sklearn.datasets import load_iris
+
+iris = load_iris(as_frame=True)
+X_iris, y_iris = iris.data, iris.target
+
+X_iris_train, X_iris_test, y_iris_train, y_iris_test = train_test_split(
+    X_iris, y_iris, test_size=0.25, random_state=42, stratify=y_iris,
+)
+```
+
+```python
+from sklearn.dummy import DummyClassifier
+
+baseline = DummyClassifier(strategy="most_frequent")
+baseline.fit(X_iris_train, y_iris_train)
+print("Accuracy de la baseline :", round(baseline.score(X_iris_test, y_iris_test), 3))
+```
+
+Le jeu `iris` étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % — un score que **tout** modèle sérieux doit largement dépasser pour être utile (voir chapitre 2, §6).
+
+## 6. Un vrai modèle, sa matrice de confusion et ses métriques
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import ConfusionMatrixDisplay, classification_report, confusion_matrix
+
+modele_knn = KNeighborsClassifier(n_neighbors=5)
+modele_knn.fit(X_iris_train, y_iris_train)
+
+y_pred = modele_knn.predict(X_iris_test)
+print("Accuracy KNN :", round(modele_knn.score(X_iris_test, y_iris_test), 3))
+
+matrice = confusion_matrix(y_iris_test, y_pred)
+print(matrice)
+
+fig, ax = plt.subplots(figsize=(5, 5))
+ConfusionMatrixDisplay(matrice, display_labels=iris.target_names).plot(ax=ax, cmap="Blues")
+ax.set_title("Matrice de confusion — KNN sur Iris")
+fig.tight_layout()
+fig.savefig("outputs/confusion_iris.png", dpi=150)
+plt.show()
+
+print(classification_report(y_iris_test, y_pred, target_names=iris.target_names))
+```
+
+::: {.callout-note title="Lecture de la matrice"}
+Comme précisé au chapitre 2 (@tbl-confusion), la convention adoptée dans ce cours est : **lignes = classes réelles, colonnes = classes prédites**. La diagonale contient les prédictions correctes ; toute valeur hors diagonale est une erreur, et sa position indique précisément quelle classe a été confondue avec quelle autre — une information que l'*accuracy* seule ne donne jamais.
+:::
+
+`classification_report` calcule automatiquement, pour chaque classe, la **précision**, le **rappel** et le **F1-score** (moyenne harmonique des deux) — trois métriques annoncées au chapitre 2 (§6) et détaillées au chapitre 5.
+
+## 7. Repérer une fuite de données, concrètement
+
+Le chapitre 2 (§4.2) insiste sur la fuite de données. Provoquons-en une, volontairement, pour en mesurer l'effet chiffré.
+
+```python
+from sklearn.preprocessing import StandardScaler
+
+# --- Version INCORRECTE : standardisation avant la séparation ---
+scaler_fuite = StandardScaler()
+X_iris_standardise = scaler_fuite.fit_transform(X_iris)   # fit sur TOUT le jeu
+
+X_train_f, X_test_f, y_train_f, y_test_f = train_test_split(
+    X_iris_standardise, y_iris, test_size=0.25, random_state=42, stratify=y_iris,
+)
+
+modele_fuite = KNeighborsClassifier(n_neighbors=5)
+modele_fuite.fit(X_train_f, y_train_f)
+score_fuite = modele_fuite.score(X_test_f, y_test_f)
+
+# --- Version CORRECTE : standardisation après la séparation ---
+X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(
+    X_iris, y_iris, test_size=0.25, random_state=42, stratify=y_iris,
+)
+
+scaler_correct = StandardScaler()
+X_train_c_scaled = scaler_correct.fit_transform(X_train_c)   # fit UNIQUEMENT sur train
+X_test_c_scaled = scaler_correct.transform(X_test_c)          # transform seul sur test
+
+modele_correct = KNeighborsClassifier(n_neighbors=5)
+modele_correct.fit(X_train_c_scaled, y_train_c)
+score_correct = modele_correct.score(X_test_c_scaled, y_test_c)
+
+print("Accuracy (avec fuite)  :", round(score_fuite, 4))
+print("Accuracy (sans fuite)  :", round(score_correct, 4))
+```
+
+Sur `iris`, l'écart est ici modeste (le jeu de données est petit et propre), mais sur des jeux plus grands ou plus bruités, l'écart peut être significatif et **toujours optimiste en faveur de la version avec fuite** — un piège d'autant plus dangereux qu'il donne une fausse confiance dans le modèle avant son déploiement.
+
+## 8. Un premier aperçu du réglage d'hyperparamètres
+
+$k$ (le nombre de voisins de `KNeighborsClassifier`) est un **hyperparamètre** (@tbl-parametres) : il n'est pas appris, il doit être choisi. La bonne pratique, rappelée au chapitre 2 (§5), est de comparer plusieurs valeurs **uniquement via la validation croisée**, jamais sur le jeu de test.
+
+```python
+for k in [1, 3, 5, 7, 9, 15]:
+    scores_k = cross_val_score(
+        KNeighborsClassifier(n_neighbors=k), X_iris_train, y_iris_train, cv=5,
+    )
+    print(f"k={k:2d}  →  accuracy moyenne (CV) = {scores_k.mean():.3f}")
+```
+
+::: {.callout-note title="Pour aller plus loin : `GridSearchCV`"}
+Comparer les valeurs une à une avec une boucle fonctionne, mais devient vite fastidieux dès qu'il y a plusieurs hyperparamètres à combiner. Le Lab 3 (régression, chapitre 4) introduit `GridSearchCV`, qui automatise entièrement cette recherche par validation croisée. Nous nous limitons ici à une boucle simple pour bien comprendre le principe sous-jacent avant d'utiliser l'outil automatisé.
+:::
+
+## 9. Synthèse
+
+::: {.callout-note title="Auto-évaluation" collapse="true"}
+- [ ] Je sais construire $X$ et $y$ à partir d'un `DataFrame` `pandas`.
+- [ ] Je sais utiliser `train_test_split` et expliquer pourquoi `random_state` est fixé.
+- [ ] Je peux tracer et interpréter une courbe d'erreur train/validation selon la complexité.
+- [ ] Je sais utiliser `cross_val_score` et expliquer ce qu'apporte la validation croisée par rapport à un split unique.
+- [ ] Je sais comparer un modèle à une `DummyClassifier`.
+- [ ] Je sais produire et lire une matrice de confusion et un `classification_report`.
+- [ ] Je peux reproduire, sur un exemple, l'écart de score causé par une fuite de données.
+:::
+
+## 10. Lab Sheet — Projet guidé {#sec-lab1-projet}
+
+::: {.callout-important title="Jeu de données du projet"}
+Ce projet utilise le jeu de données `wine`, également fourni par `scikit-learn` (`from sklearn.datasets import load_wine`) : 178 vins italiens, décrits par 13 mesures chimiques, répartis en 3 cultivars (classes). C'est un jeu **différent** de celui utilisé en cours — à vous de refaire, seul(e), l'ensemble de la démarche.
+:::
+
+### Partie A — Prise en main
+
+1. Chargez `load_wine(as_frame=True)`. Combien d'observations et de variables explicatives le jeu contient-il ? Les classes sont-elles équilibrées (comptez les occurrences de chaque classe) ?
+2. Séparez les données en Train (75 %) / Test (25 %), avec `stratify` sur la cible et un `random_state` de votre choix. Justifiez en une phrase l'usage de `stratify` ici.
+
+### Partie B — Baseline et premier modèle
+
+3. Entraînez une `DummyClassifier` et notez son accuracy sur le jeu de test. À quoi correspond ce chiffre, compte tenu de votre réponse à la question 1 ?
+4. Entraînez un `KNeighborsClassifier` avec $k=5$ **sans aucune mise à l'échelle préalable**. Comparez son accuracy à celle de la baseline.
+
+### Partie C — Une mise à l'échelle change-t-elle tout ?
+
+5. Refaites la question 4 en standardisant les données au préalable (avec la méthode **correcte**, sans fuite). L'accuracy change-t-elle ? Proposez une explication liée à la nature de l'algorithme KNN (indice : pensez à la notion de distance entre observations, chapitre 3 §5).
+
+### Partie D — Régler l'hyperparamètre $k$
+
+6. Par validation croisée à 5 plis **sur le jeu d'entraînement uniquement**, testez au moins six valeurs de $k$ entre 1 et 25. Tracez un graphique accuracy moyenne (CV) en fonction de $k$.
+7. Identifiez la valeur de $k$ qui vous semble la meilleure. Justifiez votre choix en vous appuyant sur le graphique (y a-t-il un signe de sur-apprentissage pour les très petites valeurs de $k$ ? de sous-apprentissage pour les très grandes ?).
+
+### Partie E — Évaluation finale
+
+8. Réentraînez un modèle avec le $k$ retenu sur l'ensemble du jeu d'entraînement, puis évaluez-le **une seule fois** sur le jeu de test : accuracy, matrice de confusion et `classification_report`.
+9. Le modèle confond-il davantage certaines paires de cultivars que d'autres ? Formulez une hypothèse.
+10. En une phrase : pourquoi le jeu de test n'a-t-il été utilisé qu'une seule fois, à la toute fin de votre démarche ?
+
+### Livrables
+
+- un notebook ou script contenant le code des parties A à E ;
+- au moins deux graphiques (courbe de $k$, matrice de confusion) dans `outputs/` ;
+- vos réponses écrites aux questions 1, 2, 3, 5, 7, 9 et 10.
+
+::: {.callout-tip title="Checklist finale"}
+- [ ] Le split Train/Test est stratifié et reproductible.
+- [ ] Une baseline est calculée avant tout modèle sérieux.
+- [ ] $k$ est choisi par validation croisée sur le train, jamais sur le test.
+- [ ] Le jeu de test n'est utilisé qu'une seule fois, à la fin.
+- [ ] La matrice de confusion et le `classification_report` sont produits et interprétés.
+:::

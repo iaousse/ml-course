@@ -1,0 +1,250 @@
+# Lab 4 — Classification : prédire une catégorie
+
+::: {.callout-tip title="Objectifs du Lab"}
+À la fin de ce Lab, l'étudiant sera capable de :
+
+- **Entraîner** une régression logistique, un KNN et un arbre de décision sur une même tâche de classification ;
+- **Calculer et interpréter** accuracy, précision, rappel, F1-score, ROC-AUC ;
+- **Tracer et lire** une courbe ROC et une courbe précision-rappel ;
+- **Ajuster le seuil de décision** d'un modèle et en observer l'effet sur précision et rappel ;
+- **Gérer** un déséquilibre de classes avec `class_weight` et `stratify` ;
+- **Réutiliser** `GridSearchCV` pour régler l'hyperparamètre d'un modèle de classification.
+:::
+
+::: {.callout-note title="Lien avec le cours"}
+Ce Lab correspond au chapitre 5 (*Modèles de classification*). Il réutilise directement les acquis des Labs précédents : matrice de confusion (Lab 1, chapitre 2), pipeline de prétraitement (Lab 2, chapitre 3) et `GridSearchCV` (Lab 3, chapitre 4). Le fil conducteur est l'exemple de la **résiliation d'abonnement (*churn*)** introduit au chapitre 1 (§1.2) comme second exemple du triplet (T, P, E).
+:::
+
+## 1. Construire un jeu de données de *churn*
+
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(3)
+n = 500
+
+anciennete_mois = rng.integers(1, 72, size=n)
+appels_service_client = rng.poisson(1.5, size=n)
+facture_mensuelle = rng.uniform(80, 600, size=n)
+type_contrat = rng.choice(["Mensuel", "Annuel", "Deux ans"], size=n, p=[0.5, 0.3, 0.2])
+
+# Probabilité de résiliation : augmente avec les appels au service client et
+# les contrats mensuels, diminue avec l'ancienneté — une structure réaliste.
+logit = (
+    -2.0
+    + 0.35 * appels_service_client
+    - 0.03 * anciennete_mois
+    + 0.004 * facture_mensuelle
+    + pd.Series(type_contrat).map({"Mensuel": 1.2, "Annuel": -0.3, "Deux ans": -1.0}).to_numpy()
+)
+probabilite_churn = 1 / (1 + np.exp(-logit))
+churn = rng.binomial(1, probabilite_churn)
+
+clients = pd.DataFrame({
+    "anciennete_mois": anciennete_mois,
+    "appels_service_client": appels_service_client,
+    "facture_mensuelle": facture_mensuelle.round(2),
+    "type_contrat": type_contrat,
+    "churn": churn,
+})
+print(clients["churn"].value_counts(normalize=True).round(3))
+```
+
+Comme souvent en pratique, les classes sont **déséquilibrées** : gardez ce chiffre en tête, il conditionne toute la suite (chapitre 2, §6, « le piège des classes déséquilibrées »).
+
+## 2. Un pipeline de classification, de bout en bout
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+X = clients.drop(columns="churn")
+y = clients["churn"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y,
+)
+
+colonnes_numeriques = ["anciennete_mois", "appels_service_client", "facture_mensuelle"]
+colonnes_categorielles = ["type_contrat"]
+
+pretraitement = ColumnTransformer([
+    ("num", StandardScaler(), colonnes_numeriques),
+    ("cat", OneHotEncoder(drop="first"), colonnes_categorielles),
+])
+
+pipeline_logit = Pipeline([
+    ("pretraitement", pretraitement),
+    ("modele", LogisticRegression()),
+])
+
+pipeline_logit.fit(X_train, y_train)
+print("Accuracy test :", round(pipeline_logit.score(X_test, y_test), 3))
+```
+
+## 3. Au-delà de l'accuracy : précision, rappel, F1, ROC-AUC
+
+```python
+from sklearn.metrics import (
+    ConfusionMatrixDisplay, RocCurveDisplay, classification_report,
+    confusion_matrix, roc_auc_score,
+)
+
+y_pred = pipeline_logit.predict(X_test)
+y_proba = pipeline_logit.predict_proba(X_test)[:, 1]   # probabilité de la classe "churn"
+
+print(classification_report(y_test, y_pred, target_names=["reste", "churn"]))
+print("ROC-AUC :", round(roc_auc_score(y_test, y_proba), 3))
+```
+
+```python
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+
+ConfusionMatrixDisplay(
+    confusion_matrix(y_test, y_pred), display_labels=["reste", "churn"],
+).plot(ax=axes[0], cmap="Blues")
+axes[0].set_title("Matrice de confusion")
+
+RocCurveDisplay.from_predictions(y_test, y_proba, ax=axes[1])
+axes[1].set_title("Courbe ROC")
+
+fig.tight_layout()
+fig.savefig("outputs/evaluation_churn.png", dpi=150)
+plt.show()
+```
+
+::: {.callout-note title="Lire la courbe ROC"}
+La courbe ROC (*Receiver Operating Characteristic*) trace le taux de vrais positifs contre le taux de faux positifs, pour **tous les seuils de décision possibles**. Un modèle inutile (équivalent à un tirage au hasard) suit la diagonale ; plus la courbe s'en écarte vers le coin supérieur gauche, meilleur est le modèle. L'aire sous la courbe (**AUC**) résume cette qualité en un seul nombre entre 0,5 (hasard) et 1 (parfait).
+:::
+
+## 4. Le seuil de décision n'est pas obligatoirement 0,5
+
+Par défaut, `.predict()` classe en « churn » toute observation dont la probabilité prédite dépasse 0,5. Mais rien n'impose ce seuil : selon le coût métier d'un faux négatif (un client qui part sans qu'on ait rien tenté) par rapport à un faux positif (une offre de rétention envoyée à tort), on peut vouloir un seuil différent.
+
+```python
+from sklearn.metrics import precision_score, recall_score
+
+for seuil in [0.3, 0.5, 0.7]:
+    y_pred_seuil = (y_proba >= seuil).astype(int)
+    precision = precision_score(y_test, y_pred_seuil)
+    rappel = recall_score(y_test, y_pred_seuil)
+    print(f"Seuil = {seuil} → précision = {precision:.3f}, rappel = {rappel:.3f}")
+```
+
+Abaisser le seuil **augmente le rappel** (on détecte plus de vrais churners) mais **diminue généralement la précision** (on se trompe aussi plus souvent sur des clients qui n'allaient pas partir). Ce compromis, illustré concrètement ici, est au cœur de toute décision de déploiement d'un classifieur.
+
+## 5. Gérer le déséquilibre des classes
+
+```python
+pipeline_pondere = Pipeline([
+    ("pretraitement", pretraitement),
+    ("modele", LogisticRegression(class_weight="balanced")),
+])
+pipeline_pondere.fit(X_train, y_train)
+
+y_pred_pondere = pipeline_pondere.predict(X_test)
+print(classification_report(y_test, y_pred_pondere, target_names=["reste", "churn"]))
+```
+
+`class_weight="balanced"` donne automatiquement plus de poids à la classe minoritaire pendant l'entraînement, sans avoir à dupliquer ou supprimer des observations. Comparez le rappel de la classe « churn » avec et sans cette option : c'est généralement là que l'écart est le plus visible.
+
+## 6. Comparer plusieurs algorithmes, avec réglage d'hyperparamètres
+
+Réutilisons `GridSearchCV`, déjà maîtrisé au Lab 3, pour comparer trois familles de modèles sur la même tâche.
+
+```python
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+modeles_a_comparer = {
+    "Régression logistique": (
+        LogisticRegression(class_weight="balanced"),
+        {"modele__C": [0.01, 0.1, 1, 10]},
+    ),
+    "KNN": (
+        KNeighborsClassifier(),
+        {"modele__n_neighbors": [3, 5, 9, 15, 25]},
+    ),
+    "Arbre de décision": (
+        DecisionTreeClassifier(class_weight="balanced", random_state=42),
+        {"modele__max_depth": [2, 3, 4, 5, 8, None]},
+    ),
+}
+
+for nom, (estimateur, grille) in modeles_a_comparer.items():
+    pipeline_candidat = Pipeline([("pretraitement", pretraitement), ("modele", estimateur)])
+    recherche = GridSearchCV(pipeline_candidat, param_grid=grille, cv=5, scoring="f1")
+    recherche.fit(X_train, y_train)
+    score_test = recherche.score(X_test, y_test)
+    print(f"{nom:25s} → meilleurs paramètres = {recherche.best_params_}, F1 (test) = {score_test:.3f}")
+```
+
+::: {.callout-tip title="Pourquoi `scoring=\"f1\"` plutôt que l'accuracy ?"}
+Sur un jeu déséquilibré, optimiser l'accuracy par validation croisée pousserait naturellement `GridSearchCV` vers des modèles qui prédisent presque toujours la classe majoritaire (chapitre 2, §6). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.
+:::
+
+## 7. Synthèse
+
+::: {.callout-note title="Auto-évaluation" collapse="true"}
+- [ ] Je sais construire un pipeline de classification complet, prétraitement inclus.
+- [ ] Je sais calculer et interpréter précision, rappel, F1-score et ROC-AUC.
+- [ ] Je sais expliquer ce que montre une courbe ROC et à quoi correspond l'AUC.
+- [ ] Je sais faire varier le seuil de décision et en expliquer l'effet sur précision et rappel.
+- [ ] Je sais utiliser `class_weight="balanced"` et justifier son intérêt sur des classes déséquilibrées.
+- [ ] Je sais utiliser `GridSearchCV` avec `scoring="f1"` pour comparer plusieurs familles de modèles.
+:::
+
+## 8. Lab Sheet — Projet guidé {#sec-lab4-projet}
+
+::: {.callout-important title="Jeu de données du projet : le Titanic, à nouveau"}
+Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l'objectif n'est plus seulement de le nettoyer, mais de réellement **prédire** la survie (`survived`) d'un passager.
+
+```python
+titanic = pd.read_csv(
+    "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"
+)
+```
+:::
+
+### Partie A — Reprendre le pipeline du Lab 2
+
+1. Réappliquez (ou reconstruisez) le pipeline de prétraitement du Lab 2 sur les variables `pclass`, `sex`, `age`, `fare`, `embarked`, `sibsp`, `parch`, avec `survived` comme cible. Séparez Train (75 %) / Test (25 %), stratifiés.
+2. Le jeu est-il déséquilibré ? Donnez la proportion de survivants.
+
+### Partie B — Premier modèle et métriques
+
+3. Entraînez une `LogisticRegression` (pipeline complet). Calculez accuracy, précision, rappel, F1-score et ROC-AUC sur le test.
+4. Tracez la matrice de confusion et la courbe ROC.
+5. Une `DummyClassifier` (baseline) obtiendrait quelle accuracy sur ce jeu ? Votre modèle fait-il significativement mieux ?
+
+### Partie C — Seuil et déséquilibre
+
+6. Testez trois seuils de décision différents (par exemple 0.3, 0.5, 0.7). Lequel choisiriez-vous si l'objectif prioritaire était de **ne rater aucun survivant potentiel** (maximiser le rappel), quitte à avoir plus de fausses alertes ?
+7. Comparez, avec et sans `class_weight="balanced"`, le rappel obtenu pour la classe minoritaire.
+
+### Partie D — Comparaison de modèles et hyperparamètres
+
+8. Comparez, par `GridSearchCV` avec `scoring="f1"`, une régression logistique (hyperparamètre `C`), un KNN (hyperparamètre `n_neighbors`) et un arbre de décision (hyperparamètre `max_depth`).
+9. Quel modèle obtient le meilleur F1-score sur le jeu de test ? Ce résultat était-il celui que vous attendiez, compte tenu des données (variables catégorielles nombreuses, taille du jeu, etc.) ?
+10. *(Bonus)* Affichez l'importance des variables pour votre meilleur modèle (`.coef_` pour la régression logistique, ou `.feature_importances_` pour l'arbre). Quelle variable semble la plus déterminante pour la survie ? Ce résultat correspond-il à ce que vous savez de l'histoire du naufrage ?
+
+### Livrables
+
+- un notebook ou script contenant le code des parties A à D ;
+- au moins deux graphiques (matrice de confusion, courbe ROC) dans `outputs/` ;
+- un court paragraphe de conclusion, comparant les modèles testés et justifiant votre choix final.
+
+::: {.callout-tip title="Checklist finale"}
+- [ ] Le déséquilibre des classes est mesuré avant toute modélisation.
+- [ ] Au moins trois métriques de classification (au-delà de l'accuracy) sont calculées.
+- [ ] L'effet du seuil de décision est illustré avec au moins deux valeurs différentes.
+- [ ] Tous les hyperparamètres sont réglés par validation croisée sur le train, jamais sur le test.
+- [ ] Le jeu de test n'est utilisé qu'une seule fois, pour l'évaluation finale.
+:::

@@ -1,0 +1,1032 @@
+# Classification 
+
+::: {.callout-tip title="Objectifs du chapitre"}
+À la fin de ce chapitre, l'étudiant sera capable de :
+
+- distinguer une classification binaire et une classification multiclasse ;
+- formuler mathématiquement un problème de classification supervisée ;
+- comprendre la régression logistique, sa fonction sigmoïde et ses probabilités ;
+- interpréter une matrice de confusion et les principales métriques ;
+- choisir un seuil de décision adapté au contexte ;
+- construire une chaîne de classification simple avec `scikit-learn` ;
+- résoudre des exercices théoriques sans programmation pratique.
+:::
+
+::: {.callout-note title="Lien avec le chapitre de régression"}
+Ce chapitre repose sur les mêmes bases que le chapitre précédent : matrice $X$, vecteur cible $y$, séparation train/test, généralisation et fuite de données. On se concentre ici sur ce qui est particulier à la classification : classes, probabilités, seuils et métriques.
+:::
+
+## 1. Qu'est-ce que la classification ?
+
+En classification, on cherche à prédire une variable discrète : une classe, pas une valeur continue. La cible $y$ appartient à un ensemble fini de catégories.
+
+Un modèle apprend une fonction :
+
+$$
+\hat{y} = h(x)
+$$
+
+où $x$ représente une observation et $\hat{y}$ la classe prédite.
+
+### 1.1. Classification binaire
+
+Dans une classification binaire, la cible ne prend que deux valeurs :
+
+$$
+y \in \{0,1\}
+$$
+
+Exemples :
+
+- $0$ : e-mail normal, $1$ : spam ;
+- $0$ : client fidèle, $1$ : client qui part ;
+- $0$ : patient non malade, $1$ : patient malade.
+
+Le modèle produit souvent une probabilité :
+
+$$
+\hat{p}(y=1\mid x)
+$$
+
+Ensuite, on applique un seuil pour transformer cette probabilité en classe.
+
+### 1.2. Classification multiclasse
+
+En classification multiclasse, une observation appartient à l'une de plusieurs classes :
+
+$$
+y \in \{1,2,\ldots,K\}
+$$
+
+Exemples :
+
+- reconnaître un chiffre manuscrit ;
+- classer un animal dans une catégorie ;
+- prédire une catégorie de produit.
+
+Le modèle renvoie alors souvent un vecteur de probabilités sur les $K$ classes.
+
+### 1.3. Classification multilabel
+
+Dans une classification multilabel, une observation peut appartenir à plusieurs classes à la fois. Une image peut contenir une voiture et une personne simultanément. On représente alors la cible par un vecteur binaire.
+
+::: {.callout-important title="Probabilité et classe ne sont pas la même chose"}
+Une probabilité de $0{,}51$ et une probabilité de $0{,}99$ conduisent à la même classe si le seuil est $0{,}5$. Mais elles ne représentent pas le même niveau de certitude. Il est donc utile d'étudier les probabilités, pas seulement les étiquettes finales.
+:::
+
+## 2. Formalisation d'un problème de classification
+
+La structure des données est la même que pour la régression :
+
+$$
+X \in \mathbb{R}^{n\times p}
+$$
+
+Chaque ligne de $X$ correspond à une observation, et chaque colonne à une variable explicative. La différence importante est la cible :
+
+$$
+y_i \in \{0,1\}
+$$
+
+dans le cas binaire.
+
+Un classifieur cherche à apprendre une règle de décision :
+
+$$
+\hat{y} = h(x)
+$$
+
+en utilisant des observations déjà étiquetées.
+
+Le modèle peut fournir :
+
+1. une probabilité de classe ;
+2. une classe finale après application d'un seuil.
+
+La frontière de décision est l'ensemble des points pour lesquels le modèle hésite entre les classes. Dans le cas d'une régression logistique, cette frontière est un hyperplan.
+
+## 3. Régression logistique
+
+La régression logistique est un modèle de référence pour la classification binaire. Elle est simple, interprétable et souvent très efficace comme base de comparaison.
+
+### 3.1. Score linéaire
+
+Pour une observation $x=(x_1,\ldots,x_p)$, le modèle calcule d'abord un score linéaire :
+
+$$
+z = \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p
+$$
+
+ou, en notation matricielle :
+
+$$
+z = \widetilde{x}^{\top}\beta
+$$
+
+Le score $z$ peut prendre n'importe quelle valeur réelle. Ce n'est pas encore une probabilité.
+
+### 3.2. Fonction sigmoïde
+
+On transforme ce score grâce à la fonction sigmoïde :
+
+$$
+\sigma(z) = \frac{1}{1+e^{-z}}
+$$
+
+Cette fonction donne une valeur comprise entre $0$ et $1$. La probabilité prédite de la classe 1 est alors :
+
+$$
+\boxed{\hat{p}(y=1\mid x)=\sigma(z)}
+$$
+
+Quelques valeurs utiles :
+
+| Score $z$ | Probabilité $\sigma(z)$ |
+|---|---:|
+| $-\infty$ | proche de $0$ |
+| $0$ | $0{,}5$ |
+| $+\infty$ | proche de $1$ |
+
+La dérivée de la sigmoïde est :
+
+$$
+\sigma'(z)=\sigma(z)(1-\sigma(z))
+$$
+
+Cette propriété est utile pour l'optimisation par descente de gradient.
+
+### 3.3. Règle de décision
+
+On décide de la classe positive si la probabilité dépasse un seuil $t$ :
+
+$$
+\hat{y} =
+\begin{cases}
+1 & \text{si } \hat{p}(y=1\mid x) \ge t \\
+0 & \text{sinon}
+\end{cases}
+$$
+
+Pour $t=0{,}5$, on a :
+
+$$
+\sigma(z)\ge 0{,}5 \iff z\ge 0
+$$
+
+Ainsi, le seuil $0{,}5$ correspond simplement à la frontière :
+
+$$
+\beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p = 0
+$$
+
+Le modèle sépare donc l'espace des variables par un hyperplan.
+
+::: {.callout-important title="Le seuil dépend du contexte"}
+Le seuil de $0{,}5$ est souvent utilisé, mais il ne convient pas forcément à tous les problèmes. Si un faux négatif est très coûteux, on peut baisser le seuil. Si les faux positifs sont excessivement coûteux, on peut le relever.
+:::
+
+### 3.4. Interprétation des coefficients
+
+Les coefficients $\beta_j$ n'agissent pas directement sur la probabilité, mais sur le score $z$.
+
+Le rapport entre probabilité et odds est donné par :
+
+$$
+\operatorname{logit}(p)=\ln\left(\frac{p}{1-p}\right)
+$$
+
+Dans un modèle logistique :
+
+$$
+\ln\left(\frac{p(y=1\mid x)}{1-p(y=1\mid x)}\right)
+= \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p
+$$
+
+Ainsi, une augmentation d'une unité de $x_j$ ajoute $\beta_j$ aux log-odds. Cela signifie que :
+
+$$
+e^{\beta_j}
+$$
+
+est le facteur multiplicatif des odds. Cette interprétation est utile, mais il ne faut pas conclure que la probabilité est multipliée par $e^{\beta_j}$.
+
+### 3.5. Log loss ou entropie croisée binaire
+
+Pour une observation $i$, on note :
+
+$$
+p_i = \hat{p}(y_i=1\mid x_i)
+$$
+
+La vraisemblance d'une observation est :
+
+$$
+p_i^{y_i}(1-p_i)^{1-y_i}
+$$
+
+Cette expression vaut $p_i$ si $y_i=1$ et $1-p_i$ si $y_i=0$.
+
+La log loss est la moyenne négative du log de cette vraisemblance :
+
+$$
+\boxed{
+J(\beta) = -\frac{1}{n}\sum_{i=1}^{n}\left[y_i\ln(p_i)+(1-y_i)\ln(1-p_i)\right]
+}
+$$
+
+Cette fonction pénalise fortement les prédictions qui attribuent une probabilité très faible à la vraie classe. Elle évalue donc la qualité des probabilités, pas seulement la classe prédite.
+
+### 3.6. Exemple simple
+
+Considérons le modèle :
+
+$$
+z = -1 + 0{,}5x
+$$
+
+Pour $x=2$ :
+
+$$
+z=-1+0{,}5\times2=0
+$$
+
+donc :
+
+$$
+p=\sigma(0)=\frac12=0{,}5
+$$
+
+Le modèle est exactement à la frontière.
+
+Pour $x=4$ :
+
+$$
+z=-1+0{,}5\times4=1
+$$
+
+et :
+
+$$
+p = \frac{1}{1+e^{-1}} \approx 0{,}731
+$$
+
+Pour $x=0$ :
+
+$$
+z=-1, \qquad p = \frac{1}{1+e} \approx 0{,}269
+$$
+
+Ce modèle montre très bien comment un score linéaire est transformé en probabilité et comment le seuil de décision agit sur la classification.
+
+## 4. Évaluer une classification binaire
+
+La **matrice de confusion** constitue le point de départ de l'évaluation d'un modèle de classification binaire. Elle permet de comparer, pour chaque observation, sa **classe réelle** à la **classe prédite par le modèle**. Toutes les principales métriques présentées dans cette section sont directement construites à partir de ses quatre cases : vrais positifs, vrais négatifs, faux positifs et faux négatifs.
+
+### 4.1. Matrice de confusion
+
+Pour une classification binaire, on considère deux classes : une classe **positive** et une classe **négative**. La classe positive correspond à l'événement que l'on cherche généralement à détecter. Selon l'application, il peut s'agir par exemple d'un malade, d'une fraude, d'un défaut ou d'un client susceptible de se désabonner.
+
+La matrice de confusion croise donc la **classe réelle** avec la **classe prédite** :
+
+|                  | Prédit négatif | Prédit positif |
+| :--------------- | -------------: | -------------: |
+| **Réel négatif** |             VN |             FP |
+| **Réel positif** |             FN |             VP |
+
+: Illustration de la matrice de confusion {#tbl-confusion}
+
+
+Les quatre cases ont la signification suivante :
+
+* **VP (vrai positif)** : l'observation est réellement positive et le modèle la prédit positive. Le modèle a donc correctement détecté un cas positif ;
+* **VN (vrai négatif)** : l'observation est réellement négative et le modèle la prédit négative. Le modèle a donc correctement identifié un cas négatif ;
+* **FP (faux positif)** : l'observation est réellement négative, mais le modèle la prédit positive. Il s'agit d'une **fausse alerte** ;
+* **FN (faux négatif)** : l'observation est réellement positive, mais le modèle la prédit négative. Il s'agit d'un **cas positif manqué**.
+
+Ces quatre quantités décrivent entièrement les résultats d'un classifieur binaire sur un ensemble de données. Les différentes métriques de classification ne font ensuite que combiner ces quatre nombres de manière différente.
+
+La matrice permet également de lire directement plusieurs informations utiles. Le nombre total d'observations est
+
+$$
+N = VP + VN + FP + FN.
+$$
+
+Les deux lignes correspondent aux observations selon leur **classe réelle** :
+
+$$
+N_{\text{réel négatif}} = VN + FP,
+$$
+
+$$
+N_{\text{réel positif}} = FN + VP.
+$$
+
+Les deux colonnes correspondent aux observations selon leur **classe prédite** :
+
+$$
+N_{\text{prédit négatif}} = VN + FN,
+$$
+
+$$
+N_{\text{prédit positif}} = FP + VP.
+$$
+
+Cette lecture de la matrice est essentielle, car elle permet de comprendre la signification de chacune des métriques introduites ci-dessous.
+
+### 4.2. Accuracy
+
+L'**accuracy**, ou taux de bonnes classifications, mesure la proportion totale d'observations correctement classées.
+
+Dans la matrice de confusion, les prédictions correctes correspondent exactement à la diagonale : **VN** pour les observations négatives et **VP** pour les observations positives. On obtient donc :
+
+$$
+Accuracy = \frac{VP+VN}{VP+VN+FP+FN}.
+$$
+
+Autrement dit :
+
+> **Accuracy = nombre de prédictions correctes / nombre total de prédictions.**
+
+Elle tient donc compte simultanément des vrais positifs et des vrais négatifs, mais également, au dénominateur, des erreurs de classification.
+
+L'accuracy est particulièrement facile à interpréter lorsque les classes sont relativement équilibrées. En revanche, elle peut devenir trompeuse en présence d'un fort déséquilibre entre les classes.
+
+Par exemple, si 95 % des observations sont négatives, un modèle qui prédit **toujours négatif** obtient :
+
+$$
+Accuracy = \frac{VN}{VN+FP+FN+VP} \approx 0{,}95,
+$$
+
+alors qu'il ne détecte aucun cas positif. L'accuracy peut donc être élevée alors que le modèle est incapable d'identifier la classe minoritaire.
+
+### 4.3. Précision
+
+La **précision** (*precision*) s'intéresse uniquement aux observations que le modèle a **prédites positives**.
+
+Dans la matrice, la colonne « Prédit positif » contient :
+
+$$
+FP + VP.
+$$
+
+Parmi ces observations prédites positives, seules les **VP** sont réellement positives. La précision est donc :
+
+$$
+Precision = \frac{VP}{VP+FP}.
+$$
+
+Autrement dit :
+
+> **Parmi toutes les observations que le modèle a déclarées positives, quelle proportion est réellement positive ?**
+
+La relation avec la matrice de confusion est donc directe :
+
+* **VP** augmente la précision, car il s'agit d'une prédiction positive correcte ;
+* **FP** diminue la précision, car il s'agit d'une prédiction positive erronée.
+
+Une précision élevée signifie donc que les **alertes positives produites par le modèle sont généralement fiables**.
+
+Cette métrique est particulièrement importante lorsque les **faux positifs** sont coûteux. Par exemple, dans un système d'alerte, une faible précision signifie que de nombreuses alertes correspondent en réalité à des cas négatifs.
+
+### 4.4. Rappel ou sensibilité
+
+Le **rappel**, également appelé **sensibilité** (*recall* ou *sensitivity*), adopte le point de vue opposé à celui de la précision. Il part non plus des observations prédites positives, mais des observations qui sont **réellement positives**.
+
+Dans la matrice, la ligne « Réel positif » contient :
+
+$$
+FN + VP.
+$$
+
+Parmi tous les cas réellement positifs, les **VP** sont ceux que le modèle a correctement détectés. Le rappel est donc :
+
+$$
+Recall = \frac{VP}{VP+FN}.
+$$
+
+Autrement dit :
+
+> **Parmi toutes les observations réellement positives, quelle proportion le modèle parvient-il à détecter ?**
+
+Ici :
+
+* **VP** correspond aux cas positifs correctement détectés ;
+* **FN** correspond aux cas positifs manqués.
+
+Un rappel élevé signifie donc que le modèle laisse **peu de cas positifs non détectés**.
+
+Le rappel devient particulièrement important lorsque les **faux négatifs** sont coûteux. Dans un problème de détection médicale, par exemple, manquer un cas réellement positif peut être beaucoup plus problématique que déclencher une alerte sur un cas finalement négatif.
+
+### 4.5. Spécificité
+
+La **spécificité** mesure la capacité du modèle à reconnaître correctement les observations négatives. Elle est donc l'équivalent, pour la classe négative, du rappel pour la classe positive.
+
+Dans la matrice, la ligne « Réel négatif » contient :
+
+$$
+VN + FP.
+$$
+
+Parmi tous les cas réellement négatifs, les **VN** sont correctement reconnus comme négatifs. La spécificité est donc :
+
+$$
+Specificity = \frac{VN}{VN+FP}.
+$$
+
+Autrement dit :
+
+> **Parmi toutes les observations réellement négatives, quelle proportion le modèle reconnaît-il correctement comme négative ?**
+
+La spécificité dépend donc de :
+
+* **VN**, qui correspond aux négatifs correctement identifiés ;
+* **FP**, qui correspond aux négatifs classés à tort comme positifs.
+
+Une spécificité élevée signifie que le modèle produit **peu de faux positifs parmi les observations réellement négatives**.
+
+On peut ainsi établir le parallèle suivant :
+
+$$
+Recall = \frac{VP}{VP+FN}
+$$
+
+mesure la capacité à détecter les **positifs réels**, tandis que
+
+$$
+Specificity = \frac{VN}{VN+FP}
+$$
+
+mesure la capacité à reconnaître les **négatifs réels**.
+
+### 4.6. F1-score
+
+Le **F1-score** combine la **précision** et le **rappel**. Il est défini comme leur moyenne harmonique :
+
+$$
+\boxed{
+F1 = 2\frac{Precision\times Recall}{Precision+Recall}
+}
+$$
+
+En remplaçant la précision et le rappel par leurs expressions à partir de la matrice de confusion, on peut également écrire :
+
+$$
+F1 = \frac{2VP}{2VP+FP+FN}.
+$$
+
+Cette deuxième expression met directement en évidence le lien avec la matrice de confusion.
+
+Le F1-score dépend donc de :
+
+* **VP**, qui contribue positivement au score ;
+* **FP**, qui pénalise le score ;
+* **FN**, qui pénalise également le score.
+
+En revanche, **VN n'intervient pas directement dans la formule du F1-score**.
+
+Le F1-score est donc particulièrement intéressant lorsque l'on souhaite obtenir un compromis entre :
+
+* la capacité à éviter les fausses alertes, mesurée par la **précision** ;
+* la capacité à détecter les positifs réels, mesurée par le **rappel**.
+
+La moyenne harmonique fait qu'un score très faible pour l'une des deux composantes ne peut pas être compensé simplement par un score très élevé pour l'autre. Un modèle doit donc obtenir simultanément une précision et un rappel raisonnables pour obtenir un F1-score élevé.
+
+### 4.7. Balanced accuracy
+
+La **balanced accuracy** permet de donner le même poids aux performances obtenues sur les deux classes, ce qui est particulièrement utile lorsque les classes sont déséquilibrées.
+
+Pour une classification binaire, elle est définie comme la moyenne du **rappel de la classe positive** et de la **spécificité**, c'est-à-dire du rappel de la classe négative :
+
+$$
+Balanced\ Accuracy = \frac{Recall + Specificity}{2}.
+$$
+
+En utilisant directement les éléments de la matrice de confusion :
+
+$$
+Balanced\ Accuracy
+=
+\frac{1}{2}
+\left(
+\frac{VP}{VP+FN}
++
+\frac{VN}{VN+FP}
+\right).
+$$
+
+La relation avec la matrice de confusion est donc particulièrement claire :
+
+* le premier terme évalue la capacité à détecter correctement les **positifs réels** ;
+* le second évalue la capacité à reconnaître correctement les **négatifs réels**.
+
+Contrairement à l'accuracy, la balanced accuracy ne permet pas à une classe majoritaire de dominer à elle seule la mesure globale. Elle accorde la même importance aux deux classes, indépendamment de leur fréquence.
+
+### 4.8. Exemple numérique
+
+Considérons la matrice de confusion suivante :
+
+|                  | Prédit négatif | Prédit positif |
+| :--------------- | -------------: | -------------: |
+| **Réel négatif** |             90 |             10 |
+| **Réel positif** |              5 |             15 |
+
+On lit immédiatement :
+
+$$
+VP=15,\qquad VN=90,\qquad FP=10,\qquad FN=5.
+$$
+
+Le nombre total d'observations est :
+
+$$
+N=90+10+5+15=120.
+$$
+
+Les prédictions correctes correspondent à la diagonale de la matrice, soit :
+
+$$
+VN+VP=90+15=105.
+$$
+
+L'accuracy vaut donc :
+
+$$
+Accuracy = \frac{90+15}{120}=0{,}875.
+$$
+
+Le modèle classe ainsi correctement **87,5 %** des observations.
+
+Pour comprendre les performances sur la classe positive, on peut ensuite regarder séparément la précision et le rappel.
+
+Parmi les **25 observations prédites positives**,
+
+$$
+FP+VP=10+15=25,
+$$
+
+15 sont réellement positives. On obtient donc :
+
+$$
+Precision = \frac{15}{15+10}=0{,}6.
+$$
+
+Autrement dit, **60 % des observations déclarées positives par le modèle sont réellement positives**.
+
+Par ailleurs, il existe **20 observations réellement positives** :
+
+$$
+FN+VP=5+15=20.
+$$
+
+Le modèle en détecte correctement 15, d'où :
+
+$$
+Recall = \frac{15}{15+5}=0{,}75.
+$$
+
+Le modèle détecte donc **75 % des cas réellement positifs** et en manque 25 %.
+
+Pour la classe négative, il y a :
+
+$$
+VN+FP=90+10=100
+$$
+
+observations réellement négatives. Parmi elles, 90 sont correctement reconnues comme négatives. La spécificité vaut donc :
+
+$$
+Specificity = \frac{90}{90+10}=0{,}9.
+$$
+
+Le modèle reconnaît ainsi correctement **90 % des cas réellement négatifs**.
+
+Le F1-score combine enfin la précision de 0,6 et le rappel de 0,75 :
+
+$$
+F1
+=
+2\frac{0{,}6\times0{,}75}{0{,}6+0{,}75}
+\approx 0{,}667.
+$$
+
+On peut également le calculer directement à partir de la matrice :
+
+$$
+F1
+=
+\frac{2\times15}{2\times15+10+5}
+=
+\frac{30}{45}
+\approx0{,}667.
+$$
+
+La balanced accuracy vaut :
+
+$$
+Balanced\ Accuracy
+=
+\frac{0{,}75+0{,}90}{2}
+=
+0{,}825.
+$$
+
+Cet exemple illustre pourquoi il est important de ne pas se limiter à l'accuracy. Une accuracy de **87,5 %** paraît élevée, mais l'examen de la matrice montre que le modèle produit **10 faux positifs** et **5 faux négatifs**. La précision de **60 %** indique notamment qu'une part importante des prédictions positives correspond à de fausses alertes, tandis que le rappel de **75 %** indique qu'un quart des cas réellement positifs n'est pas détecté.
+
+La matrice de confusion fournit ainsi la lecture la plus fondamentale des résultats :
+
+> **VP et VN correspondent aux prédictions correctes ; FP et FN correspondent aux erreurs. Les différentes métriques ne font que porter un regard différent sur ces quatre catégories.**
+
+L'accuracy considère les bonnes prédictions dans leur ensemble, la précision se concentre sur les prédictions positives, le rappel sur les positifs réellement présents, la spécificité sur les négatifs réellement présents, le F1-score combine précision et rappel, et la balanced accuracy équilibre les performances sur les deux classes.
+
+## 5. Seuil de décision et classes déséquilibrées
+
+### 5.1. Choisir le seuil
+
+Le seuil par défaut est souvent $0{,}5$. Mais ce seuil ne dépend pas seulement du modèle : il dépend du contexte.
+
+- seuil faible : plus de cas positifs prédits ;
+- seuil élevé : moins de cas positifs prédits.
+
+Un seuil plus faible augmente généralement le rappel et réduit les faux négatifs. Un seuil plus élevé augmente souvent la précision et réduit les faux positifs.
+
+### 5.2. Cas de classes déséquilibrées
+
+Une classification est déséquilibrée quand une classe est beaucoup plus fréquente que l'autre. Les conséquences sont :
+
+- l'accuracy peut paraître élevée alors que la classe minoritaire est ignorée ;
+- le modèle peut prédire presque toujours la classe majoritaire ;
+- le seuil par défaut peut être inadapté.
+
+En pratique, il faut alors examiner la matrice de confusion, la précision, le rappel, le F1 et la balanced accuracy.
+
+### 5.3. Bonnes pratiques
+
+- utiliser `stratify=y` lors du découpage train/test ;
+- examiner la matrice de confusion ;
+- choisir les métriques avant d'évaluer le modèle ;
+- ajuster le seuil selon le coût métier des erreurs ;
+- ne pas choisir le seuil en utilisant le jeu de test final comme critère d'optimisation.
+
+## 6. Classification avec `scikit-learn`
+
+### 6.1. Exemple simple de régression logistique
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y,
+)
+
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+y_proba = model.predict_proba(X_test)[:, 1]
+
+print(classification_report(y_test, y_pred))
+```
+
+- `predict()` donne la classe prédite ;
+- `predict_proba()` donne les probabilités ;
+- `[:, 1]` permet d'obtenir la probabilité de la classe positive dans un problème binaire.
+
+### 6.2. Matrice de confusion et métriques
+
+```python
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
+
+matrix = confusion_matrix(y_test, y_pred)
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
+
+print(matrix)
+print(accuracy, precision, recall, f1, balanced_accuracy)
+```
+
+### 6.3. Pipeline de prétraitement
+
+Le prétraitement doit être appris uniquement sur les données d'entraînement. On l'intègre dans un pipeline.
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+numeric_features = ["age", "revenu"]
+categorical_features = ["ville", "type_client"]
+
+numeric_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()),
+])
+
+categorical_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore")),
+])
+
+preprocessor = ColumnTransformer([
+    ("numeric", numeric_pipeline, numeric_features),
+    ("categorical", categorical_pipeline, categorical_features),
+])
+
+model = Pipeline([
+    ("preprocessing", preprocessor),
+    ("classifier", LogisticRegression(max_iter=1000)),
+])
+
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+y_proba = model.predict_proba(X_test)[:, 1]
+```
+
+### 6.4. Changer le seuil
+
+```python
+threshold = 0.30
+y_pred_custom = (y_proba >= threshold).astype(int)
+```
+
+Le seuil peut être choisi selon le contexte métier. Un seuil plus bas favorise le rappel ; un seuil plus haut favorise la précision.
+
+### 6.5. Validation croisée stratifiée
+
+```python
+from sklearn.model_selection import StratifiedKFold, cross_validate
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+results = cross_validate(
+    model,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring={
+        "accuracy": "accuracy",
+        "balanced_accuracy": "balanced_accuracy",
+        "f1": "f1",
+        "roc_auc": "roc_auc",
+    },
+    return_train_score=False,
+)
+```
+
+La validation croisée stratifiée est particulièrement utile si la classe positive est minoritaire.
+
+## 7. En résumé
+
+La classification binaire repose sur trois idées simples :
+
+1. distinguer les classes avec un modèle ;
+2. produire des probabilités, pas seulement des labels ;
+3. évaluer le modèle avec des métriques adaptées au coût des erreurs.
+
+La régression logistique est un excellent point de départ. Elle est mathématiquement claire, interprétable et suffisamment robuste pour servir de base de comparaison. L'évaluation doit toujours s'appuyer sur la matrice de confusion et sur des métriques comme la précision, le rappel et le F1, surtout lorsque les classes sont déséquilibrées.
+
+::: {.callout-note title="Auto-évaluation"}
+- [ ] Je sais distinguer classification binaire et multiclasse.
+- [ ] Je peux exprimer la probabilité logistique.
+- [ ] Je comprends le rôle du seuil de décision.
+- [ ] Je sais interpréter une matrice de confusion.
+- [ ] Je distingue précision, rappel, F1-score et accuracy.
+- [ ] Je sais construire un pipeline simple avec `scikit-learn`.
+:::
+
+## Exercices
+
+::: {.callout-note title="Consigne"}
+Les exercices suivants portent uniquement sur le calcul et la compréhension. Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable.
+:::
+
+::: {#exr-class-1}
+### Probabilité logistique simple
+
+Un modèle logistique est défini par :
+
+$$
+z = -2 + x
+$$
+
+1. Calculez $z$ pour $x=2$.
+2. Calculez $\sigma(z)$.
+3. Quelle classe est prédite avec un seuil de $0{,}5$ ?
+4. Calculez la probabilité pour $x=4$.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-1"}
+1. Pour $x=2$ :
+
+$$
+z=-2+2=0
+$$
+
+2. Donc :
+
+$$
+\sigma(0)=\frac{1}{1+e^0}=\frac12=0{,}5
+$$
+
+3. Avec un seuil de $0{,}5$, la classe prédite est 1.
+4. Pour $x=4$ :
+
+$$
+z=-2+4=2
+$$
+
+et :
+
+$$
+\sigma(2)=\frac{1}{1+e^{-2}}\approx0{,}881
+$$
+:::
+
+::: {#exr-class-2}
+### Log loss d'une observation
+
+Pour une observation positive, le modèle prédit :
+
+- $p=0{,}9$ ;
+- $p=0{,}5$ ;
+- $p=0{,}1$.
+
+La perte est :
+
+$$
+L = -\ln(p)
+$$
+
+Classez ces trois prédictions de la meilleure à la pire.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-2"}
+On a :
+
+$$
+L(0{,}9)=-\ln(0{,}9)\approx0{,}105
+$$
+
+$$
+L(0{,}5)=-\ln(0{,}5)\approx0{,}693
+$$
+
+$$
+L(0{,}1)=-\ln(0{,}1)\approx2{,}303
+$$
+
+La meilleure prédiction est donc $p=0{,}9$, puis $0{,}5$, puis $0{,}1$.
+:::
+
+::: {#exr-class-3}
+### Matrice de confusion
+
+Un modèle de détection donne :
+
+| | Prédit négatif | Prédit positif |
+|---|---:|---:|
+| **Réel négatif** | 80 | 20 |
+| **Réel positif** | 10 | 40 |
+
+Calculez :
+
+1. l'accuracy ;
+2. la précision ;
+3. le rappel ;
+4. la spécificité ;
+5. le F1-score.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-3"}
+On a :
+
+$$
+VN=80,\quad FP=20,\quad FN=10,\quad VP=40
+$$
+
+1. Accuracy :
+
+$$
+Accuracy = \frac{40+80}{150}=0{,}8
+$$
+
+2. Précision :
+
+$$
+Precision = \frac{40}{40+20}=\frac{40}{60}\approx0{,}667
+$$
+
+3. Rappel :
+
+$$
+Recall = \frac{40}{40+10}=0{,}8
+$$
+
+4. Spécificité :
+
+$$
+Specificity = \frac{80}{80+20}=0{,}8
+$$
+
+5. F1-score :
+
+$$
+F1 = 2\frac{0{,}667\times0{,}8}{0{,}667+0{,}8}\approx0{,}727
+$$
+:::
+
+::: {#exr-class-4}
+### Effet du seuil
+
+Un modèle produit les probabilités suivantes :
+
+| Observation | Probabilité de la classe 1 | Vraie classe |
+|---|---:|---:|
+| A | 0,90 | 1 |
+| B | 0,70 | 0 |
+| C | 0,55 | 1 |
+| D | 0,40 | 1 |
+| E | 0,20 | 0 |
+
+1. Donnez les classes prédites avec un seuil de $0{,}5$.
+2. Calculez le rappel avec ce seuil.
+3. Donnez les classes prédites avec un seuil de $0{,}3$.
+4. Expliquez qualitativement le phénomène.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-4"}
+1. Avec un seuil de $0{,}5$, on prédit 1 pour A, B, C et 0 pour D, E.
+2. Les vrais positifs sont A et C. Le rappel vaut donc :
+
+$$
+Recall = \frac{2}{3}\approx0{,}667
+$$
+
+3. Avec un seuil de $0{,}3$, D devient positif. Les prédictions sont $(1,1,1,1,0)$.
+4. Diminuer le seuil augmente le rappel, mais peut diminuer la précision. Le modèle détecte plus de positifs, mais aussi plus de faux positifs.
+:::
+
+::: {#exr-class-5}
+### Classe majoritaire et accuracy trompeuse
+
+Dans un jeu de 1 000 observations, la classe 0 représente 950 observations et la classe 1 représente 50 observations.
+
+Un modèle prédit toujours la classe 0.
+
+1. Quelle accuracy obtient-il ?
+2. Quel est son rappel pour la classe 1 ?
+3. Pourquoi l'accuracy est-elle insuffisante ici ?
+4. Quelles métriques complémentaires faut-il examiner ?
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-5"}
+1. L'accuracy est :
+
+$$
+Accuracy = \frac{950}{1000}=0{,}95
+$$
+
+2. Le rappel est :
+
+$$
+Recall = \frac{0}{50}=0
+$$
+
+3. L'accuracy est élevée uniquement parce que la classe 0 domine. Elle ne mesure pas la capacité à détecter la classe rare.
+4. Il faut examiner le rappel, la précision, le F1-score et la balanced accuracy, ainsi que le seuil de décision.
+:::
+
+::: {#exr-class-6}
+### Choisir un bon premier modèle
+
+Choisissez un premier algorithme raisonnable dans chaque situation et justifiez :
+
+1. on veut un modèle simple à expliquer et une frontière approximativement linéaire ;
+2. on dispose d'un petit jeu de données et la décision dépend des observations voisines ;
+3. on veut des règles de décision lisibles sous forme de questions successives ;
+4. on veut commencer par un modèle simple et interprétable avant d'essayer des méthodes plus complexes.
+:::
+
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-6"}
+1. Régression logistique.
+2. KNN, à condition de standardiser les variables.
+3. Arbre de décision.
+4. Régression logistique comme premier modèle de référence ; on ne change de méthode que si les résultats et les données le justifient.
+:::

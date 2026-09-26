@@ -22,7 +22,7 @@ datasets/
 *.pkl
 *.npy
 *.npz
-
+old_chapitres/
 # Operating System files
 .DS_Store
 .AppleDouble
