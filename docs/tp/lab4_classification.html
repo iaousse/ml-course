@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lab 4 — Classification : prédire une catégorie – Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../tp/lab3_regression.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab4_classification.html"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Recherche"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/03_regression_lineaire.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Régression</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_ml_non_supervise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Apprentissage non supervisé</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Dans ce chapitre</h2>
+   
+  <ul>
+  <li><a href="#construire-un-jeu-de-données-de-churn" id="toc-construire-un-jeu-de-données-de-churn" class="nav-link active" data-scroll-target="#construire-un-jeu-de-données-de-churn">1. Construire un jeu de données de <em>churn</em></a></li>
+  <li><a href="#un-pipeline-de-classification-de-bout-en-bout" id="toc-un-pipeline-de-classification-de-bout-en-bout" class="nav-link" data-scroll-target="#un-pipeline-de-classification-de-bout-en-bout">2. Un pipeline de classification, de bout en bout</a></li>
+  <li><a href="#au-delà-de-laccuracy-précision-rappel-f1-roc-auc" id="toc-au-delà-de-laccuracy-précision-rappel-f1-roc-auc" class="nav-link" data-scroll-target="#au-delà-de-laccuracy-précision-rappel-f1-roc-auc">3. Au-delà de l’accuracy : précision, rappel, F1, ROC-AUC</a></li>
+  <li><a href="#le-seuil-de-décision-nest-pas-obligatoirement-05" id="toc-le-seuil-de-décision-nest-pas-obligatoirement-05" class="nav-link" data-scroll-target="#le-seuil-de-décision-nest-pas-obligatoirement-05">4. Le seuil de décision n’est pas obligatoirement 0,5</a></li>
+  <li><a href="#gérer-le-déséquilibre-des-classes" id="toc-gérer-le-déséquilibre-des-classes" class="nav-link" data-scroll-target="#gérer-le-déséquilibre-des-classes">5. Gérer le déséquilibre des classes</a></li>
+  <li><a href="#comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres" id="toc-comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres" class="nav-link" data-scroll-target="#comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres">6. Comparer plusieurs algorithmes, avec réglage d’hyperparamètres</a></li>
+  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">7. Synthèse</a></li>
+  <li><a href="#sec-lab4-projet" id="toc-sec-lab4-projet" class="nav-link" data-scroll-target="#sec-lab4-projet">8. Lab Sheet — Projet guidé</a>
+  <ul class="collapse">
+  <li><a href="#partie-a-reprendre-le-pipeline-du-lab-2" id="toc-partie-a-reprendre-le-pipeline-du-lab-2" class="nav-link" data-scroll-target="#partie-a-reprendre-le-pipeline-du-lab-2">Partie A — Reprendre le pipeline du Lab 2</a></li>
+  <li><a href="#partie-b-premier-modèle-et-métriques" id="toc-partie-b-premier-modèle-et-métriques" class="nav-link" data-scroll-target="#partie-b-premier-modèle-et-métriques">Partie B — Premier modèle et métriques</a></li>
+  <li><a href="#partie-c-seuil-et-déséquilibre" id="toc-partie-c-seuil-et-déséquilibre" class="nav-link" data-scroll-target="#partie-c-seuil-et-déséquilibre">Partie C — Seuil et déséquilibre</a></li>
+  <li><a href="#partie-d-comparaison-de-modèles-et-hyperparamètres" id="toc-partie-d-comparaison-de-modèles-et-hyperparamètres" class="nav-link" data-scroll-target="#partie-d-comparaison-de-modèles-et-hyperparamètres">Partie D — Comparaison de modèles et hyperparamètres</a></li>
+  <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du Lab">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Objectifs du Lab
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>À la fin de ce Lab, l’étudiant sera capable de :</p>
+<ul>
+<li><strong>Entraîner</strong> une régression logistique, un KNN et un arbre de décision sur une même tâche de classification ;</li>
+<li><strong>Calculer et interpréter</strong> accuracy, précision, rappel, F1-score, ROC-AUC ;</li>
+<li><strong>Tracer et lire</strong> une courbe ROC et une courbe précision-rappel ;</li>
+<li><strong>Ajuster le seuil de décision</strong> d’un modèle et en observer l’effet sur précision et rappel ;</li>
+<li><strong>Gérer</strong> un déséquilibre de classes avec <code>class_weight</code> et <code>stratify</code> ;</li>
+<li><strong>Réutiliser</strong> <code>GridSearchCV</code> pour régler l’hyperparamètre d’un modèle de classification.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Lien avec le cours
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ce Lab correspond au chapitre 5 (<em>Modèles de classification</em>). Il réutilise directement les acquis des Labs précédents : matrice de confusion (Lab 1, chapitre 2), pipeline de prétraitement (Lab 2, chapitre 3) et <code>GridSearchCV</code> (Lab 3, chapitre 4). Le fil conducteur est l’exemple de la <strong>résiliation d’abonnement (<em>churn</em>)</strong> introduit au chapitre 1 (§1.2) comme second exemple du triplet (T, P, E).</p>
+</div>
+</div>
+<section id="construire-un-jeu-de-données-de-churn" class="level2">
+<h2 class="anchored" data-anchor-id="construire-un-jeu-de-données-de-churn">1. Construire un jeu de données de <em>churn</em></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">3</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>anciennete_mois <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">72</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>appels_service_client <span class="op">=</span> rng.poisson(<span class="fl">1.5</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>facture_mensuelle <span class="op">=</span> rng.uniform(<span class="dv">80</span>, <span class="dv">600</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>type_contrat <span class="op">=</span> rng.choice([<span class="st">"Mensuel"</span>, <span class="st">"Annuel"</span>, <span class="st">"Deux ans"</span>], size<span class="op">=</span>n, p<span class="op">=</span>[<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>])</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Probabilité de résiliation : augmente avec les appels au service client et</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># les contrats mensuels, diminue avec l'ancienneté — une structure réaliste.</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>logit <span class="op">=</span> (</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="fl">2.0</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> <span class="fl">0.35</span> <span class="op">*</span> appels_service_client</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> <span class="fl">0.03</span> <span class="op">*</span> anciennete_mois</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> <span class="fl">0.004</span> <span class="op">*</span> facture_mensuelle</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> pd.Series(type_contrat).<span class="bu">map</span>({<span class="st">"Mensuel"</span>: <span class="fl">1.2</span>, <span class="st">"Annuel"</span>: <span class="op">-</span><span class="fl">0.3</span>, <span class="st">"Deux ans"</span>: <span class="op">-</span><span class="fl">1.0</span>}).to_numpy()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>probabilite_churn <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> np.exp(<span class="op">-</span>logit))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>churn <span class="op">=</span> rng.binomial(<span class="dv">1</span>, probabilite_churn)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>clients <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"anciennete_mois"</span>: anciennete_mois,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"appels_service_client"</span>: appels_service_client,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facture_mensuelle"</span>: facture_mensuelle.<span class="bu">round</span>(<span class="dv">2</span>),</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"type_contrat"</span>: type_contrat,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"churn"</span>: churn,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients[<span class="st">"churn"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>).<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Comme souvent en pratique, les classes sont <strong>déséquilibrées</strong> : gardez ce chiffre en tête, il conditionne toute la suite (chapitre 2, §6, « le piège des classes déséquilibrées »).</p>
+</section>
+<section id="un-pipeline-de-classification-de-bout-en-bout" class="level2">
+<h2 class="anchored" data-anchor-id="un-pipeline-de-classification-de-bout-en-bout">2. Un pipeline de classification, de bout en bout</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> clients.drop(columns<span class="op">=</span><span class="st">"churn"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> clients[<span class="st">"churn"</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.25</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>colonnes_numeriques <span class="op">=</span> [<span class="st">"anciennete_mois"</span>, <span class="st">"appels_service_client"</span>, <span class="st">"facture_mensuelle"</span>]</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>colonnes_categorielles <span class="op">=</span> [<span class="st">"type_contrat"</span>]</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>pretraitement <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, StandardScaler(), colonnes_numeriques),</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>), colonnes_categorielles),</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>pipeline_logit <span class="op">=</span> Pipeline([</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pretraitement"</span>, pretraitement),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"modele"</span>, LogisticRegression()),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>pipeline_logit.fit(X_train, y_train)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy test :"</span>, <span class="bu">round</span>(pipeline_logit.score(X_test, y_test), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="au-delà-de-laccuracy-précision-rappel-f1-roc-auc" class="level2">
+<h2 class="anchored" data-anchor-id="au-delà-de-laccuracy-précision-rappel-f1-roc-auc">3. Au-delà de l’accuracy : précision, rappel, F1, ROC-AUC</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    ConfusionMatrixDisplay, RocCurveDisplay, classification_report,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    confusion_matrix, roc_auc_score,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> pipeline_logit.predict(X_test)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>y_proba <span class="op">=</span> pipeline_logit.predict_proba(X_test)[:, <span class="dv">1</span>]   <span class="co"># probabilité de la classe "churn"</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"ROC-AUC :"</span>, <span class="bu">round</span>(roc_auc_score(y_test, y_proba), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    confusion_matrix(y_test, y_pred), display_labels<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>],</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>).plot(ax<span class="op">=</span>axes[<span class="dv">0</span>], cmap<span class="op">=</span><span class="st">"Blues"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Matrice de confusion"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>RocCurveDisplay.from_predictions(y_test, y_proba, ax<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Courbe ROC"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/evaluation_churn.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lire la courbe ROC">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Lire la courbe ROC
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La courbe ROC (<em>Receiver Operating Characteristic</em>) trace le taux de vrais positifs contre le taux de faux positifs, pour <strong>tous les seuils de décision possibles</strong>. Un modèle inutile (équivalent à un tirage au hasard) suit la diagonale ; plus la courbe s’en écarte vers le coin supérieur gauche, meilleur est le modèle. L’aire sous la courbe (<strong>AUC</strong>) résume cette qualité en un seul nombre entre 0,5 (hasard) et 1 (parfait).</p>
+</div>
+</div>
+</section>
+<section id="le-seuil-de-décision-nest-pas-obligatoirement-05" class="level2">
+<h2 class="anchored" data-anchor-id="le-seuil-de-décision-nest-pas-obligatoirement-05">4. Le seuil de décision n’est pas obligatoirement 0,5</h2>
+<p>Par défaut, <code>.predict()</code> classe en « churn » toute observation dont la probabilité prédite dépasse 0,5. Mais rien n’impose ce seuil : selon le coût métier d’un faux négatif (un client qui part sans qu’on ait rien tenté) par rapport à un faux positif (une offre de rétention envoyée à tort), on peut vouloir un seuil différent.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_score, recall_score</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> seuil <span class="kw">in</span> [<span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>]:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    y_pred_seuil <span class="op">=</span> (y_proba <span class="op">&gt;=</span> seuil).astype(<span class="bu">int</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    precision <span class="op">=</span> precision_score(y_test, y_pred_seuil)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    rappel <span class="op">=</span> recall_score(y_test, y_pred_seuil)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Seuil = </span><span class="sc">{</span>seuil<span class="sc">}</span><span class="ss"> → précision = </span><span class="sc">{</span>precision<span class="sc">:.3f}</span><span class="ss">, rappel = </span><span class="sc">{</span>rappel<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Abaisser le seuil <strong>augmente le rappel</strong> (on détecte plus de vrais churners) mais <strong>diminue généralement la précision</strong> (on se trompe aussi plus souvent sur des clients qui n’allaient pas partir). Ce compromis, illustré concrètement ici, est au cœur de toute décision de déploiement d’un classifieur.</p>
+</section>
+<section id="gérer-le-déséquilibre-des-classes" class="level2">
+<h2 class="anchored" data-anchor-id="gérer-le-déséquilibre-des-classes">5. Gérer le déséquilibre des classes</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pipeline_pondere <span class="op">=</span> Pipeline([</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pretraitement"</span>, pretraitement),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"modele"</span>, LogisticRegression(class_weight<span class="op">=</span><span class="st">"balanced"</span>)),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>pipeline_pondere.fit(X_train, y_train)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>y_pred_pondere <span class="op">=</span> pipeline_pondere.predict(X_test)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred_pondere, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>class_weight="balanced"</code> donne automatiquement plus de poids à la classe minoritaire pendant l’entraînement, sans avoir à dupliquer ou supprimer des observations. Comparez le rappel de la classe « churn » avec et sans cette option : c’est généralement là que l’écart est le plus visible.</p>
+</section>
+<section id="comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres" class="level2">
+<h2 class="anchored" data-anchor-id="comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres">6. Comparer plusieurs algorithmes, avec réglage d’hyperparamètres</h2>
+<p>Réutilisons <code>GridSearchCV</code>, déjà maîtrisé au Lab 3, pour comparer trois familles de modèles sur la même tâche.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>modeles_a_comparer <span class="op">=</span> {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Régression logistique"</span>: (</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        LogisticRegression(class_weight<span class="op">=</span><span class="st">"balanced"</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"modele__C"</span>: [<span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>]},</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"KNN"</span>: (</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        KNeighborsClassifier(),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"modele__n_neighbors"</span>: [<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">15</span>, <span class="dv">25</span>]},</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Arbre de décision"</span>: (</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        DecisionTreeClassifier(class_weight<span class="op">=</span><span class="st">"balanced"</span>, random_state<span class="op">=</span><span class="dv">42</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"modele__max_depth"</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="va">None</span>]},</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nom, (estimateur, grille) <span class="kw">in</span> modeles_a_comparer.items():</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    pipeline_candidat <span class="op">=</span> Pipeline([(<span class="st">"pretraitement"</span>, pretraitement), (<span class="st">"modele"</span>, estimateur)])</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    recherche <span class="op">=</span> GridSearchCV(pipeline_candidat, param_grid<span class="op">=</span>grille, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">"f1"</span>)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    recherche.fit(X_train, y_train)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    score_test <span class="op">=</span> recherche.score(X_test, y_test)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>nom<span class="sc">:25s}</span><span class="ss"> → meilleurs paramètres = </span><span class="sc">{</span>recherche<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ss">, F1 (test) = </span><span class="sc">{</span>score_test<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Pourquoi `scoring=&quot;f1&quot;` plutôt que l'accuracy ?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Pourquoi <code>scoring="f1"</code> plutôt que l’accuracy ?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Sur un jeu déséquilibré, optimiser l’accuracy par validation croisée pousserait naturellement <code>GridSearchCV</code> vers des modèles qui prédisent presque toujours la classe majoritaire (chapitre 2, §6). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.</p>
+</div>
+</div>
+</section>
+<section id="synthèse" class="level2">
+<h2 class="anchored" data-anchor-id="synthèse">7. Synthèse</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Auto-évaluation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Je sais construire un pipeline de classification complet, prétraitement inclus.</label></li>
+<li><label><input type="checkbox">Je sais calculer et interpréter précision, rappel, F1-score et ROC-AUC.</label></li>
+<li><label><input type="checkbox">Je sais expliquer ce que montre une courbe ROC et à quoi correspond l’AUC.</label></li>
+<li><label><input type="checkbox">Je sais faire varier le seuil de décision et en expliquer l’effet sur précision et rappel.</label></li>
+<li><label><input type="checkbox">Je sais utiliser <code>class_weight="balanced"</code> et justifier son intérêt sur des classes déséquilibrées.</label></li>
+<li><label><input type="checkbox">Je sais utiliser <code>GridSearchCV</code> avec <code>scoring="f1"</code> pour comparer plusieurs familles de modèles.</label></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-lab4-projet" class="level2">
+<h2 class="anchored" data-anchor-id="sec-lab4-projet">8. Lab Sheet — Projet guidé</h2>
+<div class="callout callout-style-default callout-important callout-titled" title="Jeu de données du projet : le Titanic, à nouveau">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Jeu de données du projet : le Titanic, à nouveau
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l’objectif n’est plus seulement de le nettoyer, mais de réellement <strong>prédire</strong> la survie (<code>survived</code>) d’un passager.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>titanic <span class="op">=</span> pd.read_csv(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<section id="partie-a-reprendre-le-pipeline-du-lab-2" class="level3">
+<h3 class="anchored" data-anchor-id="partie-a-reprendre-le-pipeline-du-lab-2">Partie A — Reprendre le pipeline du Lab 2</h3>
+<ol type="1">
+<li>Réappliquez (ou reconstruisez) le pipeline de prétraitement du Lab 2 sur les variables <code>pclass</code>, <code>sex</code>, <code>age</code>, <code>fare</code>, <code>embarked</code>, <code>sibsp</code>, <code>parch</code>, avec <code>survived</code> comme cible. Séparez Train (75 %) / Test (25 %), stratifiés.</li>
+<li>Le jeu est-il déséquilibré ? Donnez la proportion de survivants.</li>
+</ol>
+</section>
+<section id="partie-b-premier-modèle-et-métriques" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b-premier-modèle-et-métriques">Partie B — Premier modèle et métriques</h3>
+<ol start="3" type="1">
+<li>Entraînez une <code>LogisticRegression</code> (pipeline complet). Calculez accuracy, précision, rappel, F1-score et ROC-AUC sur le test.</li>
+<li>Tracez la matrice de confusion et la courbe ROC.</li>
+<li>Une <code>DummyClassifier</code> (baseline) obtiendrait quelle accuracy sur ce jeu ? Votre modèle fait-il significativement mieux ?</li>
+</ol>
+</section>
+<section id="partie-c-seuil-et-déséquilibre" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c-seuil-et-déséquilibre">Partie C — Seuil et déséquilibre</h3>
+<ol start="6" type="1">
+<li>Testez trois seuils de décision différents (par exemple 0.3, 0.5, 0.7). Lequel choisiriez-vous si l’objectif prioritaire était de <strong>ne rater aucun survivant potentiel</strong> (maximiser le rappel), quitte à avoir plus de fausses alertes ?</li>
+<li>Comparez, avec et sans <code>class_weight="balanced"</code>, le rappel obtenu pour la classe minoritaire.</li>
+</ol>
+</section>
+<section id="partie-d-comparaison-de-modèles-et-hyperparamètres" class="level3">
+<h3 class="anchored" data-anchor-id="partie-d-comparaison-de-modèles-et-hyperparamètres">Partie D — Comparaison de modèles et hyperparamètres</h3>
+<ol start="8" type="1">
+<li>Comparez, par <code>GridSearchCV</code> avec <code>scoring="f1"</code>, une régression logistique (hyperparamètre <code>C</code>), un KNN (hyperparamètre <code>n_neighbors</code>) et un arbre de décision (hyperparamètre <code>max_depth</code>).</li>
+<li>Quel modèle obtient le meilleur F1-score sur le jeu de test ? Ce résultat était-il celui que vous attendiez, compte tenu des données (variables catégorielles nombreuses, taille du jeu, etc.) ?</li>
+<li><em>(Bonus)</em> Affichez l’importance des variables pour votre meilleur modèle (<code>.coef_</code> pour la régression logistique, ou <code>.feature_importances_</code> pour l’arbre). Quelle variable semble la plus déterminante pour la survie ? Ce résultat correspond-il à ce que vous savez de l’histoire du naufrage ?</li>
+</ol>
+</section>
+<section id="livrables" class="level3">
+<h3 class="anchored" data-anchor-id="livrables">Livrables</h3>
+<ul>
+<li>un notebook ou script contenant le code des parties A à D ;</li>
+<li>au moins deux graphiques (matrice de confusion, courbe ROC) dans <code>outputs/</code> ;</li>
+<li>un court paragraphe de conclusion, comparant les modèles testés et justifiant votre choix final.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Checklist finale
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Le déséquilibre des classes est mesuré avant toute modélisation.</label></li>
+<li><label><input type="checkbox">Au moins trois métriques de classification (au-delà de l’accuracy) sont calculées.</label></li>
+<li><label><input type="checkbox">L’effet du seuil de décision est illustré avec au moins deux valeurs différentes.</label></li>
+<li><label><input type="checkbox">Tous les hyperparamètres sont réglés par validation croisée sur le train, jamais sur le test.</label></li>
+<li><label><input type="checkbox">Le jeu de test n’est utilisé qu’une seule fois, pour l’évaluation finale.</label></li>
+</ul>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../tp/lab3_regression.html" class="pagination-link" aria-label="Lab 3 — Régression : prédire une valeur numérique">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

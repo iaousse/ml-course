@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Régression – Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapitres/04_classification.html" rel="next">
+<link href="../chapitres/02_pretraitement_donnees.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/03_regression_lineaire.html"><span class="chapter-title">Régression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-title">Régression</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Recherche"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/03_regression_lineaire.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Régression</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_ml_non_supervise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Apprentissage non supervisé</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Dans ce chapitre</h2>
+   
+  <ul>
+  <li><a href="#régression-ou-classification" id="toc-régression-ou-classification" class="nav-link active" data-scroll-target="#régression-ou-classification">1. Régression ou classification ?</a>
+  <ul class="collapse">
+  <li><a href="#régression" id="toc-régression" class="nav-link" data-scroll-target="#régression">1.1. Régression</a></li>
+  <li><a href="#classification" id="toc-classification" class="nav-link" data-scroll-target="#classification">1.2. Classification</a></li>
+  </ul></li>
+  <li><a href="#données-et-notation" id="toc-données-et-notation" class="nav-link" data-scroll-target="#données-et-notation">2. Données et notation</a></li>
+  <li><a href="#modèle-de-régression-linéaire" id="toc-modèle-de-régression-linéaire" class="nav-link" data-scroll-target="#modèle-de-régression-linéaire">3. Modèle de régression linéaire</a>
+  <ul class="collapse">
+  <li><a href="#régression-linéaire-simple" id="toc-régression-linéaire-simple" class="nav-link" data-scroll-target="#régression-linéaire-simple">3.1. Régression linéaire simple</a></li>
+  <li><a href="#régression-linéaire-multiple" id="toc-régression-linéaire-multiple" class="nav-link" data-scroll-target="#régression-linéaire-multiple">3.2. Régression linéaire multiple</a></li>
+  <li><a href="#écriture-matricielle" id="toc-écriture-matricielle" class="nav-link" data-scroll-target="#écriture-matricielle">3.3. Écriture matricielle</a></li>
+  <li><a href="#fonction-de-coût" id="toc-fonction-de-coût" class="nav-link" data-scroll-target="#fonction-de-coût">3.4. Fonction de coût</a></li>
+  <li><a href="#hypothèses-et-limites" id="toc-hypothèses-et-limites" class="nav-link" data-scroll-target="#hypothèses-et-limites">3.5. Hypothèses et limites</a></li>
+  </ul></li>
+  <li><a href="#calcul-des-paramètres-par-les-mco" id="toc-calcul-des-paramètres-par-les-mco" class="nav-link" data-scroll-target="#calcul-des-paramètres-par-les-mco">4. Calcul des paramètres par les MCO</a>
+  <ul class="collapse">
+  <li><a href="#principe" id="toc-principe" class="nav-link" data-scroll-target="#principe">4.1. Principe</a></li>
+  <li><a href="#cas-de-la-régression-simple" id="toc-cas-de-la-régression-simple" class="nav-link" data-scroll-target="#cas-de-la-régression-simple">4.2. Cas de la régression simple</a></li>
+  <li><a href="#exemple-simple" id="toc-exemple-simple" class="nav-link" data-scroll-target="#exemple-simple">4.3. Exemple simple</a></li>
+  <li><a href="#solution-matricielle" id="toc-solution-matricielle" class="nav-link" data-scroll-target="#solution-matricielle">4.4. Solution matricielle</a></li>
+  </ul></li>
+  <li><a href="#la-descente-de-gradient" id="toc-la-descente-de-gradient" class="nav-link" data-scroll-target="#la-descente-de-gradient">5. La descente de gradient</a>
+  <ul class="collapse">
+  <li><a href="#interprétation-du-taux-dapprentissage" id="toc-interprétation-du-taux-dapprentissage" class="nav-link" data-scroll-target="#interprétation-du-taux-dapprentissage">5.1. Interprétation du taux d’apprentissage</a></li>
+  <li><a href="#mco-ou-descente-de-gradient" id="toc-mco-ou-descente-de-gradient" class="nav-link" data-scroll-target="#mco-ou-descente-de-gradient">5.2. MCO ou descente de gradient ?</a></li>
+  </ul></li>
+  <li><a href="#évaluer-une-régression" id="toc-évaluer-une-régression" class="nav-link" data-scroll-target="#évaluer-une-régression">6. Évaluer une régression</a>
+  <ul class="collapse">
+  <li><a href="#mae" id="toc-mae" class="nav-link" data-scroll-target="#mae">6.1. MAE</a></li>
+  <li><a href="#mse" id="toc-mse" class="nav-link" data-scroll-target="#mse">6.2. MSE</a></li>
+  <li><a href="#rmse" id="toc-rmse" class="nav-link" data-scroll-target="#rmse">6.3. RMSE</a></li>
+  <li><a href="#coefficient-de-détermination-r2" id="toc-coefficient-de-détermination-r2" class="nav-link" data-scroll-target="#coefficient-de-détermination-r2">6.4. Coefficient de détermination <span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#exemple" id="toc-exemple" class="nav-link" data-scroll-target="#exemple">6.5. Exemple</a></li>
+  <li><a href="#choisir-une-métrique" id="toc-choisir-une-métrique" class="nav-link" data-scroll-target="#choisir-une-métrique">6.6. Choisir une métrique</a></li>
+  </ul></li>
+  <li><a href="#utilisation-avec-scikit-learn" id="toc-utilisation-avec-scikit-learn" class="nav-link" data-scroll-target="#utilisation-avec-scikit-learn">7. Utilisation avec <code>scikit-learn</code></a>
+  <ul class="collapse">
+  <li><a href="#modèle-linéaire-avec-plusieurs-variables" id="toc-modèle-linéaire-avec-plusieurs-variables" class="nav-link" data-scroll-target="#modèle-linéaire-avec-plusieurs-variables">7.1. Modèle linéaire avec plusieurs variables</a></li>
+  <li><a href="#pipeline-simple" id="toc-pipeline-simple" class="nav-link" data-scroll-target="#pipeline-simple">7.2. Pipeline simple</a></li>
+  <li><a href="#limites-de-lapproche-simple" id="toc-limites-de-lapproche-simple" class="nav-link" data-scroll-target="#limites-de-lapproche-simple">7.3. Limites de l’approche simple</a></li>
+  </ul></li>
+  <li><a href="#exercices-théoriques" id="toc-exercices-théoriques" class="nav-link" data-scroll-target="#exercices-théoriques">8. Exercices théoriques</a>
+  <ul class="collapse">
+  <li><a href="#exercice-1.-identifier-le-type-de-problème" id="toc-exercice-1.-identifier-le-type-de-problème" class="nav-link" data-scroll-target="#exercice-1.-identifier-le-type-de-problème">Exercice 1. Identifier le type de problème</a></li>
+  <li><a href="#exercice-2.-interpréter-un-coefficient" id="toc-exercice-2.-interpréter-un-coefficient" class="nav-link" data-scroll-target="#exercice-2.-interpréter-un-coefficient">Exercice 2. Interpréter un coefficient</a></li>
+  <li><a href="#exercice-3.-calculer-une-régression-simple" id="toc-exercice-3.-calculer-une-régression-simple" class="nav-link" data-scroll-target="#exercice-3.-calculer-une-régression-simple">Exercice 3. Calculer une régression simple</a></li>
+  <li><a href="#exercice-4.-expliquer-le-résidu" id="toc-exercice-4.-expliquer-le-résidu" class="nav-link" data-scroll-target="#exercice-4.-expliquer-le-résidu">Exercice 4. Expliquer le résidu</a></li>
+  <li><a href="#exercice-5.-choisir-une-métrique" id="toc-exercice-5.-choisir-une-métrique" class="nav-link" data-scroll-target="#exercice-5.-choisir-une-métrique">Exercice 5. Choisir une métrique</a></li>
+  <li><a href="#exercice-6.-vérifier-les-hypothèses" id="toc-exercice-6.-vérifier-les-hypothèses" class="nav-link" data-scroll-target="#exercice-6.-vérifier-les-hypothèses">Exercice 6. Vérifier les hypothèses</a></li>
+  <li><a href="#exercice-7.-comprendre-le-gradient" id="toc-exercice-7.-comprendre-le-gradient" class="nav-link" data-scroll-target="#exercice-7.-comprendre-le-gradient">Exercice 7. Comprendre le gradient</a></li>
+  <li><a href="#exercice-8.-comparer-les-deux-approches" id="toc-exercice-8.-comparer-les-deux-approches" class="nav-link" data-scroll-target="#exercice-8.-comparer-les-deux-approches">Exercice 8. Comparer les deux approches</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du chapitre">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Objectifs du chapitre
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>À la fin de ce chapitre, l’étudiant sera capable de :</p>
+<ul>
+<li>distinguer clairement une tâche de régression d’une tâche de classification ;</li>
+<li>formuler une régression linéaire simple et multiple ;</li>
+<li>interpréter les coefficients, les résidus et les prédictions ;</li>
+<li>calculer les paramètres d’une régression par les moindres carrés ordinaires ;</li>
+<li>expliquer le principe de la descente de gradient ;</li>
+<li>choisir des métriques adaptées à un problème de régression ;</li>
+<li>utiliser <code>scikit-learn</code> pour ajuster un modèle linéaire simple ;</li>
+<li>diagnostiquer les limites d’un modèle de régression.</li>
+</ul>
+</div>
+</div>
+<section id="régression-ou-classification" class="level2">
+<h2 class="anchored" data-anchor-id="régression-ou-classification">1. Régression ou classification ?</h2>
+<p>La <strong>régression</strong> et la <strong>classification</strong> sont deux tâches d’apprentissage supervisé. Dans les deux cas, on dispose d’observations décrites par des variables explicatives <span class="math inline">\(X\)</span> et d’une cible connue <span class="math inline">\(y\)</span>. La différence essentielle est la nature de la cible.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Régression</th>
+<th>Classification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nature de la cible <span class="math inline">\(y\)</span></td>
+<td>Numérique, continue</td>
+<td>Catégorielle</td>
+</tr>
+<tr class="even">
+<td>Exemple</td>
+<td>Prix, température, durée</td>
+<td>Spam / non spam, animal</td>
+</tr>
+<tr class="odd">
+<td>Sortie du modèle</td>
+<td>Une valeur réelle <span class="math inline">\(\hat{y}\)</span></td>
+<td>Une classe ou une probabilité</td>
+</tr>
+<tr class="even">
+<td>Métriques courantes</td>
+<td>MAE, MSE, RMSE, <span class="math inline">\(R^2\)</span></td>
+<td>Accuracy, précision, rappel, F1</td>
+</tr>
+<tr class="odd">
+<td>Question posée</td>
+<td>« Combien ? »</td>
+<td>« Quelle catégorie ? »</td>
+</tr>
+</tbody>
+</table>
+<section id="régression" class="level3">
+<h3 class="anchored" data-anchor-id="régression">1.1. Régression</h3>
+<p>On cherche à approximer une fonction inconnue <span class="math inline">\(f\)</span> telle que :</p>
+<p><span class="math display">\[
+y = f(x) + \varepsilon
+\]</span></p>
+<p>Ici, <span class="math inline">\(\varepsilon\)</span> représente le bruit, c’est-à-dire la part imprévisible du phénomène. Le modèle apprend une approximation <span class="math inline">\(\hat{f}\)</span> et produit :</p>
+<p><span class="math display">\[
+\hat{y} = \hat{f}(x)
+\]</span></p>
+<p>Exemples :</p>
+<ul>
+<li>prévoir le prix d’un appartement ;</li>
+<li>estimer la consommation d’électricité ;</li>
+<li>prédire le temps de livraison ;</li>
+<li>estimer la quantité mensuelle.</li>
+</ul>
+<p>Une régression est dite <strong>simple</strong> si elle utilise une seule variable explicative, et <strong>multiple</strong> si elle en utilise plusieurs.</p>
+</section>
+<section id="classification" class="level3">
+<h3 class="anchored" data-anchor-id="classification">1.2. Classification</h3>
+<p>En classification, la cible appartient à un ensemble fini de catégories. Par exemple, pour une classification binaire :</p>
+<p><span class="math display">\[
+y \in \{0,1\}
+\]</span></p>
+<p>Le modèle peut produire une probabilité :</p>
+<p><span class="math display">\[
+\hat{p}(y=1 \mid x)
+\]</span></p>
+<p>Puis, selon un seuil, il choisit une classe. Ainsi, une probabilité de <span class="math inline">\(0{,}82\)</span> peut conduire à la classe « oui » si le seuil est fixé à <span class="math inline">\(0{,}5\)</span>.</p>
+<p>La distinction est donc claire : en régression, on cherche une valeur numérique ; en classification, on cherche une catégorie.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="La frontière n'est pas toujours absolue">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>La frontière n’est pas toujours absolue
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Une variable numérique peut parfois être utilisée comme cible d’une régression même si elle est discrète, comme le nombre de commandes ou le nombre d’accidents. La vraie question est de savoir si l’objectif consiste à prédire une quantité numérique ou une catégorie.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="données-et-notation" class="level2">
+<h2 class="anchored" data-anchor-id="données-et-notation">2. Données et notation</h2>
+<p>Chaque observation <span class="math inline">\(i\)</span> est décrite par un vecteur de <span class="math inline">\(p\)</span> variables explicatives :</p>
+<p><span class="math display">\[
+x_i = (x_{i1}, x_{i2}, \ldots, x_{ip})
+\]</span></p>
+<p>et par une valeur cible numérique <span class="math inline">\(y_i\)</span>. Pour <span class="math inline">\(n\)</span> observations, on écrit :</p>
+<p><span class="math display">\[
+X = \begin{pmatrix}
+x_{11} &amp; x_{12} &amp; \cdots &amp; x_{1p} \\
+x_{21} &amp; x_{22} &amp; \cdots &amp; x_{2p} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+x_{n1} &amp; x_{n2} &amp; \cdots &amp; x_{np}
+\end{pmatrix} \in \mathbb{R}^{n \times p},
+\qquad
+y = \begin{pmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{pmatrix} \in \mathbb{R}^{n}
+\]</span></p>
+<p>Les quantités importantes sont :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Symbole</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(n\)</span></td>
+<td>Nombre d’observations</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(p\)</span></td>
+<td>Nombre de variables explicatives</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(X\)</span></td>
+<td>Matrice des caractéristiques</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(x_i\)</span></td>
+<td>Vecteur des caractéristiques de l’observation <span class="math inline">\(i\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(y\)</span></td>
+<td>Vecteur des réponses observées</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\hat{y}_i\)</span></td>
+<td>Prédiction du modèle pour l’observation <span class="math inline">\(i\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(e_i = y_i - \hat{y}_i\)</span></td>
+<td>Résidu de l’observation <span class="math inline">\(i\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Le rôle du modèle est d’apprendre à associer des valeurs de <span class="math inline">\(x\)</span> à des valeurs de <span class="math inline">\(y\)</span> en minimisant l’erreur de prédiction.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Paramètre, hyperparamètre et prédiction">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Paramètre, hyperparamètre et prédiction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dans un modèle linéaire, les coefficients <span class="math inline">\(\beta_0,\beta_1,\ldots\)</span> sont des <strong>paramètres</strong> appris sur les données. Un <strong>hyperparamètre</strong> est choisi avant l’apprentissage, comme le nombre d’itérations d’un algorithme. Une <strong>prédiction</strong> <span class="math inline">\(\hat{y}\)</span> est la valeur calculée par le modèle à partir des paramètres appris.</p>
+</div>
+</div>
+</section>
+<section id="modèle-de-régression-linéaire" class="level2">
+<h2 class="anchored" data-anchor-id="modèle-de-régression-linéaire">3. Modèle de régression linéaire</h2>
+<section id="régression-linéaire-simple" class="level3">
+<h3 class="anchored" data-anchor-id="régression-linéaire-simple">3.1. Régression linéaire simple</h3>
+<p>Avec une seule variable explicative <span class="math inline">\(x\)</span>, le modèle linéaire s’écrit :</p>
+<p><span class="math display">\[
+\hat{y}_i = \beta_0 + \beta_1 x_i
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span> est l’ordonnée à l’origine ;</li>
+<li><span class="math inline">\(\beta_1\)</span> est la pente ;</li>
+<li><span class="math inline">\(\hat{y}_i\)</span> est la valeur prédite.</li>
+</ul>
+<p>On peut aussi écrire le modèle statistique :</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
+\]</span></p>
+<p>Le terme <span class="math inline">\(\varepsilon_i\)</span> tient compte de l’écart entre la relation moyenne et les observations réelles. Le but n’est pas d’ajuster une droite parfaite, mais une tendance utile.</p>
+</section>
+<section id="régression-linéaire-multiple" class="level3">
+<h3 class="anchored" data-anchor-id="régression-linéaire-multiple">3.2. Régression linéaire multiple</h3>
+<p>Avec <span class="math inline">\(p\)</span> variables explicatives :</p>
+<p><span class="math display">\[
+\hat{y}_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip}
+\]</span></p>
+<p>Le coefficient <span class="math inline">\(\beta_j\)</span> représente l’effet moyen d’une variation d’une unité de <span class="math inline">\(x_j\)</span> sur la cible, en gardant les autres variables constantes.</p>
+<p>Par exemple, pour le prix d’un appartement :</p>
+<p><span class="math display">\[
+\widehat{\text{prix}} = \beta_0 + \beta_1 \times \text{surface} + \beta_2 \times \text{nombre de chambres}
+\]</span></p>
+<p>Si <span class="math inline">\(\beta_1 = 1200\)</span>, alors une surface supplémentaire de <span class="math inline">\(1\,m^2\)</span> est associée, toutes choses égales par ailleurs, à une augmentation moyenne de <span class="math inline">\(1200\)</span> de la valeur prédite.</p>
+</section>
+<section id="écriture-matricielle" class="level3">
+<h3 class="anchored" data-anchor-id="écriture-matricielle">3.3. Écriture matricielle</h3>
+<p>Pour inclure l’interception, on ajoute une colonne de <span class="math inline">\(1\)</span> à <span class="math inline">\(X\)</span>. On obtient :</p>
+<p><span class="math display">\[
+\widetilde{X} = \begin{pmatrix}
+1 &amp; x_{11} &amp; \cdots &amp; x_{1p} \\
+1 &amp; x_{21} &amp; \cdots &amp; x_{2p} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+1 &amp; x_{n1} &amp; \cdots &amp; x_{np}
+\end{pmatrix}
+\in \mathbb{R}^{n \times (p+1)}
+\]</span></p>
+<p>Le vecteur des coefficients est :</p>
+<p><span class="math display">\[
+\beta = \begin{pmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_p
+\end{pmatrix}
+\in \mathbb{R}^{p+1}
+\]</span></p>
+<p>Le modèle devient :</p>
+<p><span class="math display">\[
+\hat{y} = \widetilde{X}\beta
+\]</span></p>
+<p>Cette écriture compacte est très utile pour le calcul et la compréhension mathématique du modèle.</p>
+</section>
+<section id="fonction-de-coût" class="level3">
+<h3 class="anchored" data-anchor-id="fonction-de-coût">3.4. Fonction de coût</h3>
+<p>Le résidu de l’observation <span class="math inline">\(i\)</span> est :</p>
+<p><span class="math display">\[
+e_i = y_i - \hat{y}_i
+\]</span></p>
+<p>Pour mesurer l’erreur globale, on utilise souvent la somme des carrés des erreurs :</p>
+<p><span class="math display">\[
+SSE(\beta)=\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+\]</span></p>
+<p>ou la moyenne des carrés des erreurs :</p>
+<p><span class="math display">\[
+MSE(\beta)=\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+\]</span></p>
+<p>Le modèle linéaire cherche les coefficients qui minimisent cette quantité :</p>
+<p><span class="math display">\[
+\hat{\beta} = \underset{\beta}{\operatorname{argmin}}\; MSE(\beta)
+\]</span></p>
+<p>Le carré fait deux choses :</p>
+<ol type="1">
+<li>les erreurs positives et négatives ne s’annulent pas ;</li>
+<li>les grandes erreurs sont pénalisées davantage que les petites.</li>
+</ol>
+</section>
+<section id="hypothèses-et-limites" class="level3">
+<h3 class="anchored" data-anchor-id="hypothèses-et-limites">3.5. Hypothèses et limites</h3>
+<p>La régression linéaire reste utile même si toutes ses hypothèses ne sont pas parfaitement vérifiées. Mais il faut connaître les conditions qui soutiennent son interprétation :</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothèse</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linéarité</td>
+<td>La relation moyenne entre <span class="math inline">\(x\)</span> et <span class="math inline">\(y\)</span> est approximativement linéaire</td>
+</tr>
+<tr class="even">
+<td>Indépendance</td>
+<td>Les observations ne dépendent pas les unes des autres</td>
+</tr>
+<tr class="odd">
+<td>Homoscédasticité</td>
+<td>La dispersion des erreurs est à peu près constante</td>
+</tr>
+<tr class="even">
+<td>Absence de multicolinéarité forte</td>
+<td>Les variables explicatives ne sont pas presque redondantes</td>
+</tr>
+<tr class="odd">
+<td>Normalité des erreurs</td>
+<td>Utile pour certains intervalles de confiance, pas indispensable pour la prédiction</td>
+</tr>
+</tbody>
+</table>
+<p>Une relation non linéaire peut souvent être approchée par des transformations, comme <span class="math inline">\(x^2\)</span>, <span class="math inline">\(\log(x)\)</span> ou des interactions. Mais si le modèle devient trop complexe, il peut sur-apprendre.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Extrapolation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Extrapolation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Une droite peut avoir une bonne performance autour des données observées, mais devenir peu fiable en dehors de cette plage. Une prédiction faite très loin des valeurs d’entraînement est une extrapolation.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="calcul-des-paramètres-par-les-mco" class="level2">
+<h2 class="anchored" data-anchor-id="calcul-des-paramètres-par-les-mco">4. Calcul des paramètres par les MCO</h2>
+<section id="principe" class="level3">
+<h3 class="anchored" data-anchor-id="principe">4.1. Principe</h3>
+<p>Les <strong>moindres carrés ordinaires</strong> (MCO) choisissent les coefficients qui minimisent la somme des carrés des résidus :</p>
+<p><span class="math display">\[
+\hat{\beta} = \underset{\beta}{\operatorname{argmin}}\; \sum_{i=1}^{n}\left(y_i-\beta_0-\sum_{j=1}^{p}\beta_jx_{ij}\right)^2
+\]</span></p>
+<p>En notation matricielle :</p>
+<p><span class="math display">\[
+J(\beta)=\|y-\widetilde{X}\beta\|_2^2 = (y-\widetilde{X}\beta)^\top(y-\widetilde{X}\beta)
+\]</span></p>
+</section>
+<section id="cas-de-la-régression-simple" class="level3">
+<h3 class="anchored" data-anchor-id="cas-de-la-régression-simple">4.2. Cas de la régression simple</h3>
+<p>Pour :</p>
+<p><span class="math display">\[
+\hat{y}_i = \beta_0 + \beta_1 x_i
+\]</span></p>
+<p>les coefficients MCO sont :</p>
+<p><span class="math display">\[
+\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^{n}(x_i-\bar{x})^2}
+\]</span></p>
+<p>et</p>
+<p><span class="math display">\[
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\]</span></p>
+<p>Ici, <span class="math inline">\(\bar{x}\)</span> et <span class="math inline">\(\bar{y}\)</span> sont les moyennes de <span class="math inline">\(x\)</span> et de <span class="math inline">\(y\)</span>.</p>
+<p>La pente mesure la variation conjointe de <span class="math inline">\(x\)</span> et <span class="math inline">\(y\)</span>, normalisée par la variation de <span class="math inline">\(x\)</span>. Si toutes les valeurs de <span class="math inline">\(x\)</span> sont identiques, la pente ne peut pas être estimée.</p>
+</section>
+<section id="exemple-simple" class="level3">
+<h3 class="anchored" data-anchor-id="exemple-simple">4.3. Exemple simple</h3>
+<p>Considérons les observations :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(x_i\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(y_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+<p>Les moyennes sont :</p>
+<p><span class="math display">\[
+\bar{x}=2,\qquad \bar{y}=\frac{10}{3}
+\]</span></p>
+<p>Le numérateur de la pente vaut :</p>
+<p><span class="math display">\[
+\sum_i(x_i-\bar{x})(y_i-\bar{y}) = (-1)(-\tfrac{4}{3}) + 0(-\tfrac{1}{3}) + 1(\tfrac{5}{3}) = 3
+\]</span></p>
+<p>Le dénominateur vaut :</p>
+<p><span class="math display">\[
+\sum_i(x_i-\bar{x})^2 = (-1)^2 + 0^2 + 1^2 = 2
+\]</span></p>
+<p>Donc :</p>
+<p><span class="math display">\[
+\hat{\beta}_1 = \frac{3}{2} = 1{,}5
+\]</span></p>
+<p>et :</p>
+<p><span class="math display">\[
+\hat{\beta}_0 = \frac{10}{3} - 1{,}5 \times 2 = \frac{1}{3}
+\]</span></p>
+<p>La droite ajustée est donc :</p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{3} + 1{,}5x
+\]</span></p>
+<p>Les prédictions sont :</p>
+<p><span class="math display">\[
+\left(\frac{11}{6},\;\frac{10}{3},\;\frac{29}{6}\right)
+\]</span></p>
+<p>et les résidus sont :</p>
+<p><span class="math display">\[
+\left(\frac{1}{6},\;-\frac{1}{3},\;\frac{1}{6}\right)
+\]</span></p>
+<p>La somme des résidus est nulle, comme c’est souvent le cas lorsque le modèle contient une ordonnée à l’origine.</p>
+</section>
+<section id="solution-matricielle" class="level3">
+<h3 class="anchored" data-anchor-id="solution-matricielle">4.4. Solution matricielle</h3>
+<p>En annulant le gradient de la fonction de coût, on obtient les <strong>équations normales</strong> :</p>
+<p><span class="math display">\[
+\widetilde{X}^{\top}\widetilde{X}\hat{\beta} = \widetilde{X}^{\top}y
+\]</span></p>
+<p>Si la matrice <span class="math inline">\(\widetilde{X}^{\top}\widetilde{X}\)</span> est inversible, alors :</p>
+<p><span class="math display">\[
+\boxed{\hat{\beta} = (\widetilde{X}^{\top}\widetilde{X})^{-1}\widetilde{X}^{\top} y}
+\]</span></p>
+<p>Cette formule est centrale en régression linéaire. En pratique, on évite souvent de calculer explicitement l’inverse. Les bibliothèques numériques utilisent des méthodes plus stables, comme QR ou SVD.</p>
+<p>Les cas où la solution n’est pas unique ou n’est pas stable se produisent lorsque :</p>
+<ul>
+<li>une variable est une combinaison exacte d’autres variables ;</li>
+<li>deux colonnes sont redondantes ;</li>
+<li>le nombre de variables est trop élevé par rapport au nombre d’observations ;</li>
+<li>les variables sont fortement corrélées.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="MCO, corrélation et causalité">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>MCO, corrélation et causalité
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Une régression donne une association entre variables et cible, pas automatiquement un effet causal. Un coefficient important ne prouve pas qu’une variable est la cause de la variation observée de <span class="math inline">\(y\)</span>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="la-descente-de-gradient" class="level2">
+<h2 class="anchored" data-anchor-id="la-descente-de-gradient">5. La descente de gradient</h2>
+<p>La formule MCO donne une solution directe pour la régression linéaire, mais de nombreux modèles n’ont pas de solution analytique simple. La <strong>descente de gradient</strong> propose une méthode générale d’optimisation.</p>
+<p>L’idée est simple :</p>
+<ol type="1">
+<li>choisir des paramètres initiaux ;</li>
+<li>calculer la fonction de coût ;</li>
+<li>calculer le gradient ;</li>
+<li>se déplacer dans la direction opposée au gradient ;</li>
+<li>répéter jusqu’à convergence.</li>
+</ol>
+<p>Pour la régression linéaire :</p>
+<p><span class="math display">\[
+J(\beta)=\frac{1}{n}\|y-\widetilde{X}\beta\|_2^2
+\]</span></p>
+<p>le gradient est :</p>
+<p><span class="math display">\[
+\nabla J(\beta) = \frac{2}{n}\widetilde{X}^{\top}(\widetilde{X}\beta-y)
+\]</span></p>
+<p>La mise à jour est alors :</p>
+<p><span class="math display">\[
+\beta^{(t+1)} = \beta^{(t)} - \eta \nabla J(\beta^{(t)})
+\]</span></p>
+<p>avec <span class="math inline">\(\eta&gt;0\)</span> le <strong>taux d’apprentissage</strong>.</p>
+<section id="interprétation-du-taux-dapprentissage" class="level3">
+<h3 class="anchored" data-anchor-id="interprétation-du-taux-dapprentissage">5.1. Interprétation du taux d’apprentissage</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Valeur de <span class="math inline">\(\eta\)</span></th>
+<th>Comportement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Trop petite</td>
+<td>Convergence très lente</td>
+</tr>
+<tr class="even">
+<td>Bien choisie</td>
+<td>Réduction régulière du coût</td>
+</tr>
+<tr class="odd">
+<td>Trop grande</td>
+<td>Oscillations ou divergence</td>
+</tr>
+</tbody>
+</table>
+<p>Pour une régression linéaire, la fonction de coût est convexe. Quand le problème est bien posé, elle a un minimum global unique. Un taux trop grand peut empêcher l’algorithme d’atteindre ce minimum.</p>
+</section>
+<section id="mco-ou-descente-de-gradient" class="level3">
+<h3 class="anchored" data-anchor-id="mco-ou-descente-de-gradient">5.2. MCO ou descente de gradient ?</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Critère</th>
+<th>MCO</th>
+<th>Descente de gradient</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Type de solution</td>
+<td>Directe</td>
+<td>Itérative</td>
+</tr>
+<tr class="even">
+<td>Idéal pour</td>
+<td>Régression linéaire</td>
+<td>Modèles plus complexes</td>
+</tr>
+<tr class="odd">
+<td>Hyperparamètre important</td>
+<td>Peu nombreux</td>
+<td>Taux d’apprentissage</td>
+</tr>
+<tr class="even">
+<td>Coût</td>
+<td>Très efficace sur les petits problèmes</td>
+<td>Souvent plus lent</td>
+</tr>
+</tbody>
+</table>
+<p>La régression linéaire de <code>scikit-learn</code> utilise généralement des méthodes de moindres carrés, pas une descente de gradient explicite.</p>
+</section>
+</section>
+<section id="évaluer-une-régression" class="level2">
+<h2 class="anchored" data-anchor-id="évaluer-une-régression">6. Évaluer une régression</h2>
+<p>Une métrique doit refléter le coût réel des erreurs. Deux modèles peuvent avoir une RMSE similaire mais des comportements très différents.</p>
+<section id="mae" class="level3">
+<h3 class="anchored" data-anchor-id="mae">6.1. MAE</h3>
+<p><span class="math display">\[
+MAE = \frac{1}{n}\sum_{i=1}^{n}|y_i-\hat{y}_i|
+\]</span></p>
+<p>La MAE mesure l’erreur moyenne en valeur absolue. Elle est exprimée dans la même unité que la cible.</p>
+</section>
+<section id="mse" class="level3">
+<h3 class="anchored" data-anchor-id="mse">6.2. MSE</h3>
+<p><span class="math display">\[
+MSE = \frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+\]</span></p>
+<p>La MSE pénalise fortement les grandes erreurs. Elle est utile lorsque des erreurs importantes sont particulièrement coûteuses.</p>
+</section>
+<section id="rmse" class="level3">
+<h3 class="anchored" data-anchor-id="rmse">6.3. RMSE</h3>
+<p><span class="math display">\[
+RMSE = \sqrt{MSE}
+\]</span></p>
+<p>La RMSE garde la même unité que <span class="math inline">\(y\)</span>, tout en continuant à pénaliser les erreurs importantes.</p>
+</section>
+<section id="coefficient-de-détermination-r2" class="level3">
+<h3 class="anchored" data-anchor-id="coefficient-de-détermination-r2">6.4. Coefficient de détermination <span class="math inline">\(R^2\)</span></h3>
+<p>On définit :</p>
+<p><span class="math display">\[
+SSE = \sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+\]</span></p>
+<p><span class="math display">\[
+SST = \sum_{i=1}^{n}(y_i-\bar{y})^2
+\]</span></p>
+<p>Alors :</p>
+<p><span class="math display">\[
+R^2 = 1 - \frac{SSE}{SST}
+\]</span></p>
+<p><span class="math inline">\(R^2\)</span> compare le modèle à une baseline qui prédit toujours la moyenne <span class="math inline">\(\bar{y}\)</span>.</p>
+<ul>
+<li><span class="math inline">\(R^2=1\)</span> : prédictions parfaites ;</li>
+<li><span class="math inline">\(R^2=0\)</span> : le modèle n’est pas meilleur qu’une prédiction constante ;</li>
+<li><span class="math inline">\(R^2&lt;0\)</span> : le modèle est pire que cette baseline.</li>
+</ul>
+</section>
+<section id="exemple" class="level3">
+<h3 class="anchored" data-anchor-id="exemple">6.5. Exemple</h3>
+<p>Pour :</p>
+<p><span class="math display">\[
+y=(3,5,7),\qquad \hat{y}=(2,6,8)
+\]</span></p>
+<p>les erreurs sont <span class="math inline">\((1,-1,-1)\)</span> et les erreurs absolues sont <span class="math inline">\((1,1,1)\)</span>. Donc :</p>
+<p><span class="math display">\[
+MAE=1,\qquad MSE=1,\qquad RMSE=1
+\]</span></p>
+<p>Comme <span class="math inline">\(\bar{y}=5\)</span>, on a :</p>
+<p><span class="math display">\[
+SST=(3-5)^2+(5-5)^2+(7-5)^2=8
+\]</span></p>
+<p><span class="math display">\[
+SSE=1^2+(-1)^2+(-1)^2=3
+\]</span></p>
+<p>D’où :</p>
+<p><span class="math display">\[
+R^2 = 1 - \frac{3}{8} = 0{,}625
+\]</span></p>
+</section>
+<section id="choisir-une-métrique" class="level3">
+<h3 class="anchored" data-anchor-id="choisir-une-métrique">6.6. Choisir une métrique</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Métrique à privilégier</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Coût proportionnel à l’erreur</td>
+<td>MAE</td>
+</tr>
+<tr class="even">
+<td>Erreurs très grandes particulièrement coûteuses</td>
+<td>MSE ou RMSE</td>
+</tr>
+<tr class="odd">
+<td>Comparer au modèle de référence à la moyenne</td>
+<td><span class="math inline">\(R^2\)</span></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-important callout-titled" title="Évaluer sur le bon jeu">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Évaluer sur le bon jeu
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les métriques doivent être calculées sur des données que le modèle n’a pas vues pendant l’apprentissage. La métrique d’entraînement mesure la capacité d’ajustement ; la métrique de validation ou de test mesure la généralisation.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="utilisation-avec-scikit-learn" class="level2">
+<h2 class="anchored" data-anchor-id="utilisation-avec-scikit-learn">7. Utilisation avec <code>scikit-learn</code></h2>
+<p>La plupart des modèles de régression de <code>scikit-learn</code> partagent une interface simple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, mean_squared_error, r2_score</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> [[<span class="dv">120</span>], [<span class="dv">150</span>], [<span class="dv">170</span>], [<span class="dv">210</span>], [<span class="dv">240</span>], [<span class="dv">280</span>]]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [<span class="dv">1500</span>, <span class="dv">1800</span>, <span class="dv">2100</span>, <span class="dv">2500</span>, <span class="dv">2900</span>, <span class="dv">3400</span>]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> model.predict(X_test)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>mae <span class="op">=</span> mean_absolute_error(y_test, predictions)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> mean_squared_error(y_test, predictions, squared<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>r2 <span class="op">=</span> r2_score(y_test, predictions)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"MAE:"</span>, mae)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"RMSE:"</span>, rmse)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"R2:"</span>, r2)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le schéma général est :</p>
+<ol type="1">
+<li>définir <span class="math inline">\(X\)</span> et <span class="math inline">\(y\)</span> ;</li>
+<li>séparer les données en entraînement et test ;</li>
+<li>créer un estimateur ;</li>
+<li>appeler <code>.fit(X_train, y_train)</code> ;</li>
+<li>appeler <code>.predict(X_test)</code> ;</li>
+<li>calculer une métrique sur les données de test.</li>
+</ol>
+<section id="modèle-linéaire-avec-plusieurs-variables" class="level3">
+<h3 class="anchored" data-anchor-id="modèle-linéaire-avec-plusieurs-variables">7.1. Modèle linéaire avec plusieurs variables</h3>
+<p>On peut aussi utiliser plusieurs variables explicatives :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array([</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">120</span>, <span class="dv">2</span>],</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">150</span>, <span class="dv">3</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">170</span>, <span class="dv">3</span>],</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">210</span>, <span class="dv">4</span>],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">240</span>, <span class="dv">5</span>],</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>], dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">1500</span>, <span class="dv">1800</span>, <span class="dv">2100</span>, <span class="dv">2500</span>, <span class="dv">2900</span>], dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.intercept_)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.coef_)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ici, <span class="math inline">\(\text{intercept\_}\)</span> est <span class="math inline">\(\beta_0\)</span> et <code>coef_</code> contient les coefficients <span class="math inline">\(\beta_1,\beta_2,\ldots\)</span></p>
+</section>
+<section id="pipeline-simple" class="level3">
+<h3 class="anchored" data-anchor-id="pipeline-simple">7.2. Pipeline simple</h3>
+<p>Quand on a des données incomplètes ou des variables de types différents, il faut souvent préparer les données avant de les donner au modèle. <code>Pipeline</code> permet de regrouper les étapes.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>num_features <span class="op">=</span> [<span class="st">"surface"</span>, <span class="st">"age"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>cat_features <span class="op">=</span> [<span class="st">"quartier"</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>num_pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"imputer"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>)),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"scaler"</span>, StandardScaler()),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>cat_pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"imputer"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"onehot"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, num_pipeline, num_features),</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, cat_pipeline, cat_features),</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Pipeline([</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"preprocessing"</span>, preprocessor),</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"regression"</span>, LinearRegression()),</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le point important est que les statistiques de préparation sont calculées sur les données d’entraînement uniquement. Cela évite la fuite de données.</p>
+</section>
+<section id="limites-de-lapproche-simple" class="level3">
+<h3 class="anchored" data-anchor-id="limites-de-lapproche-simple">7.3. Limites de l’approche simple</h3>
+<p>La régression linéaire est puissante, mais elle n’est pas adaptée à toute situation :</p>
+<ul>
+<li>relation fortement non linéaire ;</li>
+<li>variables très corrélées ;</li>
+<li>présence de variables qualitatives nombreuses ;</li>
+<li>phénomène avec des effets non additifs.</li>
+</ul>
+<p>Dans ces cas, il faut parfois transformer les variables, ajouter des caractéristiques, ou utiliser d’autres familles de modèles. Mais la logique centrale reste la même : expliquer une cible numérique par des variables explicatives.</p>
+</section>
+</section>
+<section id="exercices-théoriques" class="level2">
+<h2 class="anchored" data-anchor-id="exercices-théoriques">8. Exercices théoriques</h2>
+<p>Les exercices suivants sont purement théoriques. Ils servent à consolider les idées, sans demander de code exécutable.</p>
+<section id="exercice-1.-identifier-le-type-de-problème" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-1.-identifier-le-type-de-problème">Exercice 1. Identifier le type de problème</h3>
+<p>Pour chaque situation, indique si l’on parle d’une tâche de régression ou de classification :</p>
+<ol type="1">
+<li>Prédire la température maximale demain.</li>
+<li>Déterminer si un email est un spam ou non.</li>
+<li>Estimer le montant d’une facture.</li>
+<li>Classer une image en “chien” ou “chat”.</li>
+<li>Prédire le nombre d’accidents pendant un mois.</li>
+</ol>
+</section>
+<section id="exercice-2.-interpréter-un-coefficient" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-2.-interpréter-un-coefficient">Exercice 2. Interpréter un coefficient</h3>
+<p>On considère le modèle :</p>
+<p><span class="math display">\[
+\hat{y} = 50 + 2x_1 - 3x_2
+\]</span></p>
+<p>Interprète le sens de <span class="math inline">\(\beta_1 = 2\)</span> et <span class="math inline">\(\beta_2 = -3\)</span>.</p>
+</section>
+<section id="exercice-3.-calculer-une-régression-simple" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-3.-calculer-une-régression-simple">Exercice 3. Calculer une régression simple</h3>
+<p>On donne les observations suivantes :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(x_i\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(y_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>Calculez la pente et l’ordonnée à l’origine de la droite de régression par les MCO.</p>
+</section>
+<section id="exercice-4.-expliquer-le-résidu" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-4.-expliquer-le-résidu">Exercice 4. Expliquer le résidu</h3>
+<p>Pourquoi le résidu <span class="math inline">\(e_i = y_i - \hat{y}_i\)</span> est-il important ? Donnez deux raisons.</p>
+</section>
+<section id="exercice-5.-choisir-une-métrique" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-5.-choisir-une-métrique">Exercice 5. Choisir une métrique</h3>
+<p>Un responsable veut éviter les grandes erreurs de prévision, même si elles sont rares. Quelle métrique entre MAE, MSE et RMSE est la plus adaptée ? Justifiez.</p>
+</section>
+<section id="exercice-6.-vérifier-les-hypothèses" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-6.-vérifier-les-hypothèses">Exercice 6. Vérifier les hypothèses</h3>
+<p>Donnez une situation où une régression linéaire risque d’être peu adaptée. Expliquez pourquoi.</p>
+</section>
+<section id="exercice-7.-comprendre-le-gradient" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-7.-comprendre-le-gradient">Exercice 7. Comprendre le gradient</h3>
+<p>Expliquez en une phrase le rôle du gradient dans la descente de gradient.</p>
+</section>
+<section id="exercice-8.-comparer-les-deux-approches" class="level3">
+<h3 class="anchored" data-anchor-id="exercice-8.-comparer-les-deux-approches">Exercice 8. Comparer les deux approches</h3>
+<p>Comparez brièvement la méthode MCO et la descente de gradient pour la régression linéaire.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Synthèse">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Synthèse
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La régression linéaire est le point de départ naturel de l’apprentissage supervisé pour les cibles continues. Sa force est sa simplicité, son interprétabilité et son fondement mathématique solide. Sa limite est qu’elle suppose une dépendance linéaire et qu’elle peut être insuffisante dans des situations plus complexes.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Auto-évaluation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Je sais distinguer une régression d’une classification.</label></li>
+<li><label><input type="checkbox">Je sais écrire un modèle linéaire simple et multiple.</label></li>
+<li><label><input type="checkbox">Je sais interpréter les coefficients et les résidus.</label></li>
+<li><label><input type="checkbox">Je peux calculer une droite de régression par les MCO.</label></li>
+<li><label><input type="checkbox">Je comprends le rôle du gradient et du taux d’apprentissage.</label></li>
+<li><label><input type="checkbox">Je sais choisir entre MAE, MSE et RMSE.</label></li>
+<li><label><input type="checkbox">Je connais le schéma général d’un modèle <code>scikit-learn</code>.</label></li>
+<li><label><input type="checkbox">Je peux expliquer pourquoi la validation sur des données non vues est essentielle.</label></li>
+</ul>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapitres/02_pretraitement_donnees.html" class="pagination-link" aria-label="Collecte et Prétraitement des Données">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Collecte et Prétraitement des Données</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapitres/04_classification.html" class="pagination-link" aria-label="Classification">
+        <span class="nav-page-text"><span class="chapter-title">Classification</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

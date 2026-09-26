@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lab 3 — Régression : prédire une valeur numérique – Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../tp/lab4_classification.html" rel="next">
+<link href="../tp/lab2_collecte_pretraitement.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab3_regression.html"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Recherche"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/03_regression_lineaire.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Régression</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_ml_non_supervise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Apprentissage non supervisé</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Dans ce chapitre</h2>
+   
+  <ul>
+  <li><a href="#rappel-quest-ce-quapprend-une-régression-linéaire" id="toc-rappel-quest-ce-quapprend-une-régression-linéaire" class="nav-link active" data-scroll-target="#rappel-quest-ce-quapprend-une-régression-linéaire">1. Rappel : qu’est-ce qu’apprend une régression linéaire ?</a>
+  <ul class="collapse">
+  <li><a href="#régression-linéaire-simple-from-scratch" id="toc-régression-linéaire-simple-from-scratch" class="nav-link" data-scroll-target="#régression-linéaire-simple-from-scratch">1.1. Régression linéaire simple, <em>from scratch</em></a></li>
+  <li><a href="#vérification-avec-scikit-learn" id="toc-vérification-avec-scikit-learn" class="nav-link" data-scroll-target="#vérification-avec-scikit-learn">1.2. Vérification avec <code>scikit-learn</code></a></li>
+  </ul></li>
+  <li><a href="#passer-à-la-régression-multiple" id="toc-passer-à-la-régression-multiple" class="nav-link" data-scroll-target="#passer-à-la-régression-multiple">2. Passer à la régression multiple</a></li>
+  <li><a href="#métriques-de-régression-mae-mse-rmse-r2" id="toc-métriques-de-régression-mae-mse-rmse-r2" class="nav-link" data-scroll-target="#métriques-de-régression-mae-mse-rmse-r2">3. Métriques de régression : MAE, MSE, RMSE, <span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#diagnostiquer-un-modèle-par-ses-résidus" id="toc-diagnostiquer-un-modèle-par-ses-résidus" class="nav-link" data-scroll-target="#diagnostiquer-un-modèle-par-ses-résidus">4. Diagnostiquer un modèle par ses résidus</a></li>
+  <li><a href="#régularisation-ridge-et-lasso" id="toc-régularisation-ridge-et-lasso" class="nav-link" data-scroll-target="#régularisation-ridge-et-lasso">5. Régularisation : <code>Ridge</code> et <code>Lasso</code></a></li>
+  <li><a href="#régler-alpha-proprement-avec-gridsearchcv" id="toc-régler-alpha-proprement-avec-gridsearchcv" class="nav-link" data-scroll-target="#régler-alpha-proprement-avec-gridsearchcv">6. Régler <span class="math inline">\(\alpha\)</span> proprement avec <code>GridSearchCV</code></a></li>
+  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">7. Synthèse</a></li>
+  <li><a href="#sec-lab3-projet" id="toc-sec-lab3-projet" class="nav-link" data-scroll-target="#sec-lab3-projet">8. Lab Sheet — Projet guidé</a>
+  <ul class="collapse">
+  <li><a href="#partie-a-prise-en-main" id="toc-partie-a-prise-en-main" class="nav-link" data-scroll-target="#partie-a-prise-en-main">Partie A — Prise en main</a></li>
+  <li><a href="#partie-b-une-première-régression" id="toc-partie-b-une-première-régression" class="nav-link" data-scroll-target="#partie-b-une-première-régression">Partie B — Une première régression</a></li>
+  <li><a href="#partie-c-régularisation-et-réglage-dhyperparamètre" id="toc-partie-c-régularisation-et-réglage-dhyperparamètre" class="nav-link" data-scroll-target="#partie-c-régularisation-et-réglage-dhyperparamètre">Partie C — Régularisation et réglage d’hyperparamètre</a></li>
+  <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du Lab">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Objectifs du Lab
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>À la fin de ce Lab, l’étudiant sera capable de :</p>
+<ul>
+<li><strong>Implémenter</strong> une régression linéaire simple <em>from scratch</em> et retrouver le même résultat qu’avec <code>scikit-learn</code> ;</li>
+<li><strong>Entraîner</strong> une régression linéaire multiple sur plusieurs variables ;</li>
+<li><strong>Calculer et interpréter</strong> les métriques MAE, MSE, RMSE et <span class="math inline">\(R^2\)</span> ;</li>
+<li><strong>Diagnostiquer</strong> un modèle de régression à partir de ses résidus ;</li>
+<li><strong>Utiliser</strong> la régularisation (<code>Ridge</code>, <code>Lasso</code>) pour lutter contre le sur-apprentissage ;</li>
+<li><strong>Régler un hyperparamètre proprement</strong> avec <code>GridSearchCV</code> et la validation croisée ;</li>
+<li><strong>Assembler</strong> un pipeline complet, du prétraitement au modèle final.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Lien avec le cours
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ce Lab correspond au chapitre 4 (<em>Modèles de régression</em>). Il réutilise directement les compétences des Labs précédents : construction de <span class="math inline">\(X\)</span>/<span class="math inline">\(y\)</span> et évaluation (Lab 1, chapitre 2), prétraitement et <code>ColumnTransformer</code> (Lab 2, chapitre 3). C’est ici que le réglage d’hyperparamètres, seulement esquissé au Lab 1, est traité <strong>en profondeur</strong> avec <code>GridSearchCV</code> — une méthode que vous réutiliserez telle quelle au Lab 4 (classification).</p>
+</div>
+</div>
+<section id="rappel-quest-ce-quapprend-une-régression-linéaire" class="level2">
+<h2 class="anchored" data-anchor-id="rappel-quest-ce-quapprend-une-régression-linéaire">1. Rappel : qu’est-ce qu’apprend une régression linéaire ?</h2>
+<p>Une régression linéaire simple cherche les coefficients <span class="math inline">\(a\)</span> et <span class="math inline">\(b\)</span> qui minimisent l’erreur quadratique moyenne entre les valeurs prédites <span class="math inline">\(\hat{y} = a x + b\)</span> et les valeurs réelles <span class="math inline">\(y\)</span> :</p>
+<p><span class="math display">\[
+\text{MSE}(a, b) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - (a x_i + b) \right)^2
+\]</span></p>
+<p>Pour la régression linéaire, cette minimisation possède une solution exacte, calculable directement (les <strong>équations normales</strong>), que nous allons calculer nous-mêmes avant de laisser <code>scikit-learn</code> s’en charger.</p>
+<section id="régression-linéaire-simple-from-scratch" class="level3">
+<h3 class="anchored" data-anchor-id="régression-linéaire-simple-from-scratch">1.1. Régression linéaire simple, <em>from scratch</em></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>surface <span class="op">=</span> rng.uniform(<span class="dv">30</span>, <span class="dv">180</span>, size<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>prix <span class="op">=</span> <span class="dv">8_500</span> <span class="op">*</span> surface <span class="op">+</span> <span class="dv">120_000</span> <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="dv">60_000</span>, size<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Équations normales pour a et b (régression simple)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>x_moyenne, y_moyenne <span class="op">=</span> surface.mean(), prix.mean()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>a_calcule <span class="op">=</span> np.<span class="bu">sum</span>((surface <span class="op">-</span> x_moyenne) <span class="op">*</span> (prix <span class="op">-</span> y_moyenne)) <span class="op">/</span> np.<span class="bu">sum</span>((surface <span class="op">-</span> x_moyenne) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>b_calcule <span class="op">=</span> y_moyenne <span class="op">-</span> a_calcule <span class="op">*</span> x_moyenne</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"a (pente)     = </span><span class="sc">{</span>a_calcule<span class="sc">:,.1f}</span><span class="ss"> MAD par m²"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"b (ordonnée)  = </span><span class="sc">{</span>b_calcule<span class="sc">:,.1f}</span><span class="ss"> MAD"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="vérification-avec-scikit-learn" class="level3">
+<h3 class="anchored" data-anchor-id="vérification-avec-scikit-learn">1.2. Vérification avec <code>scikit-learn</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>modele <span class="op">=</span> LinearRegression()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>modele.fit(surface.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>), prix)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"a (scikit-learn) :"</span>, <span class="bu">round</span>(modele.coef_[<span class="dv">0</span>], <span class="dv">1</span>))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b (scikit-learn) :"</span>, <span class="bu">round</span>(modele.intercept_, <span class="dv">1</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Résultats identiques :"</span>, np.allclose([a_calcule, b_calcule], [modele.coef_[<span class="dv">0</span>], modele.intercept_]))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Ce que `.fit()` a fait concrètement">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Ce que <code>.fit()</code> a fait concrètement
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>LinearRegression().fit()</code> n’est rien d’autre qu’une résolution optimisée des mêmes équations normales que celles calculées à la main ci-dessus. Comprendre ce calcul démystifie ce qui se cache derrière <code>.fit()</code>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="passer-à-la-régression-multiple" class="level2">
+<h2 class="anchored" data-anchor-id="passer-à-la-régression-multiple">2. Passer à la régression multiple</h2>
+<p>En pratique, un seul prédicteur suffit rarement. Construisons un jeu de données d’annonces immobilières casablancaises plus riche, dans l’esprit du fil rouge du cours (chapitre 1, §3).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">7</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>quartiers <span class="op">=</span> rng.choice([<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Agdal"</span>, <span class="st">"Ain Diab"</span>], size<span class="op">=</span>n)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>surface <span class="op">=</span> rng.uniform(<span class="dv">30</span>, <span class="dv">220</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>chambres <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">6</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>age_bien <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">40</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>etage <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">12</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>bonus_quartier <span class="op">=</span> pd.Series(quartiers).<span class="bu">map</span>({</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Maarif"</span>: <span class="dv">150_000</span>, <span class="st">"Hay Riad"</span>: <span class="dv">260_000</span>, <span class="st">"Gueliz"</span>: <span class="dv">90_000</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Agdal"</span>: <span class="dv">190_000</span>, <span class="st">"Ain Diab"</span>: <span class="dv">320_000</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>}).to_numpy()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>prix <span class="op">=</span> (</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dv">8_200</span> <span class="op">*</span> surface <span class="op">+</span> <span class="dv">55_000</span> <span class="op">*</span> chambres <span class="op">-</span> <span class="dv">3_000</span> <span class="op">*</span> age_bien <span class="op">+</span> <span class="dv">15_000</span> <span class="op">*</span> etage</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> bonus_quartier <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="dv">70_000</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: surface.<span class="bu">round</span>(<span class="dv">0</span>), <span class="st">"nb_chambres"</span>: chambres, <span class="st">"age_bien"</span>: age_bien,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"etage"</span>: etage, <span class="st">"quartier"</span>: quartiers, <span class="st">"prix_mad"</span>: prix.<span class="bu">round</span>(<span class="dv">0</span>),</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>annonces.to_csv(<span class="st">"data/processed/annonces_casablanca.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> annonces.drop(columns<span class="op">=</span><span class="st">"prix_mad"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> annonces[<span class="st">"prix_mad"</span>]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>colonnes_numeriques <span class="op">=</span> [<span class="st">"surface_m2"</span>, <span class="st">"nb_chambres"</span>, <span class="st">"age_bien"</span>, <span class="st">"etage"</span>]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>colonnes_categorielles <span class="op">=</span> [<span class="st">"quartier"</span>]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>pretraitement <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, StandardScaler(), colonnes_numeriques),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>, handle_unknown<span class="op">=</span><span class="st">"ignore"</span>), colonnes_categorielles),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>pipeline_regression <span class="op">=</span> Pipeline([</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pretraitement"</span>, pretraitement),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"modele"</span>, LinearRegression()),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>pipeline_regression.fit(X_train, y_train)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"R² test :"</span>, <span class="bu">round</span>(pipeline_regression.score(X_test, y_test), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="métriques-de-régression-mae-mse-rmse-r2" class="level2">
+<h2 class="anchored" data-anchor-id="métriques-de-régression-mae-mse-rmse-r2">3. Métriques de régression : MAE, MSE, RMSE, <span class="math inline">\(R^2\)</span></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, mean_squared_error, r2_score</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> pipeline_regression.predict(X_test)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>mae <span class="op">=</span> mean_absolute_error(y_test, y_pred)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>mse <span class="op">=</span> mean_squared_error(y_test, y_pred)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> np.sqrt(mse)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>r2 <span class="op">=</span> r2_score(y_test, y_pred)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"MAE  = </span><span class="sc">{</span>mae<span class="sc">:,.0f}</span><span class="ss"> MAD"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"MSE  = </span><span class="sc">{</span>mse<span class="sc">:,.0f}</span><span class="ss">"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RMSE = </span><span class="sc">{</span>rmse<span class="sc">:,.0f}</span><span class="ss"> MAD"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"R²   = </span><span class="sc">{</span>r2<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Métrique</th>
+<th>Unité</th>
+<th>Ce qu’elle mesure</th>
+<th>À minimiser ou maximiser ?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MAE</td>
+<td>Celle de <span class="math inline">\(y\)</span> (MAD)</td>
+<td>Erreur absolue moyenne, peu sensible aux valeurs extrêmes</td>
+<td>Minimiser</td>
+</tr>
+<tr class="even">
+<td>MSE</td>
+<td>Celle de <span class="math inline">\(y\)</span> au carré</td>
+<td>Pénalise fortement les grosses erreurs</td>
+<td>Minimiser</td>
+</tr>
+<tr class="odd">
+<td>RMSE</td>
+<td>Celle de <span class="math inline">\(y\)</span> (MAD)</td>
+<td>Racine de la MSE, revient à l’unité d’origine — la plus lisible en pratique</td>
+<td>Minimiser</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(R^2\)</span></td>
+<td>Sans unité, <span class="math inline">\(\le 1\)</span></td>
+<td>Proportion de variance expliquée par le modèle par rapport à une baseline qui prédit toujours la moyenne</td>
+<td>Maximiser</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="R² et baseline (rappel chapitre 2, §6)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>R² et baseline (rappel chapitre 2, §6)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un <span class="math inline">\(R^2\)</span> de 0 correspond exactement à la performance d’une baseline qui prédirait toujours <span class="math inline">\(\bar{y}\)</span> (la moyenne). Un <span class="math inline">\(R^2\)</span> négatif signifie que votre modèle fait <strong>pire</strong> que cette baseline triviale — un signal d’alerte à ne jamais ignorer.</p>
+</div>
+</div>
+</section>
+<section id="diagnostiquer-un-modèle-par-ses-résidus" class="level2">
+<h2 class="anchored" data-anchor-id="diagnostiquer-un-modèle-par-ses-résidus">4. Diagnostiquer un modèle par ses résidus</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>residus <span class="op">=</span> y_test <span class="op">-</span> y_pred</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(y_pred, residus, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"red"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"Prix prédit (MAD)"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Résidu (réel − prédit)"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Résidus vs prédictions"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].hist(residus, bins<span class="op">=</span><span class="dv">25</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Résidu (MAD)"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Distribution des résidus"</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/diagnostic_residus.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un bon modèle produit des résidus répartis <strong>aléatoirement autour de zéro</strong>, sans motif visible. Un nuage en forme d’entonnoir (variance croissante) ou une courbe systématique indique que le modèle rate quelque chose de structurel — une piste pour ajouter des variables ou transformer certaines d’entre elles (par exemple un logarithme sur <code>prix_mad</code>).</p>
+</section>
+<section id="régularisation-ridge-et-lasso" class="level2">
+<h2 class="anchored" data-anchor-id="régularisation-ridge-et-lasso">5. Régularisation : <code>Ridge</code> et <code>Lasso</code></h2>
+<p>Avec de nombreuses variables (surtout après un One-Hot Encoding qui crée plusieurs colonnes), une régression linéaire classique peut sur-apprendre. La <strong>régularisation</strong> ajoute une pénalité sur la taille des coefficients :</p>
+<p><span class="math display">\[
+\text{Ridge} : \quad \text{MSE}(\beta) + \alpha \sum_{j} \beta_j^2
+\qquad\qquad
+\text{Lasso} : \quad \text{MSE}(\beta) + \alpha \sum_{j} |\beta_j|
+\]</span></p>
+<p>où <span class="math inline">\(\alpha \geq 0\)</span> contrôle l’intensité de la pénalité — un <strong>hyperparamètre</strong>, à ne pas confondre avec les coefficients <span class="math inline">\(\beta_j\)</span>, qui restent des paramètres appris.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Lasso, Ridge</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nom, modele_reg <span class="kw">in</span> [(<span class="st">"Ridge (α=1.0)"</span>, Ridge(alpha<span class="op">=</span><span class="fl">1.0</span>)), (<span class="st">"Lasso (α=1.0)"</span>, Lasso(alpha<span class="op">=</span><span class="fl">1.0</span>))]:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    pipeline_test <span class="op">=</span> Pipeline([(<span class="st">"pretraitement"</span>, pretraitement), (<span class="st">"modele"</span>, modele_reg)])</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    pipeline_test.fit(X_train, y_train)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>nom<span class="sc">:20s}</span><span class="ss"> → R² test = </span><span class="sc">{</span>pipeline_test<span class="sc">.</span>score(X_test, y_test)<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Ridge vs Lasso">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Ridge vs Lasso
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>Ridge</code> réduit tous les coefficients sans jamais les annuler complètement. <code>Lasso</code> peut ramener certains coefficients <strong>exactement à zéro</strong> — il réalise de fait une sélection de variables automatique, utile quand on soupçonne que certaines colonnes n’apportent rien.</p>
+</div>
+</div>
+</section>
+<section id="régler-alpha-proprement-avec-gridsearchcv" class="level2">
+<h2 class="anchored" data-anchor-id="régler-alpha-proprement-avec-gridsearchcv">6. Régler <span class="math inline">\(\alpha\)</span> proprement avec <code>GridSearchCV</code></h2>
+<p>Au Lab 1, nous avions comparé quelques valeurs de <span class="math inline">\(k\)</span> à la main, dans une boucle. <code>GridSearchCV</code> automatise entièrement cette démarche : il essaie chaque valeur d’hyperparamètre, évalue chacune par validation croisée, et conserve la meilleure — <strong>sans jamais toucher au jeu de test</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>pipeline_ridge <span class="op">=</span> Pipeline([</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pretraitement"</span>, pretraitement),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"modele"</span>, Ridge()),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>grille_parametres <span class="op">=</span> {</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"modele__alpha"</span>: [<span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="fl">1.0</span>, <span class="fl">10.0</span>, <span class="fl">50.0</span>, <span class="fl">100.0</span>, <span class="fl">300.0</span>],</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>recherche <span class="op">=</span> GridSearchCV(</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    pipeline_ridge,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>grille_parametres,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span><span class="st">"r2"</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>recherche.fit(X_train, y_train)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Meilleur α :"</span>, recherche.best_params_)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Meilleur R² (moyenne CV) :"</span>, <span class="bu">round</span>(recherche.best_score_, <span class="dv">3</span>))</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"R² sur le test, avec le meilleur modèle :"</span>, <span class="bu">round</span>(recherche.score(X_test, y_test), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled" title="Comment lire `param_grid`">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Comment lire <code>param_grid</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>"modele__alpha"</code> utilise la syntaxe <code>nom_étape__nom_paramètre</code> de <code>scikit-learn</code> : <code>modele</code> est le nom donné à l’étape dans le <code>Pipeline</code>, et <code>alpha</code> est le paramètre de <code>Ridge</code> à faire varier. Cette syntaxe permet de régler des hyperparamètres <strong>à l’intérieur</strong> d’un pipeline complet, prétraitement inclus.</p>
+</div>
+</div>
+<p><code>recherche</code> se comporte ensuite exactement comme un modèle entraîné classique : <code>recherche.predict(...)</code> et <code>recherche.score(...)</code> utilisent automatiquement le meilleur pipeline trouvé.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Pourquoi une grille plutôt qu'une seule valeur ?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Pourquoi une grille plutôt qu’une seule valeur ?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Choisir <span class="math inline">\(\alpha\)</span> à l’œil, ou pire sur le jeu de test, revient à une fuite de données par les hyperparamètres (chapitre 2, §5) : le score obtenu serait artificiellement optimiste et ne refléterait pas la performance réelle attendue en production.</p>
+</div>
+</div>
+</section>
+<section id="synthèse" class="level2">
+<h2 class="anchored" data-anchor-id="synthèse">7. Synthèse</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Auto-évaluation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Je sais calculer les coefficients d’une régression linéaire simple à la main et retrouver le même résultat avec <code>scikit-learn</code>.</label></li>
+<li><label><input type="checkbox">Je sais construire une régression multiple avec des variables numériques et catégorielles, via un pipeline.</label></li>
+<li><label><input type="checkbox">Je sais calculer et interpréter MAE, RMSE et <span class="math inline">\(R^2\)</span>, et dire laquelle privilégier selon le contexte.</label></li>
+<li><label><input type="checkbox">Je sais lire un graphique de résidus pour diagnostiquer un modèle.</label></li>
+<li><label><input type="checkbox">Je sais expliquer la différence entre <code>Ridge</code> et <code>Lasso</code>.</label></li>
+<li><label><input type="checkbox">Je sais utiliser <code>GridSearchCV</code> pour choisir un hyperparamètre par validation croisée, à l’intérieur d’un pipeline complet.</label></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-lab3-projet" class="level2">
+<h2 class="anchored" data-anchor-id="sec-lab3-projet">8. Lab Sheet — Projet guidé</h2>
+<div class="callout callout-style-default callout-important callout-titled" title="Jeu de données du projet">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Jeu de données du projet
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ce projet utilise le jeu de données <code>diabetes</code> fourni par <code>scikit-learn</code> (<code>from sklearn.datasets import load_diabetes</code>) : 442 patients, 10 variables physiologiques standardisées, et une cible numérique mesurant la progression de la maladie un an après le diagnostic. C’est un vrai jeu de données médical, utilisé dans de nombreuses publications de référence sur la régression régularisée.</p>
+</div>
+</div>
+<section id="partie-a-prise-en-main" class="level3">
+<h3 class="anchored" data-anchor-id="partie-a-prise-en-main">Partie A — Prise en main</h3>
+<ol type="1">
+<li>Chargez <code>load_diabetes(as_frame=True)</code>. Combien d’observations et de variables explicatives ? Toutes les variables sont-elles déjà numériques ?</li>
+<li>Séparez Train (80 %) / Test (20 %) avec un <code>random_state</code> fixé.</li>
+</ol>
+</section>
+<section id="partie-b-une-première-régression" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b-une-première-régression">Partie B — Une première régression</h3>
+<ol start="3" type="1">
+<li>Entraînez une <code>LinearRegression</code> simple (sans régularisation). Calculez MAE, RMSE et <span class="math inline">\(R^2\)</span> sur le jeu de test.</li>
+<li>Affichez les coefficients appris (<code>.coef_</code>) associés à chaque variable. Quelle variable semble avoir le plus d’impact (en valeur absolue) ?</li>
+<li>Tracez le graphique résidus vs prédictions (§4). Observez-vous un motif particulier ?</li>
+</ol>
+</section>
+<section id="partie-c-régularisation-et-réglage-dhyperparamètre" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c-régularisation-et-réglage-dhyperparamètre">Partie C — Régularisation et réglage d’hyperparamètre</h3>
+<ol start="6" type="1">
+<li>Construisez une grille de valeurs de <span class="math inline">\(\alpha\)</span> pour <code>Ridge</code> (au moins 6 valeurs, sur plusieurs ordres de grandeur, par exemple de 0.01 à 100).</li>
+<li>Utilisez <code>GridSearchCV</code> (5 plis) pour trouver le meilleur <span class="math inline">\(\alpha\)</span>. Donnez la valeur retenue et le <span class="math inline">\(R^2\)</span> moyen obtenu en validation croisée.</li>
+<li>Comparez le <span class="math inline">\(R^2\)</span> sur le jeu de test entre la régression linéaire simple (question 3) et le meilleur <code>Ridge</code> trouvé. La régularisation a-t-elle amélioré la généralisation ? Formulez une explication.</li>
+<li><em>(Bonus)</em> Refaites les questions 6-7 avec <code>Lasso</code>. Combien de coefficients sont ramenés exactement à zéro avec le meilleur <span class="math inline">\(\alpha\)</span> trouvé ? Quelles variables sont éliminées ?</li>
+</ol>
+</section>
+<section id="livrables" class="level3">
+<h3 class="anchored" data-anchor-id="livrables">Livrables</h3>
+<ul>
+<li>un notebook ou script contenant le code des parties A à C ;</li>
+<li>au moins un graphique de diagnostic dans <code>outputs/</code> ;</li>
+<li>un court paragraphe comparant les modèles testés et justifiant le choix final.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Checklist finale
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Le split Train/Test est effectué avant tout calcul de statistique.</label></li>
+<li><label><input type="checkbox">Au moins trois métriques de régression sont calculées et interprétées.</label></li>
+<li><label><input type="checkbox">L’hyperparamètre <span class="math inline">\(\alpha\)</span> est choisi par validation croisée, jamais sur le test.</label></li>
+<li><label><input type="checkbox">Le jeu de test n’est utilisé qu’une seule fois, pour l’évaluation finale.</label></li>
+</ul>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../tp/lab2_collecte_pretraitement.html" class="pagination-link" aria-label="Lab 2 — Collecte et prétraitement des données">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../tp/lab4_classification.html" class="pagination-link" aria-label="Lab 4 — Classification : prédire une catégorie">
+        <span class="nav-page-text"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

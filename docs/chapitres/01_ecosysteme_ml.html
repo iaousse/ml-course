@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Fondements Théoriques du Machine Learning – Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapitres/02_pretraitement_donnees.html" rel="next">
+<link href="../chapitres/00_intro_ml.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/01_ecosysteme_ml.html"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Recherche"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/03_regression_lineaire.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Régression</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_ml_non_supervise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Apprentissage non supervisé</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Dans ce chapitre</h2>
+   
+  <ul>
+  <li><a href="#vocabulaire-et-représentation-des-données" id="toc-vocabulaire-et-représentation-des-données" class="nav-link active" data-scroll-target="#vocabulaire-et-représentation-des-données">1. Vocabulaire et représentation des données</a></li>
+  <li><a href="#les-grandes-familles-dapprentissage" id="toc-les-grandes-familles-dapprentissage" class="nav-link" data-scroll-target="#les-grandes-familles-dapprentissage">2. Les grandes familles d’apprentissage</a></li>
+  <li><a href="#apprendre-et-généraliser" id="toc-apprendre-et-généraliser" class="nav-link" data-scroll-target="#apprendre-et-généraliser">3. Apprendre et généraliser</a></li>
+  <li><a href="#jeux-dévaluation-et-fuite-de-données" id="toc-jeux-dévaluation-et-fuite-de-données" class="nav-link" data-scroll-target="#jeux-dévaluation-et-fuite-de-données">4. Jeux d’évaluation et Fuite de données</a>
+  <ul class="collapse">
+  <li><a href="#le-cas-particulier-des-données-temporelles" id="toc-le-cas-particulier-des-données-temporelles" class="nav-link" data-scroll-target="#le-cas-particulier-des-données-temporelles">4.1. Le cas particulier des données temporelles</a></li>
+  <li><a href="#la-fuite-de-données-data-leakage" id="toc-la-fuite-de-données-data-leakage" class="nav-link" data-scroll-target="#la-fuite-de-données-data-leakage">4.2. La fuite de données (<em>Data Leakage</em>)</a></li>
+  </ul></li>
+  <li><a href="#paramètres-et-hyperparamètres" id="toc-paramètres-et-hyperparamètres" class="nav-link" data-scroll-target="#paramètres-et-hyperparamètres">5. Paramètres et Hyperparamètres</a></li>
+  <li><a href="#la-baseline-et-les-limites-de-laccuracy" id="toc-la-baseline-et-les-limites-de-laccuracy" class="nav-link" data-scroll-target="#la-baseline-et-les-limites-de-laccuracy">6. La Baseline et les limites de l’Accuracy</a></li>
+  <li><a href="#prédiction-corrélation-et-causalité" id="toc-prédiction-corrélation-et-causalité" class="nav-link" data-scroll-target="#prédiction-corrélation-et-causalité">7. Prédiction, Corrélation et Causalité</a></li>
+  <li><a href="#enjeux-éthiques-et-reproductibilité" id="toc-enjeux-éthiques-et-reproductibilité" class="nav-link" data-scroll-target="#enjeux-éthiques-et-reproductibilité">8. Enjeux Éthiques et Reproductibilité</a></li>
+  <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">Exercices</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du chapitre">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Objectifs du chapitre
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>À la fin de ce chapitre, l’étudiant sera capable de :</p>
+<ul>
+<li><strong>Distinguer</strong> l’apprentissage supervisé et non supervisé ;</li>
+<li><strong>Utiliser</strong> le vocabulaire fondamental (matrice de design, vecteur cible, hyperparamètres) ;</li>
+<li><strong>Diagnostiquer</strong> le sur-apprentissage et le sous-apprentissage ;</li>
+<li><strong>Structurer</strong> correctement un jeu de données (Train/Validation/Test) pour éviter la fuite de données ;</li>
+<li><strong>Évaluer</strong> l’importance d’une baseline et les limites de certaines métriques.</li>
+</ul>
+</div>
+</div>
+<section id="vocabulaire-et-représentation-des-données" class="level2">
+<h2 class="anchored" data-anchor-id="vocabulaire-et-représentation-des-données">1. Vocabulaire et représentation des données</h2>
+<p>Avant de choisir un algorithme, il faut formaliser algébriquement le jeu de données. Chaque <strong>ligne</strong> représente une observation et chaque <strong>colonne</strong> une information.</p>
+<div id="tbl-jeu-donnees" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-jeu-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Notions et vocabulaire
+</figcaption>
+<div aria-describedby="tbl-jeu-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Terme</th>
+<th>Définition</th>
+<th>Exemple (Prédiction de prix)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Observation</strong></td>
+<td>Un exemple individuel décrit par plusieurs variables</td>
+<td>Un appartement particulier</td>
+</tr>
+<tr class="even">
+<td><strong>Échantillon</strong></td>
+<td>Un ensemble d’observations représentant une population</td>
+<td>10 000 appartements</td>
+</tr>
+<tr class="odd">
+<td><strong>Variable explicative (<em>Feature</em>)</strong></td>
+<td>Information utilisée par le modèle pour prédire</td>
+<td>Surface, quartier</td>
+</tr>
+<tr class="even">
+<td><strong>Cible (<em>Target</em>)</strong></td>
+<td>La valeur que le modèle doit apprendre à prédire</td>
+<td>Prix de vente</td>
+</tr>
+<tr class="odd">
+<td><strong>Étiquette (<em>Label</em>)</strong></td>
+<td>La réponse connue associée à une observation (en classification)</td>
+<td>« Vendu rapidement »</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><strong>Notation mathématique standard</strong>, utilisée dans de ce cours :</p>
+<ul>
+<li><span class="math inline">\(X\)</span> : la <strong>matrice de design</strong> contenant les variables explicatives (une ligne par observation, une colonne par variable) ;</li>
+<li><span class="math inline">\(y\)</span> : le <strong>vecteur cible</strong> (ou vecteur des étiquettes) ;</li>
+<li><span class="math inline">\(x_i\)</span> : les variables explicatives de l’observation <span class="math inline">\(i\)</span> (la <span class="math inline">\(i\)</span>-ème ligne de <span class="math inline">\(X\)</span>) ;</li>
+<li><span class="math inline">\(y_i\)</span> : la réponse associée à l’observation <span class="math inline">\(i\)</span> (le <span class="math inline">\(i\)</span>-ème élément de <span class="math inline">\(y\)</span>).</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled" title="Exemple">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Exemple
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pour le jeu de données ci-dessous (2 appartements, 2 variables explicatives numériques) :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: right;">surface (<span class="math inline">\(m^2\)</span>)</th>
+<th style="text-align: right;">nbr_chambres</th>
+<th style="text-align: right;">prix (MAD)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">850 000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">420 000</td>
+</tr>
+</tbody>
+</table>
+<p>On note <span class="math inline">\(x_1 = (65, 2)\)</span> et <span class="math inline">\(y_1 = 850\,000\)</span> pour la première observation.</p>
+<p>Les variables explicatives sont regroupées dans la matrice des caractéristiques <span class="math inline">\(X\)</span> (de dimension <span class="math inline">\(2 \times 2\)</span>), et les cibles dans le vecteur-colonne <span class="math inline">\(y\)</span> :</p>
+<p><span class="math display">\[X = \begin{pmatrix} 65 &amp; 2 \\ 42 &amp; 1 \end{pmatrix} \quad \text{et} \quad y = \begin{pmatrix} 850\,000 \\ 420\,000 \end{pmatrix}\]</span></p>
+</div>
+</div>
+</section>
+<section id="les-grandes-familles-dapprentissage" class="level2">
+<h2 class="anchored" data-anchor-id="les-grandes-familles-dapprentissage">2. Les grandes familles d’apprentissage</h2>
+<p>Il existe plusieurs façons de classer les méthodes de Machine Learning. Pour ce cours, la distinction fondamentale repose sur la <strong>nature du signal disponible pour l’apprentissage</strong>.</p>
+<p>On retient ici deux <strong>grands paradigmes</strong>, étudiés dans les chapitres suivants :</p>
+<ul>
+<li><strong>l’apprentissage supervisé</strong> ;</li>
+<li><strong>l’apprentissage non supervisé</strong> ;</li>
+<li><strong>l’apprentissage non supervisé</strong>.</li>
+</ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Supervisé</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Non supervisé</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Le modèle apprend à partir de données <strong>étiquetées</strong> : chaque exemple d’entraînement est associé à une <strong>cible</strong> <span class="math inline">\(y\)</span> que le modèle cherche à prédire à partir des données d’entrée <span class="math inline">\(X\)</span>.</p>
+<p>Les deux principales tâches sont :</p>
+<ul>
+<li><p><strong>Régression</strong> : la cible <span class="math inline">\(y\)</span> est une valeur numérique, généralement continue.</p>
+<p><em>Exemple : prédire le prix d’un logement.</em></p></li>
+<li><p><strong>Classification</strong> : la cible <span class="math inline">\(y\)</span> appartient à un ensemble de classes.</p>
+<p><em>Exemple : déterminer si une transaction est frauduleuse ou non.</em></p></li>
+</ul>
+<p>Pendant l’entraînement, le modèle dispose donc d’exemples de la forme :</p>
+<p><span class="math display">\[
+(X, y)
+\]</span></p>
+<p>et cherche à apprendre une relation permettant de produire une prédiction <span class="math inline">\(\hat{y}\)</span> à partir d’une nouvelle entrée <span class="math inline">\(X\)</span>.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Le modèle apprend à partir de données <strong>non étiquetées</strong>, c’est-à-dire sans cible <span class="math inline">\(y\)</span> fournie à l’avance.</p>
+<p>L’objectif est de mettre en évidence des <strong>structures, régularités, relations ou regroupements</strong> présents dans les données.</p>
+<p>Parmi les tâches courantes :</p>
+<ul>
+<li><strong>Clustering</strong> : regrouper les observations selon leur similarité ;</li>
+<li><strong>Réduction de dimension</strong> : représenter les données dans un espace de dimension plus faible ;</li>
+<li><strong>Détection d’anomalies</strong> : identifier des observations qui s’écartent du comportement habituel.</li>
+</ul>
+<p><em>Exemple : regrouper des clients selon leur comportement d’achat sans disposer de catégories prédéfinies.</em></p>
+<p>On dispose principalement des données <span class="math inline">\(X\)</span> sans cible <span class="math inline">\(y\)</span> fournie pour l’apprentissage.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="À retenir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>À retenir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La question à se poser pour choisir un paradigme est toujours la même : <strong>de quelles données est-ce que je dispose ?</strong> Ai-je une cible connue pour chaque observation (supervisé) ou dois-je rechercher une structure sans cible fournie (non supervisé) ?</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Périmètre du cours">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Périmètre du cours
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le présent cours se concentrera sur une sélection d’algorithmes fondamentaux issus de l’<strong>apprentissage supervisé</strong> et de l’<strong>apprentissage non supervisé</strong>. L’apprentissage par renforcement et les approches semi-supervisées seront seulement mentionnés, car ils dépassent l’objectif de cette introduction.</p>
+</div>
+</div>
+</section>
+<section id="apprendre-et-généraliser" class="level2">
+<h2 class="anchored" data-anchor-id="apprendre-et-généraliser">3. Apprendre et généraliser</h2>
+<blockquote class="blockquote">
+<p>Le meilleur modèle n’est pas celui qui mémorise le mieux les données d’entraînement, mais celui qui <strong>généralise</strong> le mieux à des données inédites.</p>
+<p>— Principe fondamental du Machine Learning</p>
+</blockquote>
+<p>La <strong>généralisation</strong> est la capacité du modèle à produire une prédiction correcte face à une observation qu’il n’a jamais rencontrée. L’état d’un modèle se classe dans l’une de ces trois situations :</p>
+<ol type="1">
+<li><strong>Sous-apprentissage (<em>Underfitting</em>)</strong> : modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout — y compris sur les données d’entraînement.</li>
+<li><strong>Ajustement optimal (<em>Good fit</em>)</strong> : le modèle extrait les règles générales (le <strong>signal</strong>) et ignore les anomalies (le <strong>bruit</strong>).</li>
+<li><strong>Sur-apprentissage (<em>Overfitting</em>)</strong> : modèle trop complexe. Il mémorise le bruit spécifique aux données d’entraînement. Il excelle artificiellement sur l’historique mais échoue sur de nouvelles données.</li>
+</ol>
+<div id="fig-overfitting" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-overfitting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/overfitting-underfitting.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-overfitting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Évolution de l’erreur d’entraînement et de validation selon la complexité du modèle
+</figcaption>
+</figure>
+</div>
+<p>La <a href="#fig-overfitting" class="quarto-xref">Figure&nbsp;<span>1</span></a> illustre le compromis entre un modèle trop simple et un modèle trop complexe. L’objectif est de choisir une complexité pour laquelle l’erreur sur des données nouvelles est faible. Le vocabulaire biais-variance pourra être approfondi plus tard ; ici, il suffit de retenir que mémoriser les données d’entraînement ne garantit pas une bonne généralisation.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Comment détecter concrètement un sur-apprentissage ?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Comment détecter concrètement un sur-apprentissage ?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Le signal le plus caractéristique est un <strong>grand écart entre la performance sur le jeu d’entraînement et sur le jeu de validation</strong> : une accuracy de 99 % en entraînement contre 65 % en validation est une signature typique de sur-apprentissage. À l’inverse, une accuracy médiocre et similaire sur les deux jeux (par exemple 55 % partout) évoque plutôt un sous-apprentissage.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="jeux-dévaluation-et-fuite-de-données" class="level2">
+<h2 class="anchored" data-anchor-id="jeux-dévaluation-et-fuite-de-données">4. Jeux d’évaluation et Fuite de données</h2>
+<p>Pour diagnostiquer la généralisation, on divise l’échantillon initial en <strong>trois sous-ensembles disjoints</strong> :</p>
+<div id="tbl-jeux-evaluation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-jeux-evaluation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Les jeux d’évaluation
+</figcaption>
+<div aria-describedby="tbl-jeux-evaluation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Jeu de données</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Entraînement (<em>Train</em>)</strong></td>
+<td>Ajuster les paramètres internes du modèle.</td>
+</tr>
+<tr class="even">
+<td><strong>Validation</strong></td>
+<td>Comparer différents modèles et régler les hyperparamètres.</td>
+</tr>
+<tr class="odd">
+<td><strong>Test</strong></td>
+<td>Estimer la performance finale sur des données strictement inédites.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="fig-train-val-test" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-train-val-test-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/train-val-test-split.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-train-val-test-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Séparation typique d’un jeu de données en Train / Validation / Test
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Règle d'or">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Règle d’or
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le jeu de <strong>Test</strong> ne doit être utilisé <strong>qu’une seule fois</strong>, tout à la fin du projet, pour obtenir une estimation honnête de la performance. Le consulter à répétition pour ajuster des choix de modélisation revient, de fait, à l’intégrer au jeu d’entraînement — et fausse l’estimation finale.</p>
+</div>
+</div>
+<section id="le-cas-particulier-des-données-temporelles" class="level3">
+<h3 class="anchored" data-anchor-id="le-cas-particulier-des-données-temporelles">4.1. Le cas particulier des données temporelles</h3>
+<p>Lorsque les observations sont <strong>datées</strong> (ex. transactions bancaires, ventes mensuelles), un découpage <strong>aléatoire</strong> de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d’informations « futures » par rapport à certaines observations de test, ce qui <strong>surestime artificiellement</strong> sa performance réelle. Dans ce cas, on applique plutôt un <strong>découpage chronologique</strong> : les données les plus anciennes forment le jeu d’entraînement, les plus récentes le jeu de test — reproduisant ainsi la situation réelle où le modèle doit prédire l’avenir à partir du passé.</p>
+</section>
+<section id="la-fuite-de-données-data-leakage" class="level3">
+<h3 class="anchored" data-anchor-id="la-fuite-de-données-data-leakage">4.2. La fuite de données (<em>Data Leakage</em>)</h3>
+<p>Il y a <strong>fuite de données</strong> lorsqu’une information qui ne devrait pas être disponible au moment de la prédiction influence malgré tout l’entraînement. Cela génère des performances artificiellement excellentes, qui s’effondrent en production.</p>
+<p><em>Exemples caractéristiques :</em></p>
+<ul>
+<li>Normaliser (centrer-réduire) <strong>l’ensemble</strong> du jeu de données <em>avant</em> de le séparer en Train/Test : les statistiques de normalisation (moyenne, écart-type) « voient » alors des données de test.</li>
+<li>Inclure une variable qui n’est calculée ou connue <strong>qu’après</strong> l’événement à prédire (ex. la date d’une consultation médicale future pour prédire une réadmission hospitalière).</li>
+</ul>
+<p>Pour éviter ce type d’erreur, on utilise des <strong>Pipelines</strong> : des enchaînements d’étapes (normalisation, encodage, modélisation) que l’on ajuste <strong>uniquement</strong> sur le jeu d’entraînement, puis que l’on applique tel quel aux jeux de validation et de test.</p>
+</section>
+</section>
+<section id="paramètres-et-hyperparamètres" class="level2">
+<h2 class="anchored" data-anchor-id="paramètres-et-hyperparamètres">5. Paramètres et Hyperparamètres</h2>
+<div id="tbl-parametres" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-parametres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Paramètres et hyperparamètres
+</figcaption>
+<div aria-describedby="tbl-parametres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Élément</th>
+<th>Qui le fixe ?</th>
+<th>Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Paramètre</strong></td>
+<td>Le modèle l’apprend automatiquement à partir des données</td>
+<td>Coefficients d’une régression linéaire</td>
+</tr>
+<tr class="even">
+<td><strong>Hyperparamètre</strong></td>
+<td>Le développeur le règle avant l’entraînement</td>
+<td>Profondeur maximale d’un arbre de décision</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Comment choisir un hyperparamètre sans tricher ?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Comment choisir un hyperparamètre sans tricher ?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On ne règle <strong>jamais</strong> un hyperparamètre en observant sa performance sur le jeu de <strong>test</strong> — cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d’hyperparamètres uniquement sur le jeu de <strong>validation</strong> (<a href="#tbl-jeux-evaluation" class="quarto-xref">Table&nbsp;<span>2</span></a>), et à ne consulter le jeu de test qu’une fois le meilleur réglage définitivement choisi.</p>
+</div>
+</div>
+</section>
+<section id="la-baseline-et-les-limites-de-laccuracy" class="level2">
+<h2 class="anchored" data-anchor-id="la-baseline-et-les-limites-de-laccuracy">6. La Baseline et les limites de l’Accuracy</h2>
+<p>Une <strong>baseline</strong> est une règle de décision extrêmement simple (ex. « toujours prédire la classe majoritaire »). Elle répond à la question : <em>le modèle ML complexe fait-il réellement mieux que l’approche la plus basique possible ?</em></p>
+<div class="callout callout-style-default callout-caution callout-titled" title="Le piège des classes déséquilibrées">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Mise en garde</span>Le piège des classes déséquilibrées
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline qui prédit systématiquement « Légitime » obtiendra <strong>99 % d’<em>accuracy</em></strong> (exactitude) — un score en apparence excellent — alors même que le modèle est totalement inutile, puisqu’il ne détecte jamais aucune fraude.</p>
+</div>
+</div>
+<p>Pour étudier plus finement les erreurs d’un modèle de classification, on utilise notamment la <strong>matrice de confusion</strong>, qui sera définie et étudiée dans le chapitre consacré à la classification.</p>
+</section>
+<section id="prédiction-corrélation-et-causalité" class="level2">
+<h2 class="anchored" data-anchor-id="prédiction-corrélation-et-causalité">7. Prédiction, Corrélation et Causalité</h2>
+<p>Un modèle ML excelle à trouver des <strong>corrélations</strong> (ex. les ventes de glaces et les coups de soleil augmentent ensemble l’été). Cependant :</p>
+<ul>
+<li>La <strong>prédiction</strong> exploite une corrélation pour estimer une valeur inconnue.</li>
+<li>La <strong>causalité</strong> prouve qu’agir sur A modifie effectivement B.</li>
+</ul>
+<p>Un bon modèle prédictif <strong>ne justifie pas</strong> une décision causale : arrêter de vendre des glaces ne réduira évidemment pas le nombre de coups de soleil, car la vraie cause commune des deux phénomènes est… le beau temps.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Remarque">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Remarque
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avant de transformer une corrélation détectée par un modèle en <strong>décision d’action</strong> (« si on fait X, alors Y va s’améliorer »), il faut se demander s’il n’existe pas une <strong>variable cachée</strong> expliquant conjointement les deux phénomènes observés.</p>
+</div>
+</div>
+</section>
+<section id="enjeux-éthiques-et-reproductibilité" class="level2">
+<h2 class="anchored" data-anchor-id="enjeux-éthiques-et-reproductibilité">8. Enjeux Éthiques et Reproductibilité</h2>
+<p><strong>L’éthique dans le ML :</strong></p>
+<ul>
+<li><strong>Biais de représentation</strong> : les données d’entraînement reflètent-elles fidèlement la population sur laquelle le modèle sera utilisé, ou risquent-elles de discriminer certains groupes ?</li>
+<li><strong>Explicabilité</strong> : peut-on justifier, a posteriori, la décision prise par la machine — en particulier lorsque celle-ci affecte directement une personne (crédit refusé, diagnostic médical) ?</li>
+</ul>
+<p><strong>La Reproductibilité :</strong> un résultat scientifique ou industriel doit pouvoir être relancé à l’identique par une autre personne. Pratiques obligatoires :</p>
+<ol type="1">
+<li>Figer les versions des bibliothèques utilisées (<code>uv.lock</code>, voir le chapitre d’introduction).</li>
+<li>Fixer les « graines aléatoires » (<em>random seeds</em>) de tous les processus stochastiques.</li>
+<li>Versionner le code (Git) et documenter précisément la pipeline de données.</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Auto-évaluation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Je sais définir <span class="math inline">\(X\)</span> et <span class="math inline">\(y\)</span> pour un jeu de données que je choisis moi-même.</label></li>
+<li><label><input type="checkbox">Je peux distinguer l’apprentissage supervisé et non supervisé et donner un exemple pour chacun.</label></li>
+<li><label><input type="checkbox">Je sais expliquer, à partir d’un graphique d’erreurs, si un modèle sous-apprend ou sur-apprend.</label></li>
+<li><label><input type="checkbox">Je sais pourquoi on ne doit jamais régler un hyperparamètre sur le jeu de test.</label></li>
+<li><label><input type="checkbox">Je comprends pourquoi l’accuracy seule peut être trompeuse lorsque les classes sont déséquilibrées.</label></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="exercices" class="level2">
+<h2 class="anchored" data-anchor-id="exercices">Exercices</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Consigne">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Consigne
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit <strong>avant</strong> de les consulter.</p>
+</div>
+</div>
+<div id="exr-fond-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 1 (Vocabulaire et représentation)</strong></span> On dispose du tableau suivant, pour la tâche « prédire si un appartement sera vendu rapidement » :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: right;">surface</th>
+<th>quartier</th>
+<th style="text-align: right;">prix</th>
+<th>vendu_rapidement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">65</td>
+<td>Centre</td>
+<td style="text-align: right;">850000</td>
+<td>oui</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">42</td>
+<td>Nord</td>
+<td style="text-align: right;">420000</td>
+<td>non</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">80</td>
+<td>Centre</td>
+<td style="text-align: right;">990000</td>
+<td>oui</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Qu’est-ce qu’une observation, ici ?</li>
+<li>Quel est l’échantillon ?</li>
+<li>Quelles sont les variables explicatives ?</li>
+<li>Quelle est la cible ?</li>
+<li>Quel est le rôle de la colonne <code>id</code> ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-1">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-1" class="quarto-xref">Exercice&nbsp;<span>1</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Une observation est une ligne du tableau, ici un appartement particulier (ex. l’appartement n°1).</li>
+<li>L’échantillon est l’ensemble des 3 appartements du tableau.</li>
+<li>Les variables explicatives sont <code>surface</code>, <code>quartier</code> et <code>prix</code> (toute information utilisée pour prédire).</li>
+<li>La cible est <code>vendu_rapidement</code> (« oui »/« non »), c’est ce que le modèle doit apprendre à prédire.</li>
+<li>La colonne <code>id</code> n’est <strong>ni</strong> une variable explicative <strong>ni</strong> une cible : c’est un simple identifiant, qui ne doit <strong>pas</strong> être fourni au modèle (il n’apporte aucune information prédictive et pourrait même provoquer une fuite si les identifiants étaient attribués dans l’ordre chronologique de vente).</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 2 (Diagnostiquer sous/sur-apprentissage)</strong></span> Deux modèles donnent les résultats suivants :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Modèle</th>
+<th style="text-align: right;">Accuracy train</th>
+<th style="text-align: right;">Accuracy test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">99 %</td>
+<td style="text-align: right;">61 %</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">84 %</td>
+<td style="text-align: right;">81 %</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Quel modèle généralise le mieux ?</li>
+<li>Quel modèle semble en sur-apprentissage ?</li>
+<li>Pourquoi ne faut-il pas choisir le modèle A en regardant uniquement l’accuracy d’entraînement ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-2">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-2" class="quarto-xref">Exercice&nbsp;<span>2</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Le <strong>modèle B</strong> généralise le mieux : son accuracy de test (81 %) est nettement supérieure à celle du modèle A (61 %), et l’écart train/test y est faible.</li>
+<li>Le <strong>modèle A</strong> est en sur-apprentissage : l’écart de 38 points entre train (99 %) et test (61 %) est la signature typique décrite en <a href="#fig-overfitting" class="quarto-xref">Figure&nbsp;<span>1</span></a> — le modèle a mémorisé le bruit des données d’entraînement.</li>
+<li>L’accuracy d’entraînement seule ne mesure <strong>jamais</strong> la capacité de généralisation : un modèle peut atteindre 100 % sur ses données d’entraînement en les mémorisant purement, tout en étant inutilisable sur de nouvelles données.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 3 (Fuite de données)</strong></span> Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, une équipe utilise :</p>
+<ul>
+<li>l’âge ;</li>
+<li>le diagnostic initial ;</li>
+<li>la durée d’hospitalisation ;</li>
+<li><strong>la date de la prochaine consultation</strong> ;</li>
+<li>le nombre de médicaments prescrits pendant le séjour.</li>
+</ul>
+<ol type="1">
+<li>Quelle variable est potentiellement une fuite de données ?</li>
+<li>Pourquoi ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-3">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-3" class="quarto-xref">Exercice&nbsp;<span>3</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>La <strong>date de la prochaine consultation</strong> est potentiellement une fuite.</li>
+<li>Cette information n’est généralement connue <strong>qu’après</strong> la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) — elle n’est donc pas disponible au moment réel où l’on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en §4.2.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-4" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 4 (Paramètres vs Hyperparamètres)</strong></span> Pour chacun des éléments suivants, indiquez s’il s’agit d’un <strong>paramètre</strong> appris ou d’un <strong>hyperparamètre</strong> choisi par le développeur :</p>
+<ol type="1">
+<li>les coefficients d’une régression linéaire ;</li>
+<li>le nombre maximal de niveaux d’un arbre de décision ;</li>
+<li>le nombre de voisins <span class="math inline">\(k\)</span> dans l’algorithme des k plus proches voisins.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-4">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-4" class="quarto-xref">Exercice&nbsp;<span>4</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>D’après la <a href="#tbl-parametres" class="quarto-xref">Table&nbsp;<span>3</span></a> :</p>
+<ol type="1">
+<li><strong>Paramètre</strong> — les coefficients sont appris automatiquement par l’algorithme à partir des données.</li>
+<li><strong>Hyperparamètre</strong> — la profondeur maximale est un choix fait par le développeur avant l’entraînement.</li>
+<li><strong>Hyperparamètre</strong> — la valeur de <span class="math inline">\(k\)</span> est fixée avant l’entraînement (et se règle typiquement sur le jeu de validation, jamais sur le test).</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-5" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 5 (Baseline et classes déséquilibrées)</strong></span> Dans un jeu de classification de 1 000 observations, la classe A représente 900 observations et la classe B seulement 100.</p>
+<ol type="1">
+<li>Quelle accuracy obtient la baseline qui prédit toujours A ?</li>
+<li>Pourquoi cette baseline peut-elle être utile malgré sa simplicité ?</li>
+<li>Pourquoi faut-il compléter l’accuracy par d’autres mesures lorsque la classe B est minoritaire ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-5">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-5" class="quarto-xref">Exercice&nbsp;<span>5</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>La baseline obtient <strong>90 % d’accuracy</strong> (900 bonnes prédictions sur 1 000), sans avoir rien appris.</li>
+<li>Elle est utile car elle fixe un <strong>seuil minimal</strong> que tout modèle plus sophistiqué doit impérativement dépasser pour être considéré comme réellement utile (voir le « piège des classes déséquilibrées », §6).</li>
+<li>L’accuracy globale peut rester élevée même si le modèle détecte très peu de cas de la classe B. Il faut donc utiliser des mesures adaptées aux erreurs sur cette classe ; ces mesures seront définies dans le chapitre consacré à la classification.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-6" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 6 (Préparer une évaluation)</strong></span> Une banque utilise un modèle pour repérer des demandes de prêt potentiellement frauduleuses. Les fraudes sont rares, mais manquer une fraude peut coûter très cher.</p>
+<ol type="1">
+<li>Pourquoi l’accuracy seule risque-t-elle d’être insuffisante ?</li>
+<li>Pourquoi faut-il discuter avec le métier avant de choisir une métrique ?</li>
+<li>Dans quel chapitre trouvera-t-on les outils permettant de détailler les erreurs positives et négatives ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-6">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-6" class="quarto-xref">Exercice&nbsp;<span>6</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Si les fraudes sont rares, un modèle qui prédit presque toujours « non fraude » peut obtenir une accuracy élevée tout en étant inutile.</li>
+<li>Le choix dépend du coût relatif des erreurs : manquer une fraude et contrôler à tort une demande légitime n’ont pas nécessairement les mêmes conséquences.</li>
+<li>Les outils d’analyse détaillée seront présentés dans le chapitre consacré à la classification.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-7" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 7 (Corrélation et causalité)</strong></span> Une analyse montre que les personnes qui utilisent davantage une application de e-learning réussissent mieux une formation. L’équipe pédagogique conclut que rendre l’application obligatoire fera automatiquement réussir davantage d’étudiants.</p>
+<ol type="1">
+<li>Quelle est la corrélation observée ?</li>
+<li>Pourquoi cette conclusion causale peut-elle être injustifiée ?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-7">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-7" class="quarto-xref">Exercice&nbsp;<span>7</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>La corrélation observée est entre <strong>le niveau d’utilisation de l’application</strong> et <strong>la réussite à la formation</strong>.</li>
+<li>Comme expliqué en §7, une corrélation ne prouve pas une causalité : il est possible qu’une <strong>variable cachée</strong> — par exemple la motivation intrinsèque des étudiants — explique à la fois une utilisation plus fréquente de l’application <strong>et</strong> de meilleurs résultats, sans que l’application elle-même soit la cause de la réussite. Rendre l’application obligatoire pourrait donc n’avoir aucun effet sur les étudiants peu motivés.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="exr-fond-8" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 8 (Choisir entre supervisé et non supervisé)</strong></span> Pour chaque situation, indiquez si elle relève plutôt de l’apprentissage supervisé ou non supervisé, et justifiez brièvement.</p>
+<ol type="1">
+<li>Prédire le prix d’un logement à partir de sa surface et de son quartier.</li>
+<li>Regrouper des clients selon leurs habitudes d’achat sans catégorie connue à l’avance.</li>
+<li>Déterminer si un e-mail est un spam à partir d’e-mails déjà étiquetés.</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-8">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-8" class="quarto-xref">Exercice&nbsp;<span>8</span></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><strong>Supervisé</strong> : le prix connu dans les exemples d’apprentissage sert de cible.</li>
+<li><strong>Non supervisé</strong> : aucune catégorie n’est fournie ; l’algorithme recherche des groupes.</li>
+<li><strong>Supervisé</strong> : chaque e-mail d’apprentissage possède une étiquette (« spam » ou « non-spam »).</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapitres/00_intro_ml.html" class="pagination-link" aria-label="Introduction au Machine Learning">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Introduction au Machine Learning</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapitres/02_pretraitement_donnees.html" class="pagination-link" aria-label="Collecte et Prétraitement des Données">
+        <span class="nav-page-text"><span class="chapter-title">Collecte et Prétraitement des Données</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
