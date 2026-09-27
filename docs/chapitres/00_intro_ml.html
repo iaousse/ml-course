@@ -808,27 +808,6 @@ scikit-learn</code></pre>
 <li>Un modèle de Machine Learning peut être vu comme un « programme appris automatiquement ».</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-1">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-1" class="quarto-xref">Exercice&nbsp;<span>1</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><strong>Faux.</strong> C’est l’inverse : tout système de ML est un système d’IA, mais l’IA contient aussi des approches qui ne relèvent pas du ML (systèmes experts, algorithmes de recherche…).</li>
-<li><strong>Vrai.</strong> Le Deep Learning est défini comme un sous-domaine du Machine Learning (<a href="#fig-venn-ia-ml-dl" class="quarto-xref">Figure&nbsp;<span>1</span></a>).</li>
-<li><strong>Faux.</strong> Un système expert applique des règles écrites par un humain ; il n’apprend rien à partir de données.</li>
-<li><strong>Vrai.</strong> C’est exactement la définition du paradigme Data-Driven en §2.2 : le modèle résulte de l’algorithme d’apprentissage plutôt que d’être écrit à la main.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-intro-2" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 2 (QCM)</strong></span> Dans la définition de <span class="citation" data-cites="mitchell1997machine">(<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">Mitchell et Mitchell 1997</a>)</span> (<a href="#def-ml" class="quarto-xref">Définition&nbsp;<span>1</span></a>), que représente la lettre <strong>E</strong> ?</p>
 <ol type="1">
@@ -838,45 +817,9 @@ scikit-learn</code></pre>
 <li>L’évaluation (<em>Evaluation</em>) finale du système</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-2">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-2" class="quarto-xref">Exercice&nbsp;<span>2</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><strong>Réponse : 2.</strong> D’après la <a href="#tbl-mitchell" class="quarto-xref">Table&nbsp;<span>1</span></a>, E désigne l’<strong>Expérience</strong>, c’est-à-dire les données (par exemple les e-mails déjà étiquetés) à partir desquelles le système améliore sa performance P sur la tâche T.</p>
-</div>
-</div>
-</div>
 <div id="exr-intro-3" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 3 (Formuler le triplet (T, P, E))</strong></span> Une chaîne de supermarchés marocaine souhaite développer un système capable de <strong>prédire, pour chaque client fidèle, le montant qu’il dépensera lors de sa prochaine visite</strong>, à partir de son historique d’achats des deux dernières années.</p>
 <p>Formulez le triplet (T, P, E) pour ce projet.</p>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-3">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-3" class="quarto-xref">Exercice&nbsp;<span>3</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul>
-<li><strong>T</strong> : prédire le montant de la prochaine dépense d’un client donné — une tâche de <strong>régression</strong> (sortie numérique continue).</li>
-<li><strong>P</strong> : une métrique de régression telle que la RMSE ou la MAE, calculée entre le montant prédit et le montant réellement dépensé sur des clients dont on connaît déjà la dépense réelle.</li>
-<li><strong>E</strong> : l’historique des transactions des deux dernières années (montants, fréquence des visites, produits achetés).</li>
-</ul>
-</div>
-</div>
 </div>
 <div id="exr-intro-4" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 4 (Programmation classique ou Machine Learning ?)</strong></span> Pour chaque situation, indiquez l’approche la plus appropriée et justifiez en une phrase.</p>
@@ -887,75 +830,13 @@ scikit-learn</code></pre>
 <li>Estimer, à partir d’une radiographie, si un patient présente une fracture osseuse.</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-4">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-4" class="quarto-xref">Exercice&nbsp;<span>4</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><strong>Programmation classique</strong> : la règle de conversion est fixe et purement arithmétique.</li>
-<li><strong>Machine Learning</strong> : il n’existe pas de règle exhaustive couvrant toute la diversité linguistique et contextuelle des insultes.</li>
-<li><strong>Programmation classique</strong> : le calcul obéit à des règles calendaires fixes et entièrement déterministes.</li>
-<li><strong>Machine Learning</strong> : la reconnaissance de motifs visuels complexes est très difficile à coder sous forme de règles explicites — un cas typique du Deep Learning appliqué à l’imagerie médicale.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-intro-5" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 5 (Reconstituer le schéma Data-Driven)</strong></span> En vous appuyant sur la <a href="#fig-paradigme-programmation" class="quarto-xref">Figure&nbsp;<span>2</span></a>, reconstituez sous la forme <code>A → B</code> l’enchaînement correct des quatre éléments suivants du paradigme Machine Learning : <strong>Modèle</strong>, <strong>Données</strong>, <strong>Algorithme d’apprentissage</strong>, <strong>Résultats attendus</strong>.</p>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-5">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-5" class="quarto-xref">Exercice&nbsp;<span>5</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<pre><code>Données + Résultats attendus → Algorithme d'apprentissage → Modèle</code></pre>
-<p>Les données et les résultats attendus (étiquettes) sont fournis conjointement en entrée de l’algorithme d’apprentissage, qui produit en sortie le modèle.</p>
-</div>
-</div>
 </div>
 <div id="exr-intro-6" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 6 (Remettre les étapes dans l’ordre)</strong></span> Voici, dans le désordre, les sept étapes du cycle de vie d’un projet de Machine Learning :</p>
 <p>Évaluation du modèle · Cadrage du problème métier · Monitoring · Modélisation · Préparation et nettoyage · Déploiement · Collecte des données</p>
 <p>Remettez-les dans l’ordre correct.</p>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-6">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-6" class="quarto-xref">Exercice&nbsp;<span>6</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Cadrage du problème métier</li>
-<li>Collecte des données</li>
-<li>Préparation et nettoyage</li>
-<li>Modélisation</li>
-<li>Évaluation du modèle</li>
-<li>Déploiement</li>
-<li>Monitoring</li>
-</ol>
-</div>
-</div>
 </div>
 <div id="exr-intro-7" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 7 (Étude de cas : dérive du modèle)</strong></span> Une banque a déployé, en janvier, un modèle de scoring de crédit qui obtenait d’excellents résultats en test. Six mois plus tard, le modèle rejette de plus en plus de dossiers qui se révèlent être de bons payeurs.</p>
@@ -964,50 +845,12 @@ scikit-learn</code></pre>
 <li>À quelle(s) étape(s) du cycle de vie ce constat doit-il renvoyer l’équipe ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-7">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-7" class="quarto-xref">Exercice&nbsp;<span>7</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li>Il s’agit d’un phénomène de <strong>dérive des données</strong> (<em>data drift</em>) : la distribution des données réelles s’est écartée de celle des données d’entraînement.</li>
-<li>Ce constat relève de l’étape <strong>7 (Monitoring)</strong>, qui doit précisément détecter ce type de dérive, puis renvoie vers les étapes <strong>2-3</strong> (nouvelles données) et <strong>4</strong> (réentraînement).</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-intro-8" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 8 (Outils et bibliothèques)</strong></span> &nbsp;</p>
 <ol type="a">
 <li>Associez chaque bibliothèque à son rôle principal : <code>pandas</code>, <code>scikit-learn</code>, <code>numpy</code>. Rôles : (i) modélisation classique (régression/classification) ; (ii) manipulation de tableaux de données ; (iii) calcul numérique et matriciel.</li>
 <li>Un étudiant veut explorer rapidement un nouveau jeu de données et visualiser quelques graphiques avant de structurer un vrai projet. Quel outil de la section <a href="#sec-outils" class="quarto-xref"><span>4.2. Environnements de développement : exploration et production</span></a> lui conseillez-vous, et pourquoi ?</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-intro-8">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-intro-8" class="quarto-xref">Exercice&nbsp;<span>8</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><code>pandas</code> → (ii) ; <code>scikit-learn</code> → (i) ; <code>numpy</code> → (iii).</li>
-<li><strong>JupyterLab</strong> (ou Google Colab pour éviter toute installation) : ces outils sont conçus pour l’exploration rapide et itérative, avec affichage immédiat des graphiques cellule par cellule — contrairement à VS Code, davantage orienté vers la structuration d’un projet en production.</li>
-</ol>
-</div>
-</div>
 </div>
 
 

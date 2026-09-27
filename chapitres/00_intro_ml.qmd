@@ -376,11 +376,13 @@ c. Un système expert à base de règles `SI ... ALORS ...` relève du Machine L
 d. Un modèle de Machine Learning peut être vu comme un « programme appris automatiquement ».
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-1"}
 a. **Faux.** C'est l'inverse : tout système de ML est un système d'IA, mais l'IA contient aussi des approches qui ne relèvent pas du ML (systèmes experts, algorithmes de recherche...).
 b. **Vrai.** Le Deep Learning est défini comme un sous-domaine du Machine Learning (@fig-venn-ia-ml-dl).
 c. **Faux.** Un système expert applique des règles écrites par un humain ; il n'apprend rien à partir de données.
 d. **Vrai.** C'est exactement la définition du paradigme Data-Driven en §2.2 : le modèle résulte de l'algorithme d'apprentissage plutôt que d'être écrit à la main.
+:::
 :::
 
 ::: {#exr-intro-2}
@@ -394,8 +396,10 @@ Dans la définition de [@mitchell1997machine] (@def-ml), que représente la lett
 4. L'évaluation (*Evaluation*) finale du système
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-2"}
 **Réponse : 2.** D'après la @tbl-mitchell, E désigne l'**Expérience**, c'est-à-dire les données (par exemple les e-mails déjà étiquetés) à partir desquelles le système améliore sa performance P sur la tâche T.
+:::
 :::
 
 ::: {#exr-intro-3}
@@ -406,10 +410,12 @@ Une chaîne de supermarchés marocaine souhaite développer un système capable 
 Formulez le triplet (T, P, E) pour ce projet.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-3"}
 - **T** : prédire le montant de la prochaine dépense d'un client donné — une tâche de **régression** (sortie numérique continue).
 - **P** : une métrique de régression telle que la RMSE ou la MAE, calculée entre le montant prédit et le montant réellement dépensé sur des clients dont on connaît déjà la dépense réelle.
 - **E** : l'historique des transactions des deux dernières années (montants, fréquence des visites, produits achetés).
+:::
 :::
 
 ::: {#exr-intro-4}
@@ -423,11 +429,13 @@ c. Calculer la date du dernier jour du mois, pour n'importe quel mois de l'anné
 d. Estimer, à partir d'une radiographie, si un patient présente une fracture osseuse.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-4"}
 a. **Programmation classique** : la règle de conversion est fixe et purement arithmétique.
 b. **Machine Learning** : il n'existe pas de règle exhaustive couvrant toute la diversité linguistique et contextuelle des insultes.
 c. **Programmation classique** : le calcul obéit à des règles calendaires fixes et entièrement déterministes.
 d. **Machine Learning** : la reconnaissance de motifs visuels complexes est très difficile à coder sous forme de règles explicites — un cas typique du Deep Learning appliqué à l'imagerie médicale.
+:::
 :::
 
 ::: {#exr-intro-5}
@@ -436,11 +444,13 @@ d. **Machine Learning** : la reconnaissance de motifs visuels complexes est trè
 En vous appuyant sur la @fig-paradigme-programmation, reconstituez sous la forme `A → B` l'enchaînement correct des quatre éléments suivants du paradigme Machine Learning : **Modèle**, **Données**, **Algorithme d'apprentissage**, **Résultats attendus**.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-5"}
 ```
 Données + Résultats attendus → Algorithme d'apprentissage → Modèle
 ```
 Les données et les résultats attendus (étiquettes) sont fournis conjointement en entrée de l'algorithme d'apprentissage, qui produit en sortie le modèle.
+:::
 :::
 
 ::: {#exr-intro-6}
@@ -453,6 +463,7 @@ Voici, dans le désordre, les sept étapes du cycle de vie d'un projet de Machin
 Remettez-les dans l'ordre correct.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-6"}
 1. Cadrage du problème métier
 2. Collecte des données
@@ -461,6 +472,7 @@ Remettez-les dans l'ordre correct.
 5. Évaluation du modèle
 6. Déploiement
 7. Monitoring
+:::
 :::
 
 ::: {#exr-intro-7}
@@ -472,9 +484,11 @@ a. Comment nomme-t-on ce phénomène dans le cours ?
 b. À quelle(s) étape(s) du cycle de vie ce constat doit-il renvoyer l'équipe ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-7"}
 a. Il s'agit d'un phénomène de **dérive des données** (*data drift*) : la distribution des données réelles s'est écartée de celle des données d'entraînement.
 b. Ce constat relève de l'étape **7 (Monitoring)**, qui doit précisément détecter ce type de dérive, puis renvoie vers les étapes **2-3** (nouvelles données) et **4** (réentraînement).
+:::
 :::
 
 ::: {#exr-intro-8}
@@ -485,7 +499,9 @@ a. Associez chaque bibliothèque à son rôle principal : `pandas`, `scikit-lear
 b. Un étudiant veut explorer rapidement un nouveau jeu de données et visualiser quelques graphiques avant de structurer un vrai projet. Quel outil de la section @sec-outils lui conseillez-vous, et pourquoi ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-8"}
 a. `pandas` → (ii) ; `scikit-learn` → (i) ; `numpy` → (iii).
 b. **JupyterLab** (ou Google Colab pour éviter toute installation) : ces outils sont conçus pour l'exploration rapide et itérative, avec affichage immédiat des graphiques cellule par cellule — contrairement à VS Code, davantage orienté vers la structuration d'un projet en production.
+:::
 :::

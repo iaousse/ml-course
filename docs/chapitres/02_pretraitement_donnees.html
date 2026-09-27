@@ -853,26 +853,6 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 <li>Extraire l’historique des commandes déjà stockées dans le système d’information interne de l’entreprise.</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-1">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-1" class="quarto-xref">Exercice&nbsp;<span>1</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><strong>API</strong> (généralement REST) : les cours de change sont typiquement mis à disposition par des services financiers via une API dédiée, offrant des données structurées et à jour.</li>
-<li><strong>Web scraping</strong> : en l’absence d’API publique, l’extraction du HTML des pages d’annonces (avec <code>BeautifulSoup</code> ou <code>Scrapy</code>) reste la seule option, sous réserve de vérifier le <code>robots.txt</code> et les CGU du site (§1.2).</li>
-<li><strong>Base de données</strong> : ces données existent déjà, structurées, dans le système d’information de l’entreprise (probablement une base SQL) ; il s’agit alors d’une simple requête, sans collecte externe.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-pretraitement-2" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 2 (Identifier un biais)</strong></span> Une application mobile de course à pied souhaite entraîner un modèle pour prédire le temps qu’un coureur mettra sur un semi-marathon. Les données d’entraînement proviennent exclusivement des utilisateurs ayant activé le partage de leurs statistiques sur les réseaux sociaux.</p>
 <ol type="a">
@@ -880,50 +860,12 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 <li>Le modèle entraîné sur cet échantillon sera-t-il fiable pour prédire le temps d’un coureur occasionnel qui ne partage jamais ses performances ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-2">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-2" class="quarto-xref">Exercice&nbsp;<span>2</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li>Un <strong>biais de sélection</strong> (§2) : les coureurs qui partagent volontairement leurs performances sur les réseaux sociaux sont probablement plus performants, plus réguliers ou plus motivés que la population générale des coureurs.</li>
-<li>Non, probablement pas de façon fiable : le modèle a appris à partir d’une sous-population non représentative de l’ensemble des utilisateurs ; ses prédictions risquent d’être systématiquement trop optimistes pour un coureur occasionnel.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-pretraitement-3" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 3 (Nature d’une valeur manquante)</strong></span> Dans une enquête de satisfaction, on observe que les clients ayant donné une note très basse au service client laissent beaucoup plus souvent la question « Recommanderiez-vous ce service ? » sans réponse que les autres clients.</p>
 <ol type="a">
 <li>À quelle catégorie (MCAR, MAR, MNAR) ce type d’absence appartient-il le plus probablement ?</li>
 <li>Pourquoi une imputation simple par le mode (la réponse la plus fréquente) serait-elle risquée dans ce cas précis ?</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-3">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-3" class="quarto-xref">Exercice&nbsp;<span>3</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><strong>MNAR</strong> (<em>Missing Not At Random</em>) est une hypothèse plausible : la probabilité que la réponse soit manquante semble liée à la réponse elle-même (les clients mécontents évitent la question, précisément parce qu’ils seraient enclins à répondre négativement).</li>
-<li>Une imputation par le mode suppose implicitement que les valeurs manquantes se comportent comme les valeurs observées — ce qui est justement faux dans cette hypothèse MNAR. Remplacer ces absences par la réponse la plus fréquente (probablement positive, si la majorité des clients sont satisfaits) masquerait artificiellement l’insatisfaction réelle des clients n’ayant pas répondu.</li>
-</ol>
-</div>
-</div>
 </div>
 <div id="exr-pretraitement-4" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 4 (Choisir un type d’encodage)</strong></span> Pour chacune des variables suivantes, indiquez si un <em>Label/Ordinal Encoding</em> ou un <em>One-Hot Encoding</em> est le plus adapté, et justifiez.</p>
@@ -933,51 +875,12 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 <li>Le mois de la transaction (<code>Janvier</code>, …, <code>Décembre</code>).</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-4">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-4" class="quarto-xref">Exercice&nbsp;<span>4</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><strong>Ordinal Encoding</strong> : cette variable possède un ordre naturel non ambigu (<code>Primaire</code> &lt; <code>Secondaire</code> &lt; <code>Supérieur</code>), qu’un encodage ordinal préserve correctement (§4.1).</li>
-<li><strong>One-Hot Encoding</strong> : il n’existe aucun ordre naturel entre les couleurs ; un encodage ordinal introduirait un ordre artificiel et trompeur (§4.1, piège fréquent).</li>
-<li><strong>Discutable, à justifier</strong> : un encodage ordinal simple (Janvier=1, …, Décembre=12) fait implicitement l’hypothèse que Décembre et Janvier sont « éloignés », alors qu’ils sont calendairement adjacents (effet de cyclicité) ; un One-Hot Encoding évite ce problème mais perd la notion de proximité entre mois consécutifs. C’est un exemple où ni l’une ni l’autre des deux méthodes vues dans ce chapitre n’est pleinement satisfaisante (des encodages cycliques spécifiques existent, hors du cadre de ce chapitre).</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-pretraitement-5" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 5 (Standardisation ou normalisation ?)</strong></span> Un jeu de données contient une variable <code>revenu_annuel</code> dont la quasi-totalité des valeurs se situent entre 30 000 et 200 000 MAD, à l’exception de trois valeurs extrêmes dépassant 5 000 000 MAD (probablement des grandes fortunes, mais authentiques).</p>
 <ol type="a">
 <li>Que se passerait-il si l’on appliquait une <strong>normalisation</strong> (<em>Min-Max scaling</em>) à cette variable en l’état ?</li>
 <li>Quelle alternative, parmi celles évoquées dans ce chapitre, serait plus robuste face à ces valeurs extrêmes ?</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-5">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-5" class="quarto-xref">Exercice&nbsp;<span>5</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li>D’après la <a href="#tbl-scaling" class="quarto-xref">Table&nbsp;<span>5</span></a>, la normalisation est très sensible aux valeurs aberrantes, car <span class="math inline">\(x_{max}\)</span> serait fixé par ces trois valeurs extrêmes (&gt; 5 000 000). La quasi-totalité des observations « normales » (30 000 à 200 000) se retrouverait alors écrasée dans un intervalle minuscule proche de 0, perdant presque toute variabilité utile.</li>
-<li>Le <strong><code>RobustScaler</code></strong> (§5.3), fondé sur la médiane et l’écart interquartile plutôt que sur le minimum/maximum ou la moyenne/écart-type, serait nettement moins sensible à ces quelques valeurs extrêmes.</li>
-</ol>
-</div>
-</div>
 </div>
 <div id="exr-pretraitement-6" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 6 (Repérer une fuite de données dans un prétraitement)</strong></span> Un étudiant applique la démarche suivante :</p>
@@ -989,25 +892,6 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 <li>Proposez, en français (sans code), la démarche correcte à suivre.</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-6">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-6" class="quarto-xref">Exercice&nbsp;<span>6</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li><strong>Oui.</strong> Le <code>StandardScaler</code> est ajusté (<code>fit</code>) sur l’intégralité des données, <strong>avant</strong> la séparation en Train/Test. La moyenne et l’écart-type utilisés pour standardiser <code>X_train</code> intègrent donc déjà des informations issues de <code>X_test</code> — exactement le cas décrit dans le chapitre précédent (§4.2) et rappelé en §5.3 de ce chapitre.</li>
-<li>Il faut d’abord <strong>séparer</strong> les données en <code>X_train</code> / <code>X_test</code>, puis <strong>ajuster</strong> le <code>StandardScaler</code> uniquement sur <code>X_train</code> (<code>fit_transform</code>), et enfin <strong>appliquer</strong> ce même scaler déjà ajusté à <code>X_test</code> (<code>transform</code> seul, sans nouveau <code>fit</code>).</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-pretraitement-7" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 7 (Rôle du <code>ColumnTransformer</code>)</strong></span> Un jeu de données comporte à la fois des variables numériques (<code>surface</code>, <code>age_bien</code>) et catégorielles (<code>quartier</code>, <code>type_bien</code>).</p>
 <ol type="a">
@@ -1015,50 +899,12 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 <li>Quel est le rôle précis du <code>ColumnTransformer</code> dans ce contexte ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-7">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-7" class="quarto-xref">Exercice&nbsp;<span>7</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li>Le <code>StandardScaler</code> suppose des variables <strong>numériques</strong> (il calcule une moyenne et un écart-type) ; l’appliquer directement à des colonnes catégorielles (<code>quartier</code>, <code>type_bien</code>) n’a pas de sens mathématique. De même, l’imputation par la médiane n’est pas adaptée à une variable catégorielle (qui nécessite plutôt une imputation par le mode, <a href="#tbl-imputation" class="quarto-xref">Table&nbsp;<span>2</span></a>).</li>
-<li>Le <code>ColumnTransformer</code> (§6.1, <a href="#fig-pipeline" class="quarto-xref">Figure&nbsp;<span>1</span></a>) permet d’appliquer des transformations <strong>différentes et adaptées</strong> selon le type de chaque colonne — une chaîne <code>imputation → StandardScaler</code> pour les colonnes numériques, une chaîne <code>imputation → OneHotEncoder</code> pour les colonnes catégorielles — puis de <strong>fusionner</strong> automatiquement les résultats en une seule matrice.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-pretraitement-8" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 8 (Doublons et double comptage)</strong></span> Une équipe fusionne deux exports de données provenant de deux systèmes différents de l’entreprise, contenant chacun une partie commune de clients. Après fusion, certains clients apparaissent deux fois avec des valeurs identiques.</p>
 <ol type="a">
 <li>Quel est le risque si ces doublons ne sont pas détectés avant l’entraînement du modèle ?</li>
 <li>Cela affecte-t-il davantage un algorithme de classification ou serait-ce sans conséquence ?</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-8">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-pretraitement-8" class="quarto-xref">Exercice&nbsp;<span>8</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="a">
-<li>Comme indiqué en §3.3, un doublon donne artificiellement <strong>plus de poids</strong> à l’observation concernée lors de l’apprentissage : le modèle « voit » deux fois le même client, ce qui biaise l’estimation des paramètres en faveur du profil de ce client dupliqué.</li>
-<li>Cela affecte potentiellement <strong>tout</strong> algorithme entraîné par minimisation d’une fonction de coût sur l’ensemble des observations (donc la plupart des algorithmes vus dans ce cours) : plus une observation est dupliquée, plus son influence sur le modèle final est disproportionnée par rapport à son poids réel dans la population.</li>
-</ol>
-</div>
-</div>
 </div>
 
 

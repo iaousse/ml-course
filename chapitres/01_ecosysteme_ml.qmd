@@ -248,12 +248,15 @@ On dispose du tableau suivant, pour la tâche « prédire si un appartement sera
 5. Quel est le rôle de la colonne `id` ?
 :::
 
+
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-1"}
 1. Une observation est une ligne du tableau, ici un appartement particulier (ex. l'appartement n°1).
 2. L'échantillon est l'ensemble des 3 appartements du tableau.
 3. Les variables explicatives sont `surface`, `quartier` et `prix` (toute information utilisée pour prédire).
 4. La cible est `vendu_rapidement` (« oui »/« non »), c'est ce que le modèle doit apprendre à prédire.
 5. La colonne `id` n'est **ni** une variable explicative **ni** une cible : c'est un simple identifiant, qui ne doit **pas** être fourni au modèle (il n'apporte aucune information prédictive et pourrait même provoquer une fuite si les identifiants étaient attribués dans l'ordre chronologique de vente).
+:::
 :::
 
 ::: {#exr-fond-2}
@@ -271,10 +274,12 @@ Deux modèles donnent les résultats suivants :
 3. Pourquoi ne faut-il pas choisir le modèle A en regardant uniquement l'accuracy d'entraînement ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-2"}
 1. Le **modèle B** généralise le mieux : son accuracy de test (81 %) est nettement supérieure à celle du modèle A (61 %), et l'écart train/test y est faible.
 2. Le **modèle A** est en sur-apprentissage : l'écart de 38 points entre train (99 %) et test (61 %) est la signature typique décrite en @fig-overfitting — le modèle a mémorisé le bruit des données d'entraînement.
 3. L'accuracy d'entraînement seule ne mesure **jamais** la capacité de généralisation : un modèle peut atteindre 100 % sur ses données d'entraînement en les mémorisant purement, tout en étant inutilisable sur de nouvelles données.
+:::
 :::
 
 ::: {#exr-fond-3}
@@ -292,9 +297,11 @@ Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, u
 2. Pourquoi ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-3"}
 1. La **date de la prochaine consultation** est potentiellement une fuite.
 2. Cette information n'est généralement connue **qu'après** la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) — elle n'est donc pas disponible au moment réel où l'on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en §4.2.
+:::
 :::
 
 ::: {#exr-fond-4}
@@ -307,12 +314,14 @@ Pour chacun des éléments suivants, indiquez s'il s'agit d'un **paramètre** ap
 3. le nombre de voisins $k$ dans l'algorithme des k plus proches voisins.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-4"}
 D'après la @tbl-parametres :
 
 1. **Paramètre** — les coefficients sont appris automatiquement par l'algorithme à partir des données.
 2. **Hyperparamètre** — la profondeur maximale est un choix fait par le développeur avant l'entraînement.
 3. **Hyperparamètre** — la valeur de $k$ est fixée avant l'entraînement (et se règle typiquement sur le jeu de validation, jamais sur le test).
+:::
 :::
 
 ::: {#exr-fond-5}
@@ -325,10 +334,12 @@ Dans un jeu de classification de 1 000 observations, la classe A représente 900
 3. Pourquoi faut-il compléter l'accuracy par d'autres mesures lorsque la classe B est minoritaire ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-5"}
 1. La baseline obtient **90 % d'accuracy** (900 bonnes prédictions sur 1 000), sans avoir rien appris.
 2. Elle est utile car elle fixe un **seuil minimal** que tout modèle plus sophistiqué doit impérativement dépasser pour être considéré comme réellement utile (voir le « piège des classes déséquilibrées », §6).
 3. L'accuracy globale peut rester élevée même si le modèle détecte très peu de cas de la classe B. Il faut donc utiliser des mesures adaptées aux erreurs sur cette classe ; ces mesures seront définies dans le chapitre consacré à la classification.
+:::
 :::
 
 ::: {#exr-fond-6}
@@ -341,10 +352,12 @@ Une banque utilise un modèle pour repérer des demandes de prêt potentiellemen
 3. Dans quel chapitre trouvera-t-on les outils permettant de détailler les erreurs positives et négatives ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-6"}
 1. Si les fraudes sont rares, un modèle qui prédit presque toujours « non fraude » peut obtenir une accuracy élevée tout en étant inutile.
 2. Le choix dépend du coût relatif des erreurs : manquer une fraude et contrôler à tort une demande légitime n'ont pas nécessairement les mêmes conséquences.
 3. Les outils d'analyse détaillée seront présentés dans le chapitre consacré à la classification.
+:::
 :::
 
 ::: {#exr-fond-7}
@@ -356,9 +369,11 @@ Une analyse montre que les personnes qui utilisent davantage une application de 
 2. Pourquoi cette conclusion causale peut-elle être injustifiée ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-7"}
 1. La corrélation observée est entre **le niveau d'utilisation de l'application** et **la réussite à la formation**.
 2. Comme expliqué en §7, une corrélation ne prouve pas une causalité : il est possible qu'une **variable cachée** — par exemple la motivation intrinsèque des étudiants — explique à la fois une utilisation plus fréquente de l'application **et** de meilleurs résultats, sans que l'application elle-même soit la cause de la réussite. Rendre l'application obligatoire pourrait donc n'avoir aucun effet sur les étudiants peu motivés.
+:::
 :::
 
 ::: {#exr-fond-8}
@@ -371,8 +386,10 @@ Pour chaque situation, indiquez si elle relève plutôt de l'apprentissage super
 3. Déterminer si un e-mail est un spam à partir d'e-mails déjà étiquetés.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-8"}
 1. **Supervisé** : le prix connu dans les exemples d'apprentissage sert de cible.
 2. **Non supervisé** : aucune catégorie n'est fournie ; l'algorithme recherche des groupes.
 3. **Supervisé** : chaque e-mail d'apprentissage possède une étiquette (« spam » ou « non-spam »).
+:::
 :::

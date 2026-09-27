@@ -680,8 +680,10 @@ Expliquez en une phrase le rôle du gradient dans la descente de gradient.
 
 Comparez brièvement la méthode MCO et la descente de gradient pour la régression linéaire.
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip title="Synthèse"}
 La régression linéaire est le point de départ naturel de l'apprentissage supervisé pour les cibles continues. Sa force est sa simplicité, son interprétabilité et son fondement mathématique solide. Sa limite est qu'elle suppose une dépendance linéaire et qu'elle peut être insuffisante dans des situations plus complexes.
+:::
 :::
 
 :::{.content-visible when-profile="teacher"}

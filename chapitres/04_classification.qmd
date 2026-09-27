@@ -834,6 +834,7 @@ $$
 4. Calculez la probabilité pour $x=4$.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-1"}
 1. Pour $x=2$ :
 
@@ -860,6 +861,7 @@ $$
 \sigma(2)=\frac{1}{1+e^{-2}}\approx0{,}881
 $$
 :::
+:::
 
 ::: {#exr-class-2}
 ### Log loss d'une observation
@@ -879,6 +881,7 @@ $$
 Classez ces trois prédictions de la meilleure à la pire.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-2"}
 On a :
 
@@ -895,6 +898,7 @@ L(0{,}1)=-\ln(0{,}1)\approx2{,}303
 $$
 
 La meilleure prédiction est donc $p=0{,}9$, puis $0{,}5$, puis $0{,}1$.
+:::
 :::
 
 ::: {#exr-class-3}
@@ -916,6 +920,7 @@ Calculez :
 5. le F1-score.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-3"}
 On a :
 
@@ -953,6 +958,7 @@ $$
 F1 = 2\frac{0{,}667\times0{,}8}{0{,}667+0{,}8}\approx0{,}727
 $$
 :::
+:::
 
 ::: {#exr-class-4}
 ### Effet du seuil
@@ -973,6 +979,7 @@ Un modèle produit les probabilités suivantes :
 4. Expliquez qualitativement le phénomène.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-4"}
 1. Avec un seuil de $0{,}5$, on prédit 1 pour A, B, C et 0 pour D, E.
 2. Les vrais positifs sont A et C. Le rappel vaut donc :
@@ -983,6 +990,7 @@ $$
 
 3. Avec un seuil de $0{,}3$, D devient positif. Les prédictions sont $(1,1,1,1,0)$.
 4. Diminuer le seuil augmente le rappel, mais peut diminuer la précision. Le modèle détecte plus de positifs, mais aussi plus de faux positifs.
+:::
 :::
 
 ::: {#exr-class-5}
@@ -998,6 +1006,7 @@ Un modèle prédit toujours la classe 0.
 4. Quelles métriques complémentaires faut-il examiner ?
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-5"}
 1. L'accuracy est :
 
@@ -1014,6 +1023,7 @@ $$
 3. L'accuracy est élevée uniquement parce que la classe 0 domine. Elle ne mesure pas la capacité à détecter la classe rare.
 4. Il faut examiner le rappel, la précision, le F1-score et la balanced accuracy, ainsi que le seuil de décision.
 :::
+:::
 
 ::: {#exr-class-6}
 ### Choisir un bon premier modèle
@@ -1026,9 +1036,11 @@ Choisissez un premier algorithme raisonnable dans chaque situation et justifiez 
 4. on veut commencer par un modèle simple et interprétable avant d'essayer des méthodes plus complexes.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-class-6"}
 1. Régression logistique.
 2. KNN, à condition de standardiser les variables.
 3. Arbre de décision.
 4. Régression logistique comme premier modèle de référence ; on ne change de méthode que si les résultats et les données le justifient.
+:::
 :::

@@ -739,28 +739,6 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>Quel est le rôle de la colonne <code>id</code> ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-1">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-1" class="quarto-xref">Exercice&nbsp;<span>1</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Une observation est une ligne du tableau, ici un appartement particulier (ex. l’appartement n°1).</li>
-<li>L’échantillon est l’ensemble des 3 appartements du tableau.</li>
-<li>Les variables explicatives sont <code>surface</code>, <code>quartier</code> et <code>prix</code> (toute information utilisée pour prédire).</li>
-<li>La cible est <code>vendu_rapidement</code> (« oui »/« non »), c’est ce que le modèle doit apprendre à prédire.</li>
-<li>La colonne <code>id</code> n’est <strong>ni</strong> une variable explicative <strong>ni</strong> une cible : c’est un simple identifiant, qui ne doit <strong>pas</strong> être fourni au modèle (il n’apporte aucune information prédictive et pourrait même provoquer une fuite si les identifiants étaient attribués dans l’ordre chronologique de vente).</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-fond-2" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 2 (Diagnostiquer sous/sur-apprentissage)</strong></span> Deux modèles donnent les résultats suivants :</p>
 <table class="caption-top table">
@@ -790,26 +768,6 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>Pourquoi ne faut-il pas choisir le modèle A en regardant uniquement l’accuracy d’entraînement ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-2">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-2" class="quarto-xref">Exercice&nbsp;<span>2</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Le <strong>modèle B</strong> généralise le mieux : son accuracy de test (81 %) est nettement supérieure à celle du modèle A (61 %), et l’écart train/test y est faible.</li>
-<li>Le <strong>modèle A</strong> est en sur-apprentissage : l’écart de 38 points entre train (99 %) et test (61 %) est la signature typique décrite en <a href="#fig-overfitting" class="quarto-xref">Figure&nbsp;<span>1</span></a> — le modèle a mémorisé le bruit des données d’entraînement.</li>
-<li>L’accuracy d’entraînement seule ne mesure <strong>jamais</strong> la capacité de généralisation : un modèle peut atteindre 100 % sur ses données d’entraînement en les mémorisant purement, tout en étant inutilisable sur de nouvelles données.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-fond-3" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 3 (Fuite de données)</strong></span> Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, une équipe utilise :</p>
 <ul>
@@ -824,25 +782,6 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>Pourquoi ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-3">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-3" class="quarto-xref">Exercice&nbsp;<span>3</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>La <strong>date de la prochaine consultation</strong> est potentiellement une fuite.</li>
-<li>Cette information n’est généralement connue <strong>qu’après</strong> la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) — elle n’est donc pas disponible au moment réel où l’on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en §4.2.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-fond-4" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 4 (Paramètres vs Hyperparamètres)</strong></span> Pour chacun des éléments suivants, indiquez s’il s’agit d’un <strong>paramètre</strong> appris ou d’un <strong>hyperparamètre</strong> choisi par le développeur :</p>
 <ol type="1">
@@ -850,27 +789,6 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>le nombre maximal de niveaux d’un arbre de décision ;</li>
 <li>le nombre de voisins <span class="math inline">\(k\)</span> dans l’algorithme des k plus proches voisins.</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-4">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-4" class="quarto-xref">Exercice&nbsp;<span>4</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>D’après la <a href="#tbl-parametres" class="quarto-xref">Table&nbsp;<span>3</span></a> :</p>
-<ol type="1">
-<li><strong>Paramètre</strong> — les coefficients sont appris automatiquement par l’algorithme à partir des données.</li>
-<li><strong>Hyperparamètre</strong> — la profondeur maximale est un choix fait par le développeur avant l’entraînement.</li>
-<li><strong>Hyperparamètre</strong> — la valeur de <span class="math inline">\(k\)</span> est fixée avant l’entraînement (et se règle typiquement sur le jeu de validation, jamais sur le test).</li>
-</ol>
-</div>
-</div>
 </div>
 <div id="exr-fond-5" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 5 (Baseline et classes déséquilibrées)</strong></span> Dans un jeu de classification de 1 000 observations, la classe A représente 900 observations et la classe B seulement 100.</p>
@@ -880,26 +798,6 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>Pourquoi faut-il compléter l’accuracy par d’autres mesures lorsque la classe B est minoritaire ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-5">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-5" class="quarto-xref">Exercice&nbsp;<span>5</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>La baseline obtient <strong>90 % d’accuracy</strong> (900 bonnes prédictions sur 1 000), sans avoir rien appris.</li>
-<li>Elle est utile car elle fixe un <strong>seuil minimal</strong> que tout modèle plus sophistiqué doit impérativement dépasser pour être considéré comme réellement utile (voir le « piège des classes déséquilibrées », §6).</li>
-<li>L’accuracy globale peut rester élevée même si le modèle détecte très peu de cas de la classe B. Il faut donc utiliser des mesures adaptées aux erreurs sur cette classe ; ces mesures seront définies dans le chapitre consacré à la classification.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-fond-6" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 6 (Préparer une évaluation)</strong></span> Une banque utilise un modèle pour repérer des demandes de prêt potentiellement frauduleuses. Les fraudes sont rares, mais manquer une fraude peut coûter très cher.</p>
 <ol type="1">
@@ -908,51 +806,12 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>Dans quel chapitre trouvera-t-on les outils permettant de détailler les erreurs positives et négatives ?</li>
 </ol>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-6">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-6" class="quarto-xref">Exercice&nbsp;<span>6</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Si les fraudes sont rares, un modèle qui prédit presque toujours « non fraude » peut obtenir une accuracy élevée tout en étant inutile.</li>
-<li>Le choix dépend du coût relatif des erreurs : manquer une fraude et contrôler à tort une demande légitime n’ont pas nécessairement les mêmes conséquences.</li>
-<li>Les outils d’analyse détaillée seront présentés dans le chapitre consacré à la classification.</li>
-</ol>
-</div>
-</div>
-</div>
 <div id="exr-fond-7" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 7 (Corrélation et causalité)</strong></span> Une analyse montre que les personnes qui utilisent davantage une application de e-learning réussissent mieux une formation. L’équipe pédagogique conclut que rendre l’application obligatoire fera automatiquement réussir davantage d’étudiants.</p>
 <ol type="1">
 <li>Quelle est la corrélation observée ?</li>
 <li>Pourquoi cette conclusion causale peut-elle être injustifiée ?</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-7">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-7" class="quarto-xref">Exercice&nbsp;<span>7</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>La corrélation observée est entre <strong>le niveau d’utilisation de l’application</strong> et <strong>la réussite à la formation</strong>.</li>
-<li>Comme expliqué en §7, une corrélation ne prouve pas une causalité : il est possible qu’une <strong>variable cachée</strong> — par exemple la motivation intrinsèque des étudiants — explique à la fois une utilisation plus fréquente de l’application <strong>et</strong> de meilleurs résultats, sans que l’application elle-même soit la cause de la réussite. Rendre l’application obligatoire pourrait donc n’avoir aucun effet sur les étudiants peu motivés.</li>
-</ol>
-</div>
-</div>
 </div>
 <div id="exr-fond-8" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercice 8 (Choisir entre supervisé et non supervisé)</strong></span> Pour chaque situation, indiquez si elle relève plutôt de l’apprentissage supervisé ou non supervisé, et justifiez brièvement.</p>
@@ -961,26 +820,6 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <li>Regrouper des clients selon leurs habitudes d’achat sans catégorie connue à l’avance.</li>
 <li>Déterminer si un e-mail est un spam à partir d’e-mails déjà étiquetés.</li>
 </ol>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-fond-8">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Solution de l’exercice <a href="#exr-fond-8" class="quarto-xref">Exercice&nbsp;<span>8</span></a>
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li><strong>Supervisé</strong> : le prix connu dans les exemples d’apprentissage sert de cible.</li>
-<li><strong>Non supervisé</strong> : aucune catégorie n’est fournie ; l’algorithme recherche des groupes.</li>
-<li><strong>Supervisé</strong> : chaque e-mail d’apprentissage possède une étiquette (« spam » ou « non-spam »).</li>
-</ol>
-</div>
-</div>
 </div>
 
 
