@@ -1074,26 +1074,6 @@ Balanced\ Accuracy
 <li>évaluer le modèle avec des métriques adaptées au coût des erreurs.</li>
 </ol>
 <p>La régression logistique est un excellent point de départ. Elle est mathématiquement claire, interprétable et suffisamment robuste pour servir de base de comparaison. L’évaluation doit toujours s’appuyer sur la matrice de confusion et sur des métriques comme la précision, le rappel et le F1, surtout lorsque les classes sont déséquilibrées.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Je sais distinguer classification binaire et multiclasse.</label></li>
-<li><label><input type="checkbox">Je peux exprimer la probabilité logistique.</label></li>
-<li><label><input type="checkbox">Je comprends le rôle du seuil de décision.</label></li>
-<li><label><input type="checkbox">Je sais interpréter une matrice de confusion.</label></li>
-<li><label><input type="checkbox">Je distingue précision, rappel, F1-score et accuracy.</label></li>
-<li><label><input type="checkbox">Je sais construire un pipeline simple avec <code>scikit-learn</code>.</label></li>
-</ul>
-</div>
-</div>
 </section>
 <section id="exercices" class="level2">
 <h2 class="anchored" data-anchor-id="exercices">Exercices</h2>
@@ -1123,7 +1103,7 @@ z = -2 + x
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-class-1">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1132,7 +1112,7 @@ z = -2 + x
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Pour <span class="math inline">\(x=2\)</span> :</li>
@@ -1174,7 +1154,7 @@ L = -\ln(p)
 <p>Classez ces trois prédictions de la meilleure à la pire.</p>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-class-2">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1183,7 +1163,7 @@ L = -\ln(p)
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>On a :</p>
 <p><span class="math display">\[
@@ -1232,7 +1212,7 @@ L(0{,}1)=-\ln(0{,}1)\approx2{,}303
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-class-3">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1241,7 +1221,7 @@ L(0{,}1)=-\ln(0{,}1)\approx2{,}303
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>On a :</p>
 <p><span class="math display">\[
@@ -1326,7 +1306,7 @@ F1 = 2\frac{0{,}667\times0{,}8}{0{,}667+0{,}8}\approx0{,}727
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-class-4">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1335,7 +1315,7 @@ F1 = 2\frac{0{,}667\times0{,}8}{0{,}667+0{,}8}\approx0{,}727
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Avec un seuil de <span class="math inline">\(0{,}5\)</span>, on prédit 1 pour A, B, C et 0 pour D, E.</li>
@@ -1362,7 +1342,7 @@ Recall = \frac{2}{3}\approx0{,}667
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-class-5">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1371,7 +1351,7 @@ Recall = \frac{2}{3}\approx0{,}667
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>L’accuracy est :</li>
@@ -1402,7 +1382,7 @@ Recall = \frac{0}{50}=0
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-class-6">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1411,7 +1391,7 @@ Recall = \frac{0}{50}=0
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Régression logistique.</li>

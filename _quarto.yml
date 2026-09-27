@@ -2,6 +2,10 @@ project:
   type: book
   output-dir: docs
 lang: fr
+
+profile:
+  default: student
+
 number-sections: false
 language:
   title-block-author-single: "Auteur"
@@ -35,7 +39,7 @@ book:
     - chapitres/02_pretraitement_donnees.qmd
     - chapitres/03_regression_lineaire.qmd
     - chapitres/04_classification.qmd
-    - chapitres/04_ml_non_supervise.qmd
+    - chapitres/05_ml_non_supervise.qmd
     - references.qmd
     - tp/lab0_environnement_python.qmd
     - tp/lab1_fondements_sklearn.qmd

@@ -802,6 +802,7 @@ La classification binaire repose sur trois idées simples :
 
 La régression logistique est un excellent point de départ. Elle est mathématiquement claire, interprétable et suffisamment robuste pour servir de base de comparaison. L'évaluation doit toujours s'appuyer sur la matrice de confusion et sur des métriques comme la précision, le rappel et le F1, surtout lorsque les classes sont déséquilibrées.
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-note title="Auto-évaluation"}
 - [ ] Je sais distinguer classification binaire et multiclasse.
 - [ ] Je peux exprimer la probabilité logistique.
@@ -809,6 +810,7 @@ La régression logistique est un excellent point de départ. Elle est mathémati
 - [ ] Je sais interpréter une matrice de confusion.
 - [ ] Je distingue précision, rappel, F1-score et accuracy.
 - [ ] Je sais construire un pipeline simple avec `scikit-learn`.
+:::
 :::
 
 ## Exercices

@@ -214,12 +214,14 @@ Avant de transformer une corrélation détectée par un modèle en **décision d
 2. Fixer les « graines aléatoires » (*random seeds*) de tous les processus stochastiques.
 3. Versionner le code (Git) et documenter précisément la pipeline de données.
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-note title="Auto-évaluation" collapse="true"}
 - [ ] Je sais définir $X$ et $y$ pour un jeu de données que je choisis moi-même.
 - [ ] Je peux distinguer l'apprentissage supervisé et non supervisé et donner un exemple pour chacun.
 - [ ] Je sais expliquer, à partir d'un graphique d'erreurs, si un modèle sous-apprend ou sur-apprend.
 - [ ] Je sais pourquoi on ne doit jamais régler un hyperparamètre sur le jeu de test.
 - [ ] Je comprends pourquoi l'accuracy seule peut être trompeuse lorsque les classes sont déséquilibrées.
+:::
 :::
 
 ## Exercices

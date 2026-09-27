@@ -347,7 +347,7 @@ Le choix de `uv` répond donc avant tout aux besoins de ce cours : disposer d'un
 
 
 
-
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-note title="Auto-évaluation" collapse="true"}
 Avant de passer au chapitre suivant, assurez-vous de pouvoir répondre « oui » aux questions suivantes :
 
@@ -356,6 +356,7 @@ Avant de passer au chapitre suivant, assurez-vous de pouvoir répondre « oui »
 - [ ] Je sais dire, pour un problème donné, s'il relève plutôt de la programmation classique ou du Machine Learning.
 - [ ] Je peux citer les sept étapes du cycle de vie d'un projet ML, dans l'ordre.
 - [ ] Je sais dans quel contexte utiliser JupyterLab plutôt que VS Code (et inversement).
+:::
 :::
 
 ## Exercices

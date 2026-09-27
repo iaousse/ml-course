@@ -828,28 +828,6 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 <p>En cohérence avec la gestion de projet introduite au chapitre 1 (§4.3), les nouvelles dépendances nécessaires à ce chapitre sont ajoutées explicitement au projet :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> add scikit-learn</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> lock   <span class="co"># fige les versions exactes dans uv.lock, pour la reproductibilité</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Je sais citer trois sources de données et une bibliothèque Python associée à chacune.</label></li>
-<li><label><input type="checkbox">Je peux expliquer, avec un exemple, ce qu’est un biais de sélection.</label></li>
-<li><label><input type="checkbox">Je sais quand utiliser un encodage ordinal plutôt qu’un <em>One-Hot Encoding</em>, et pourquoi.</label></li>
-<li><label><input type="checkbox">Je peux écrire la formule de la standardisation et de la normalisation, et dire dans quel cas privilégier chacune.</label></li>
-<li><label><input type="checkbox">Je comprends pourquoi un <code>ColumnTransformer</code> doit être ajusté (<code>fit</code>) uniquement sur le jeu d’entraînement.</label></li>
-</ul>
-</div>
-</div>
-</div>
 </section>
 </section>
 <section id="exercices" class="level2">
@@ -876,7 +854,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-1">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -885,7 +863,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li><strong>API</strong> (généralement REST) : les cours de change sont typiquement mis à disposition par des services financiers via une API dédiée, offrant des données structurées et à jour.</li>
@@ -903,7 +881,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-2">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -912,7 +890,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li>Un <strong>biais de sélection</strong> (§2) : les coureurs qui partagent volontairement leurs performances sur les réseaux sociaux sont probablement plus performants, plus réguliers ou plus motivés que la population générale des coureurs.</li>
@@ -929,7 +907,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-3">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -938,7 +916,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li><strong>MNAR</strong> (<em>Missing Not At Random</em>) est une hypothèse plausible : la probabilité que la réponse soit manquante semble liée à la réponse elle-même (les clients mécontents évitent la question, précisément parce qu’ils seraient enclins à répondre négativement).</li>
@@ -956,7 +934,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-4">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -965,7 +943,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li><strong>Ordinal Encoding</strong> : cette variable possède un ordre naturel non ambigu (<code>Primaire</code> &lt; <code>Secondaire</code> &lt; <code>Supérieur</code>), qu’un encodage ordinal préserve correctement (§4.1).</li>
@@ -983,7 +961,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-5">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -992,7 +970,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li>D’après la <a href="#tbl-scaling" class="quarto-xref">Table&nbsp;<span>5</span></a>, la normalisation est très sensible aux valeurs aberrantes, car <span class="math inline">\(x_{max}\)</span> serait fixé par ces trois valeurs extrêmes (&gt; 5 000 000). La quasi-totalité des observations « normales » (30 000 à 200 000) se retrouverait alors écrasée dans un intervalle minuscule proche de 0, perdant presque toute variabilité utile.</li>
@@ -1012,7 +990,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-6">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1021,7 +999,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li><strong>Oui.</strong> Le <code>StandardScaler</code> est ajusté (<code>fit</code>) sur l’intégralité des données, <strong>avant</strong> la séparation en Train/Test. La moyenne et l’écart-type utilisés pour standardiser <code>X_train</code> intègrent donc déjà des informations issues de <code>X_test</code> — exactement le cas décrit dans le chapitre précédent (§4.2) et rappelé en §5.3 de ce chapitre.</li>
@@ -1038,7 +1016,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-7">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1047,7 +1025,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li>Le <code>StandardScaler</code> suppose des variables <strong>numériques</strong> (il calcule une moyenne et un écart-type) ; l’appliquer directement à des colonnes catégorielles (<code>quartier</code>, <code>type_bien</code>) n’a pas de sens mathématique. De même, l’imputation par la médiane n’est pas adaptée à une variable catégorielle (qui nécessite plutôt une imputation par le mode, <a href="#tbl-imputation" class="quarto-xref">Table&nbsp;<span>2</span></a>).</li>
@@ -1064,7 +1042,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </ol>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution de l'exercice @exr-pretraitement-8">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1073,7 +1051,7 @@ Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="a">
 <li>Comme indiqué en §3.3, un doublon donne artificiellement <strong>plus de poids</strong> à l’observation concernée lors de l’apprentissage : le modèle « voit » deux fois le même client, ce qui biaise l’estimation des paramètres en faveur du profil de ce client dupliqué.</li>

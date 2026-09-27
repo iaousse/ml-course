@@ -684,6 +684,7 @@ Comparez brièvement la méthode MCO et la descente de gradient pour la régress
 La régression linéaire est le point de départ naturel de l'apprentissage supervisé pour les cibles continues. Sa force est sa simplicité, son interprétabilité et son fondement mathématique solide. Sa limite est qu'elle suppose une dépendance linéaire et qu'elle peut être insuffisante dans des situations plus complexes.
 :::
 
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-note title="Auto-évaluation"}
 - [ ] Je sais distinguer une régression d'une classification.
 - [ ] Je sais écrire un modèle linéaire simple et multiple.
@@ -693,4 +694,5 @@ La régression linéaire est le point de départ naturel de l'apprentissage supe
 - [ ] Je sais choisir entre MAE, MSE et RMSE.
 - [ ] Je connais le schéma général d'un modèle `scikit-learn`.
 - [ ] Je peux expliquer pourquoi la validation sur des données non vues est essentielle.
+:::
 :::

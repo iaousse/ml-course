@@ -261,13 +261,14 @@ uv add scikit-learn
 uv lock   # fige les versions exactes dans uv.lock, pour la reproductibilité
 ```
 
-
+:::{.content-visible when-profile="teacher"}
 ::: {.callout-note title="Auto-évaluation" collapse="true"}
 - [ ] Je sais citer trois sources de données et une bibliothèque Python associée à chacune.
 - [ ] Je peux expliquer, avec un exemple, ce qu'est un biais de sélection.
 - [ ] Je sais quand utiliser un encodage ordinal plutôt qu'un *One-Hot Encoding*, et pourquoi.
 - [ ] Je peux écrire la formule de la standardisation et de la normalisation, et dire dans quel cas privilégier chacune.
 - [ ] Je comprends pourquoi un `ColumnTransformer` doit être ajusté (`fit`) uniquement sur le jeu d'entraînement.
+:::
 :::
 
 ## Exercices
