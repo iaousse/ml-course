@@ -1,7 +1,7 @@
 ---
 number-sections: false
 ---
-# Préface {.hidden}
+# Préface {.unnumbered}
 ```{=latex}
 \pagenumbering{roman}
 \setcounter{page}{1}
@@ -20,11 +20,11 @@ number-sections: false
 %{\usekomafont{chapter}\strut Préface\par}
 ```
 
-Le présent manuel est le support de cours officiel du module **Machine Learning**, dispensé dans le cadre de la Licence Professionnelle DBT-DAIA (Développement d'Applications et Intelligence Artificielle) en temps aménagé à l'École Supérieure de Technologie de Casablanca (ESTC). 
+Le présent ouvrage pédagogique est le support de cours du module **Machine Learning**, dispensé dans le cadre de la Licence Professionnelle DBT-DAIA (Développement d'Applications et Intelligence Artificielle) en temps aménagé à l'École Supérieure de Technologie de Casablanca (ESTC).
 
-À l'origine, la communauté étudiante dans ce programme provient de parcours techniques variés (DUT, BTS, DTS ou diplômes équivalents), ayant déjà acquis un bagage en programmation informatique et les prérequis nécessaires en mathématiques appliquées pour suivre et comprendre les formules de ce manuel.
+À l'origine, la communauté étudiante dans ce programme provient de parcours techniques variés (DUT, BTS, DTS ou diplômes équivalents), ayant déjà acquis un bagage en programmation informatique et les prérequis nécessaires en mathématiques appliquées pour suivre et comprendre les formules de cet ouvrage pédagogique.
 
-Le manuel vise à simplifier l'accès aux concepts clés **Machine Learning** du sous forme de ressource éducative libre. Il propose une approche, combinant les bases mathématiques nécessaires, l'ingénierie des données et une transition pratique vers des outils de production.
+L'ouvrage pédagogique vise à simplifier l'accès aux concepts clés **Machine Learning** sous forme de ressource éducative libre. Il propose une approche combinant les bases mathématiques nécessaires, l'ingénierie des données et une transition pratique vers des outils de production.
 
 
 
@@ -36,7 +36,7 @@ Le manuel vise à simplifier l'accès aux concepts clés **Machine Learning** du
 <h2>Prérequis</h2>
 ```
 
-Le contenu de ce manuel est organisé pour les personnes ayant déjà une base et une expérience avec :
+Le contenu de cet ouvrage pédagogique est organisé pour les personnes ayant déjà une base et une expérience avec :
   
 - la programmation en langage Python ;
 - les notions élémentaires de mathématiques pour l'informatique (calcul matriciel de base, dérivées, probabilités et Statistique) ;
@@ -53,10 +53,10 @@ La familiarité préalable avec le Machine Learning n'est pas un prérequis : le
 
 Pendant longtemps, l'enseignement du Machine Learning s'est appuyé sur des ouvrages de référence académiques classiques, tels que *Pattern Recognition and Machine Learning* [@bishop2006] ou *Hands-On Machine Learning* [@geron2022].
 
-Ce manuel s'inspire largement de leurs approches et de leurs méthodes pour structurer le cours. L'ensemble des applications pratiques et des algorithmes y est développé en utilisant [Python](https://python.org) comme outil de programmation principal.
+Cet ouvrage pédagogique s'inspire largement de leurs approches et de leurs méthodes pour structurer le cours. L'ensemble des applications pratiques et des algorithmes y est développé en utilisant [Python](https://python.org) comme outil de programmation principal.
 
 ::: {.callout-note}
-Les bibliothèques scientifiques Python évoluant rapidement, veillez à utiliser un environnement virtuel basé sur Python 3.10 ou supérieur pour garantir la compatibilité des extraits de code présentés dans ce manuel.
+Les bibliothèques scientifiques Python évoluant rapidement, utilisez l'environnement du projet fourni avec cet ouvrage pédagogique (Python 3.12 et dépendances verrouillées dans `uv.lock`) afin de garantir la compatibilité des extraits de code.
 :::
 
 ::: {.content-visible when-format="pdf"}

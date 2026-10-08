@@ -23,12 +23,21 @@ book:
   title: "Machine Learning"
   sidebar:
     logo: images/logo_estc.png
+    tools:
+      - icon: github
+        href: https://github.com/iaousse/
+        aria-label: GitHub
+        target: _blank
+      - icon: linkedin
+        href: https://www.linkedin.com/in/mbarekiaousse
+        aria-label: LinkedIn
+        target: _blank
   author: "IAOUSSE M'barek"
   date: "2026"
   date-format: "YYYY"
   # Navigation et options web
   search: true
-  downloads: [pdf]
+  downloads: [pdf, epub]
   
   # Structure du livre (votre table des matières)
   chapters:
@@ -36,16 +45,17 @@ book:
     - preface.qmd
     - chapitres/00_intro_ml.qmd
     - chapitres/01_ecosysteme_ml.qmd
-    - chapitres/02_pretraitement_donnees.qmd
+    - chapitres/module_collecte_pretraitement_commun.qmd
+    #- chapitres/02_pretraitement_donnees.qmd
     - chapitres/03_regression_lineaire.qmd
     - chapitres/04_classification.qmd
     - chapitres/05_ml_non_supervise.qmd
-    - references.qmd
     - tp/lab0_environnement_python.qmd
     - tp/lab1_fondements_sklearn.qmd
     - tp/lab2_collecte_pretraitement.qmd
     - tp/lab3_regression.qmd
     - tp/lab4_classification.qmd
+    - references.qmd
 
 # Configuration pour le code Python
 execute:
@@ -60,7 +70,11 @@ citations-hover: true
 # Styles d'exportation
 format:
   html:
-    theme: spacelab             # Thème clair, lisible, avec des accents bleus
+    theme:
+      light: spacelab
+      dark: darkly
+    respect-user-color-scheme: false
+    css: styles.css
     title-block-banner: true    # Active le bloc d'en-tête (prend la couleur bleue du thème)
     # title-block-banner: "#1a467e" # Optionnel : remplacez "true" par un code couleur précis pour correspondre au bleu de l'ESTC
     
@@ -80,10 +94,12 @@ format:
     smooth-scroll: true         # Défilement fluide
     
   pdf:
+    linkcolor: blue
     documentclass: scrbook
     pdf-engine: xelatex   # Ou pdflatex
     title-block: false
     toc: false
+    toc-depth: 2
     number-sections: false
     colorlinks: true
     citeproc: true
@@ -97,9 +113,17 @@ format:
     header-includes:
       - \usepackage{graphicx}
       - \usepackage{ragged2e}
+      - \setcounter{tocdepth}{1}
       - |
         \makeatletter
         \renewcommand{\maketitle}{}
-        \AtBeginDocument{\frontmatter\pagenumbering{gobble}\pagestyle{empty}}
+        \AtBeginDocument{\justifying\frontmatter\pagenumbering{gobble}\pagestyle{empty}}
         \let\ps@plain\ps@empty
         \makeatother
+  epub:
+    toc: true
+    toc-depth: 2
+    epub-cover-image: images/epub-cover.png
+    css:
+      - styles.css
+      - styles-epub.css

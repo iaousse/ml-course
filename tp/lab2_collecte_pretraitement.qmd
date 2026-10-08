@@ -1,4 +1,4 @@
-# Lab 2 — Collecte et prétraitement des données
+# Lab 2 - Collecte et prétraitement des données
 
 ::: {.callout-tip title="Objectifs du Lab"}
 À la fin de ce Lab, l'étudiant sera capable de :
@@ -11,8 +11,11 @@
 - **Construire** un pipeline complet (`ColumnTransformer` + `Pipeline`) sans fuite de données.
 :::
 
-::: {.callout-note title="Lien avec le cours"}
-Ce Lab met en pratique le chapitre 3 (*Collecte et Prétraitement des Données*) dans son intégralité : sources de données (§1), valeurs manquantes et MCAR/MAR/MNAR (§3.1), valeurs aberrantes (§3.2), encodage (§4), mise à l'échelle (§5) et pipelines (§6). Les exercices « papier » du chapitre 3 vous ont fait calculer ces transformations à la main sur un jeu minuscule ; ce Lab vous fait passer à l'échelle avec du vrai code, sur des données plus volumineuses et réellement imparfaites.
+::: {.callout-note title="Téléchargement de la Lab Sheet"}
+Téléchargez un seul format avant de travailler :
+
+- **Notebook `.ipynb`** pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub [`labsheets/`](https://github.com/iaousse/ml-course/tree/main/labsheets) et téléchargez le [fichier source du Lab 2](https://github.com/iaousse/ml-course/blob/main/labsheets/lab2_collecte_pretraitement.ipynb).
+- **Fichier `.qmd`** pour travailler avec Quarto : ouvrez le dossier GitHub [`tp/`](https://github.com/iaousse/ml-course/tree/main/tp) et téléchargez le [fichier source du Lab 2](https://github.com/iaousse/ml-course/blob/main/tp/lab2_collecte_pretraitement.qmd).
 :::
 
 ## 1. Lire des données depuis plusieurs sources
@@ -22,8 +25,7 @@ Ce Lab met en pratique le chapitre 3 (*Collecte et Prétraitement des Données*)
 ```python
 import pandas as pd
 
-clients = pd.read_csv("data/raw/clients_bruts.csv")
-print(clients.head())
+print("pandas prêt à lire le CSV qui sera créé en section 2.")
 ```
 
 (Nous allons construire ce fichier nous-mêmes en §2.)
@@ -46,15 +48,19 @@ print({"étoiles": repo["stargazers_count"], "forks": repo["forks_count"]})
 ```python
 import sqlite3
 
+from pathlib import Path
+
+Path("data/interim").mkdir(parents=True, exist_ok=True)
 connexion = sqlite3.connect("data/interim/clients.sqlite")
 
 connexion.execute("""
 CREATE TABLE IF NOT EXISTS clients (
-    client_id INTEGER,
+    client_id INTEGER PRIMARY KEY,
     ville TEXT,
     revenu REAL
 )
 """)
+connexion.execute("DELETE FROM clients")
 connexion.executemany(
     "INSERT INTO clients VALUES (?, ?, ?)",
     [(101, "Rabat", 6500.0), (102, "Casablanca", 12000.0)],
@@ -69,7 +75,7 @@ connexion.close()
 ```
 
 ::: {.callout-warning title="Paramètres SQL, pas concaténation"}
-`params=(7000,)` évite de construire la requête par concaténation de chaînes — une concaténation directe de données utilisateur peut provoquer une injection SQL, même dans un projet pédagogique.
+`params=(7000,)` évite de construire la requête par concaténation de chaînes - une concaténation directe de données utilisateur peut provoquer une injection SQL, même dans un projet pédagogique.
 :::
 
 ### 1.4. Extraire une information depuis une page HTML
@@ -87,7 +93,7 @@ livres = soup.select("article.product_pod")[:5]
 for livre in livres:
     titre = livre.select_one("h3 a")["title"]
     prix = livre.select_one(".price_color").get_text(strip=True)
-    print(f"{titre} — {prix}")
+    print(f"{titre} - {prix}")
 ```
 
 ::: {.callout-warning title="Éthique et robustesse (rappel chapitre 3, §1.2)"}
@@ -116,6 +122,9 @@ clients_bruts = pd.DataFrame({
 })
 clients_bruts.to_csv("data/raw/clients_bruts.csv", index=False)
 print(clients_bruts)
+
+clients = pd.read_csv("data/raw/clients_bruts.csv")
+print(clients.head())
 ```
 
 Ce petit jeu contient, volontairement :
@@ -160,7 +169,7 @@ aberrantes = clients[(clients["age"] < borne_basse) | (clients["age"] > borne_ha
 print(aberrantes[["client_id", "age"]])
 ```
 
-Ici, `age = 250` est manifestement une **erreur de saisie** (un âge humain plausible) plutôt qu'une observation rare et légitime (chapitre 3, §3.2) — on la remplace par une valeur manquante, qui sera traitée comme telle :
+Ici, `age = 250` est manifestement une **erreur de saisie** (un âge humain plausible) plutôt qu'une observation rare et légitime (chapitre 3, §3.2) - on la remplace par une valeur manquante, qui sera traitée comme telle :
 
 ```python
 clients.loc[clients["age"] > 120, "age"] = None
@@ -284,7 +293,7 @@ comparaison = pd.DataFrame({"valeur": revenu_avec_extreme, "standard": standard.
 print(comparaison.tail(3))
 ```
 
-Observez comme la valeur extrême écrase les autres avec `StandardScaler` (des valeurs standardisées proches de 0 pour presque tout le monde), alors que `RobustScaler` — fondé sur la médiane et l'écart interquartile — reste nettement plus stable (chapitre 3, @tbl-scaling).
+Observez comme la valeur extrême écrase les autres avec `StandardScaler` (des valeurs standardisées proches de 0 pour presque tout le monde), alors que `RobustScaler` - fondé sur la médiane et l'écart interquartile - reste nettement plus stable (chapitre 3, @tbl-scaling).
 
 ## 7. Construire le pipeline complet, sans fuite
 
@@ -314,7 +323,7 @@ pipeline_numerique = Pipeline([
 
 pipeline_categorielle = Pipeline([
     ("imputation", SimpleImputer(strategy="most_frequent")),
-    ("encodage", OneHotEncoder(drop="first", handle_unknown="ignore")),
+    ("encodage", OneHotEncoder(drop="first", handle_unknown="ignore", sparse_output=False)),
 ])
 
 pretraitement = ColumnTransformer([
@@ -340,20 +349,9 @@ X_test_pret_df = pretraitement.transform(X_test)
 print(X_train_pret_df.head())
 ```
 
-## 8. Synthèse
+## 8. Travail {#sec-lab2-projet}
 
-::: {.callout-note title="Auto-évaluation" collapse="true"}
-- [ ] Je sais lire un CSV, appeler une API JSON et interroger une base SQLite avec `pandas`.
-- [ ] Je sais diagnostiquer valeurs manquantes, doublons et valeurs aberrantes avant de nettoyer.
-- [ ] Je sais calculer une imputation et une standardisation *from scratch* et vérifier qu'elles correspondent aux outils `scikit-learn`.
-- [ ] Je sais expliquer la différence d'usage entre `LabelEncoder` et `OrdinalEncoder`.
-- [ ] Je sais construire un `ColumnTransformer` combinant imputation, encodage et mise à l'échelle.
-- [ ] Je sais expliquer pourquoi `fit_transform` s'applique au train et `transform` seul au test.
-:::
-
-## 9. Lab Sheet — Projet guidé {#sec-lab2-projet}
-
-::: {.callout-important title="Jeu de données du projet : le Titanic"}
+**Jeu de données du projet : le Titanic**
 Ce projet utilise le célèbre jeu de données des passagers du Titanic, disponible publiquement :
 
 ```python
@@ -362,27 +360,25 @@ titanic = pd.read_csv(
 )
 ```
 
-C'est un jeu **réel**, avec de véritables valeurs manquantes et un mélange de variables numériques et catégorielles — pas un jeu fabriqué pour l'exercice.
-:::
-
-### Partie A — Diagnostic
+C'est un jeu **réel**, avec de véritables valeurs manquantes et un mélange de variables numériques et catégorielles - pas un jeu fabriqué pour l'exercice.
+### Partie A - Diagnostic
 
 1. Chargez le jeu de données. Combien d'observations et de variables contient-il ?
 2. Pour chaque colonne, calculez le pourcentage de valeurs manquantes. Quelle colonne est la plus touchée ? Proposez une hypothèse sur la raison probable de ces absences (est-ce plutôt MCAR, MAR ou MNAR, à votre avis ?).
 3. Y a-t-il des lignes strictement dupliquées ?
 
-### Partie B — Nettoyage et décisions justifiées
+### Partie B - Nettoyage et décisions justifiées
 
 4. La colonne `deck` (ou `cabin` selon la source) a un taux de valeurs manquantes très élevé. Que proposez-vous de faire, et pourquoi (référez-vous au tableau des stratégies d'imputation, @tbl-imputation) ?
 5. Choisissez, en le justifiant, comment traiter les valeurs manquantes de `age` : suppression, imputation simple, imputation par groupe (par exemple, par classe de billet) ?
 6. La variable `fare` (prix du billet) contient-elle des valeurs qui pourraient être considérées comme aberrantes selon la méthode IQR ? Affichez-les. S'agit-il probablement d'erreurs ou d'observations réelles mais extrêmes ?
 
-### Partie C — Encodage et mise à l'échelle
+### Partie C - Encodage et mise à l'échelle
 
 7. Parmi les variables catégorielles du jeu (`sex`, `embarked`, `class`...), laquelle est **ordinale** et laquelle est **nominale** ? Justifiez, puis choisissez l'encodage approprié pour chacune.
 8. La variable `fare` a une distribution très asymétrique (quelques billets très chers). Quelle méthode de mise à l'échelle du chapitre 3 (@tbl-scaling) recommanderiez-vous, et pourquoi ?
 
-### Partie D — Pipeline complet
+### Partie D - Pipeline complet
 
 9. Construisez un `ColumnTransformer` complet (imputation + encodage + mise à l'échelle adaptés à chaque type de colonne) pour préparer `X`, avec `survived` comme cible $y$.
 10. Séparez Train/Test (80/20, stratifié sur `survived`), ajustez votre pipeline **uniquement sur le train**, puis transformez le test. Affichez la forme (`shape`) du tableau obtenu.
@@ -393,10 +389,3 @@ C'est un jeu **réel**, avec de véritables valeurs manquantes et un mélange de
 - un notebook ou script contenant le code des parties A à D ;
 - un court texte (quelques phrases) justifiant chacune de vos décisions de nettoyage ;
 - le pipeline final, exécutable de bout en bout sur les données brutes.
-
-::: {.callout-tip title="Checklist finale"}
-- [ ] Chaque décision de nettoyage est justifiée, pas seulement appliquée.
-- [ ] Aucune statistique (moyenne, médiane, min/max) n'est calculée sur l'ensemble des données avant le split.
-- [ ] Le pipeline distingue correctement colonnes numériques et catégorielles.
-- [ ] Le pipeline s'exécute sans erreur de bout en bout sur des données brutes jamais vues.
-:::

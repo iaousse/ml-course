@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab 1 — Généralisation et évaluation avec scikit-learn – Machine Learning</title>
+<title>Lab 1 - Généralisation et évaluation avec scikit-learn – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -79,10 +79,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -142,9 +146,172 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -153,7 +320,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab1_fondements_sklearn.html"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab1_fondements_sklearn.html"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -166,7 +333,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></h1>
+      <h1 class="title"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></h1>
                       </div>
   </div>
     
@@ -189,8 +356,27 @@ window.Quarto = {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -203,12 +389,14 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -223,7 +411,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -243,33 +431,33 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -293,14 +481,13 @@ window.Quarto = {
   <li><a href="#un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques" id="toc-un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques" class="nav-link" data-scroll-target="#un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques">6. Un vrai modèle, sa matrice de confusion et ses métriques</a></li>
   <li><a href="#repérer-une-fuite-de-données-concrètement" id="toc-repérer-une-fuite-de-données-concrètement" class="nav-link" data-scroll-target="#repérer-une-fuite-de-données-concrètement">7. Repérer une fuite de données, concrètement</a></li>
   <li><a href="#un-premier-aperçu-du-réglage-dhyperparamètres" id="toc-un-premier-aperçu-du-réglage-dhyperparamètres" class="nav-link" data-scroll-target="#un-premier-aperçu-du-réglage-dhyperparamètres">8. Un premier aperçu du réglage d’hyperparamètres</a></li>
-  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">9. Synthèse</a></li>
-  <li><a href="#sec-lab1-projet" id="toc-sec-lab1-projet" class="nav-link" data-scroll-target="#sec-lab1-projet">10. Lab Sheet — Projet guidé</a>
+  <li><a href="#sec-lab1-projet" id="toc-sec-lab1-projet" class="nav-link" data-scroll-target="#sec-lab1-projet">9. Travail</a>
   <ul class="collapse">
-  <li><a href="#partie-a-prise-en-main" id="toc-partie-a-prise-en-main" class="nav-link" data-scroll-target="#partie-a-prise-en-main">Partie A — Prise en main</a></li>
-  <li><a href="#partie-b-baseline-et-premier-modèle" id="toc-partie-b-baseline-et-premier-modèle" class="nav-link" data-scroll-target="#partie-b-baseline-et-premier-modèle">Partie B — Baseline et premier modèle</a></li>
-  <li><a href="#partie-c-une-mise-à-léchelle-change-t-elle-tout" id="toc-partie-c-une-mise-à-léchelle-change-t-elle-tout" class="nav-link" data-scroll-target="#partie-c-une-mise-à-léchelle-change-t-elle-tout">Partie C — Une mise à l’échelle change-t-elle tout ?</a></li>
-  <li><a href="#partie-d-régler-lhyperparamètre-k" id="toc-partie-d-régler-lhyperparamètre-k" class="nav-link" data-scroll-target="#partie-d-régler-lhyperparamètre-k">Partie D — Régler l’hyperparamètre <span class="math inline">\(k\)</span></a></li>
-  <li><a href="#partie-e-évaluation-finale" id="toc-partie-e-évaluation-finale" class="nav-link" data-scroll-target="#partie-e-évaluation-finale">Partie E — Évaluation finale</a></li>
+  <li><a href="#partie-a---prise-en-main" id="toc-partie-a---prise-en-main" class="nav-link" data-scroll-target="#partie-a---prise-en-main">Partie A - Prise en main</a></li>
+  <li><a href="#partie-b---baseline-et-premier-modèle" id="toc-partie-b---baseline-et-premier-modèle" class="nav-link" data-scroll-target="#partie-b---baseline-et-premier-modèle">Partie B - Baseline et premier modèle</a></li>
+  <li><a href="#partie-c---une-mise-à-léchelle-change-t-elle-tout" id="toc-partie-c---une-mise-à-léchelle-change-t-elle-tout" class="nav-link" data-scroll-target="#partie-c---une-mise-à-léchelle-change-t-elle-tout">Partie C - Une mise à l’échelle change-t-elle tout ?</a></li>
+  <li><a href="#partie-d---régler-lhyperparamètre-k" id="toc-partie-d---régler-lhyperparamètre-k" class="nav-link" data-scroll-target="#partie-d---régler-lhyperparamètre-k">Partie D - Régler l’hyperparamètre <span class="math inline">\(k\)</span></a></li>
+  <li><a href="#partie-e---évaluation-finale" id="toc-partie-e---évaluation-finale" class="nav-link" data-scroll-target="#partie-e---évaluation-finale">Partie E - Évaluation finale</a></li>
   <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
   </ul></li>
   </ul>
@@ -308,6 +495,7 @@ window.Quarto = {
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -336,17 +524,21 @@ window.Quarto = {
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout callout-style-default callout-note callout-titled" title="Téléchargement de la Lab Sheet">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Lien avec le cours
+<span class="screen-reader-only">Note</span>Téléchargement de la Lab Sheet
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce Lab met en pratique le chapitre 2 (<em>Fondements Théoriques de l’Apprentissage Automatique</em>) : notation <span class="math inline">\(X\)</span>/<span class="math inline">\(y\)</span> (<a href="../chapitres/01_ecosysteme_ml.html#tbl-jeu-donnees" class="quarto-xref">Table&nbsp;<span>1</span></a>), généralisation et sur-apprentissage (<a href="../chapitres/01_ecosysteme_ml.html#fig-overfitting" class="quarto-xref">Figure&nbsp;<span>1</span></a>), jeux Train/Validation/Test (<a href="../chapitres/01_ecosysteme_ml.html#tbl-jeux-evaluation" class="quarto-xref">Table&nbsp;<span>2</span></a>), baseline et matrice de confusion (<a href="../chapitres/04_classification.html#tbl-confusion" class="quarto-xref">Table&nbsp;<span>1</span></a>). Le classifieur des k plus proches voisins (<code>KNeighborsClassifier</code>) est utilisé ici uniquement comme <strong>véhicule pédagogique</strong> pour manipuler concrètement un hyperparamètre (<span class="math inline">\(k\)</span>) — son fonctionnement détaillé est étudié au chapitre 5 (Lab 4). De même, les pipelines de prétraitement complets (imputation, encodage) sont réservés au chapitre 3 (Lab 2) ; nous travaillons ici sur des données déjà numériques et propres, pour isoler les notions d’évaluation.</p>
+<p>Téléchargez un seul format avant de travailler :</p>
+<ul>
+<li><strong>Notebook <code>.ipynb</code></strong> pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/labsheets"><code>labsheets/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/labsheets/lab1_fondements_sklearn.ipynb">fichier source du Lab 1</a>.</li>
+<li><strong>Fichier <code>.qmd</code></strong> pour travailler avec Quarto : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/tp"><code>tp/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/tp/lab1_fondements_sklearn.qmd">fichier source du Lab 1</a>.</li>
+</ul>
 </div>
 </div>
 <section id="rappel-express-construire-x-et-y" class="level2">
@@ -354,27 +546,30 @@ window.Quarto = {
 <p>Reprenons le petit jeu d’annonces immobilières du Lab 0, mais agrandi et légèrement bruité pour ressembler à un vrai jeu de données.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">150</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>quartiers <span class="op">=</span> rng.choice([<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Agdal"</span>], size<span class="op">=</span>n)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>surface <span class="op">=</span> rng.uniform(<span class="dv">30</span>, <span class="dv">180</span>, size<span class="op">=</span>n).<span class="bu">round</span>(<span class="dv">0</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>chambres <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">6</span>, size<span class="op">=</span>n)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>prix_base <span class="op">=</span> <span class="dv">8_000</span> <span class="op">*</span> surface <span class="op">+</span> <span class="dv">60_000</span> <span class="op">*</span> chambres</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>bonus_quartier <span class="op">=</span> pd.Series(quartiers).<span class="bu">map</span>({</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Maarif"</span>: <span class="dv">150_000</span>, <span class="st">"Hay Riad"</span>: <span class="dv">250_000</span>, <span class="st">"Gueliz"</span>: <span class="dv">100_000</span>, <span class="st">"Agdal"</span>: <span class="dv">180_000</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>}).to_numpy()</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>bruit <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">60_000</span>, size<span class="op">=</span>n)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: surface,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"nb_chambres"</span>: chambres,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"quartier"</span>: quartiers,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prix_mad"</span>: (prix_base <span class="op">+</span> bonus_quartier <span class="op">+</span> bruit).<span class="bu">round</span>(<span class="dv">0</span>),</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"outputs"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">150</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>quartiers <span class="op">=</span> rng.choice([<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Agdal"</span>], size<span class="op">=</span>n)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>surface <span class="op">=</span> rng.uniform(<span class="dv">30</span>, <span class="dv">180</span>, size<span class="op">=</span>n).<span class="bu">round</span>(<span class="dv">0</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>chambres <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">6</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>prix_base <span class="op">=</span> <span class="dv">8_000</span> <span class="op">*</span> surface <span class="op">+</span> <span class="dv">60_000</span> <span class="op">*</span> chambres</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>bonus_quartier <span class="op">=</span> pd.Series(quartiers).<span class="bu">map</span>({</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Maarif"</span>: <span class="dv">150_000</span>, <span class="st">"Hay Riad"</span>: <span class="dv">250_000</span>, <span class="st">"Gueliz"</span>: <span class="dv">100_000</span>, <span class="st">"Agdal"</span>: <span class="dv">180_000</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}).to_numpy()</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>bruit <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">60_000</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: surface,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"nb_chambres"</span>: chambres,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"quartier"</span>: quartiers,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prix_mad"</span>: (prix_base <span class="op">+</span> bonus_quartier <span class="op">+</span> bruit).<span class="bu">round</span>(<span class="dv">0</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Conformément à la notation du chapitre 2 (<a href="../chapitres/01_ecosysteme_ml.html#tbl-jeu-donnees" class="quarto-xref">Table&nbsp;<span>1</span></a>), on sépare <strong>variables explicatives</strong> (<span class="math inline">\(X\)</span>) et <strong>cible</strong> (<span class="math inline">\(y\)</span>). Pour rester sur des variables numériques dans cette première section, on ignore temporairement <code>quartier</code> (l’encodage complet est traité au Lab 2) :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> annonces[[<span class="st">"surface_m2"</span>, <span class="st">"nb_chambres"</span>]]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> annonces[<span class="st">"prix_mad"</span>]</span>
@@ -402,7 +597,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce score est calculé sur les <strong>mêmes données</strong> que celles utilisées pour l’entraînement. Comme vu au chapitre 2, cela ne mesure en rien la capacité de généralisation du modèle — ce n’est qu’une mesure de qualité d’ajustement (<em>fit</em>). La suite du Lab corrige ce problème.</p>
+<p>Ce score est calculé sur les <strong>mêmes données</strong> que celles utilisées pour l’entraînement. Comme vu au chapitre 2, cela ne mesure en rien la capacité de généralisation du modèle - ce n’est qu’une mesure de qualité d’ajustement (<em>fit</em>). La suite du Lab corrige ce problème.</p>
 </div>
 </div>
 </section>
@@ -434,7 +629,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>random_state=42</code> fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours <strong>le même</strong> partage Train/Test en réexécutant le code — indispensable pour la reproductibilité (chapitre 1, §4.3).</p>
+<p><code>random_state=42</code> fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours <strong>le même</strong> partage Train/Test en réexécutant le code - indispensable pour la reproductibilité (chapitre 1, §4.3).</p>
 </div>
 </div>
 </section>
@@ -481,7 +676,7 @@ window.Quarto = {
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Vous devriez observer, comme sur la <a href="../chapitres/01_ecosysteme_ml.html#fig-overfitting" class="quarto-xref">Figure&nbsp;<span>1</span></a> du chapitre 2 :</p>
 <ul>
-<li>pour un <strong>faible degré</strong> (1-2), les deux erreurs sont élevées et proches : c’est du <strong>sous-apprentissage</strong> — le modèle (une droite ou presque) est trop simple pour capturer la courbe sinusoïdale ;</li>
+<li>pour un <strong>faible degré</strong> (1-2), les deux erreurs sont élevées et proches : c’est du <strong>sous-apprentissage</strong> - le modèle (une droite ou presque) est trop simple pour capturer la courbe sinusoïdale ;</li>
 <li>pour un <strong>degré intermédiaire</strong>, l’erreur de validation atteint son minimum : c’est le meilleur compromis ;</li>
 <li>pour un <strong>degré élevé</strong> (10+), l’erreur d’entraînement continue de baisser (le modèle mémorise le bruit) tandis que l’erreur de validation <strong>remonte</strong> : c’est le <strong>sur-apprentissage</strong>.</li>
 </ul>
@@ -501,7 +696,7 @@ window.Quarto = {
 </section>
 <section id="la-validation-croisée" class="level2">
 <h2 class="anchored" data-anchor-id="la-validation-croisée">4. La validation croisée</h2>
-<p>Un unique découpage Train/Validation dépend du hasard du tirage : sur un petit jeu de données, deux découpages différents peuvent donner des résultats sensiblement différents. La <strong>validation croisée</strong> répète l’évaluation sur plusieurs découpages et moyenne les résultats — une notion annoncée mais non détaillée au chapitre 2, que nous mettons ici en pratique.</p>
+<p>Un unique découpage Train/Validation dépend du hasard du tirage : sur un petit jeu de données, deux découpages différents peuvent donner des résultats sensiblement différents. La <strong>validation croisée</strong> répète l’évaluation sur plusieurs découpages et moyenne les résultats - une notion annoncée mais non détaillée au chapitre 2, que nous mettons ici en pratique.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold, cross_val_score</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>modele <span class="op">=</span> LinearRegression()</span>
@@ -522,13 +717,13 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Pour une tâche de <strong>classification</strong>, on utilise <code>StratifiedKFold</code> plutôt que <code>KFold</code> : il garantit que chaque pli conserve la même proportion de chaque classe que le jeu complet — important si les classes sont déséquilibrées (voir le chapitre de classification pour les limites de l’accuracy).</p>
+<p>Pour une tâche de <strong>classification</strong>, on utilise <code>StratifiedKFold</code> plutôt que <code>KFold</code> : il garantit que chaque pli conserve la même proportion de chaque classe que le jeu complet - important si les classes sont déséquilibrées (voir le chapitre de classification pour les limites de l’accuracy).</p>
 </div>
 </div>
 </section>
 <section id="une-baseline-avant-tout-modèle" class="level2">
 <h2 class="anchored" data-anchor-id="une-baseline-avant-tout-modèle">5. Une baseline avant tout modèle</h2>
-<p>Avant de juger un modèle « bon », il faut le comparer à une règle triviale. Passons à une tâche de <strong>classification</strong> pour illustrer ce point avec le jeu de données <code>iris</code> (fourni avec <code>scikit-learn</code> — trois espèces de fleurs, décrites par 4 mesures).</p>
+<p>Avant de juger un modèle « bon », il faut le comparer à une règle triviale. Passons à une tâche de <strong>classification</strong> pour illustrer ce point avec le jeu de données <code>iris</code> (fourni avec <code>scikit-learn</code> - trois espèces de fleurs, décrites par 4 mesures).</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_iris</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>iris <span class="op">=</span> load_iris(as_frame<span class="op">=</span><span class="va">True</span>)</span>
@@ -542,7 +737,7 @@ window.Quarto = {
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>baseline <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>baseline.fit(X_iris_train, y_iris_train)</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy de la baseline :"</span>, <span class="bu">round</span>(baseline.score(X_iris_test, y_iris_test), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Le jeu <code>iris</code> étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % — un score que <strong>tout</strong> modèle sérieux doit largement dépasser pour être utile (voir chapitre 2, §6).</p>
+<p>Le jeu <code>iris</code> étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % - un score que <strong>tout</strong> modèle sérieux doit largement dépasser pour être utile (voir chapitre 2, §6).</p>
 </section>
 <section id="un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques" class="level2">
 <h2 class="anchored" data-anchor-id="un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques">6. Un vrai modèle, sa matrice de confusion et ses métriques</h2>
@@ -560,7 +755,7 @@ window.Quarto = {
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay(matrice, display_labels<span class="op">=</span>iris.target_names).plot(ax<span class="op">=</span>ax, cmap<span class="op">=</span><span class="st">"Blues"</span>)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Matrice de confusion — KNN sur Iris"</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Matrice de confusion - KNN sur Iris"</span>)</span>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/confusion_iris.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
@@ -576,10 +771,10 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Comme précisé au chapitre 2 (<a href="../chapitres/04_classification.html#tbl-confusion" class="quarto-xref">Table&nbsp;<span>1</span></a>), la convention adoptée dans ce cours est : <strong>lignes = classes réelles, colonnes = classes prédites</strong>. La diagonale contient les prédictions correctes ; toute valeur hors diagonale est une erreur, et sa position indique précisément quelle classe a été confondue avec quelle autre — une information que l’<em>accuracy</em> seule ne donne jamais.</p>
+<p>Comme précisé au chapitre 2 (<a href="../chapitres/04_classification.html#tbl-confusion" class="quarto-xref">Table&nbsp;<span>1</span></a>), la convention adoptée dans ce cours est : <strong>lignes = classes réelles, colonnes = classes prédites</strong>. La diagonale contient les prédictions correctes ; toute valeur hors diagonale est une erreur, et sa position indique précisément quelle classe a été confondue avec quelle autre - une information que l’<em>accuracy</em> seule ne donne jamais.</p>
 </div>
 </div>
-<p><code>classification_report</code> calcule automatiquement, pour chaque classe, la <strong>précision</strong>, le <strong>rappel</strong> et le <strong>F1-score</strong> (moyenne harmonique des deux) — trois métriques annoncées au chapitre 2 (§6) et détaillées au chapitre 5.</p>
+<p><code>classification_report</code> calcule automatiquement, pour chaque classe, la <strong>précision</strong>, le <strong>rappel</strong> et le <strong>F1-score</strong> (moyenne harmonique des deux) - trois métriques annoncées au chapitre 2 (§6) et détaillées au chapitre 5.</p>
 </section>
 <section id="repérer-une-fuite-de-données-concrètement" class="level2">
 <h2 class="anchored" data-anchor-id="repérer-une-fuite-de-données-concrètement">7. Repérer une fuite de données, concrètement</h2>
@@ -613,7 +808,7 @@ window.Quarto = {
 <span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy (avec fuite)  :"</span>, <span class="bu">round</span>(score_fuite, <span class="dv">4</span>))</span>
 <span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy (sans fuite)  :"</span>, <span class="bu">round</span>(score_correct, <span class="dv">4</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Sur <code>iris</code>, l’écart est ici modeste (le jeu de données est petit et propre), mais sur des jeux plus grands ou plus bruités, l’écart peut être significatif et <strong>toujours optimiste en faveur de la version avec fuite</strong> — un piège d’autant plus dangereux qu’il donne une fausse confiance dans le modèle avant son déploiement.</p>
+<p>Sur <code>iris</code>, l’écart est ici modeste, car le jeu de données est petit et propre. La standardisation avant la séparation fait intervenir les caractéristiques du jeu de test dans le prétraitement : l’évaluation n’est donc plus totalement indépendante. Cette fuite peut biaiser le score, mais ne garantit pas que celui-ci sera plus élevé dans chaque expérience.</p>
 </section>
 <section id="un-premier-aperçu-du-réglage-dhyperparamètres" class="level2">
 <h2 class="anchored" data-anchor-id="un-premier-aperçu-du-réglage-dhyperparamètres">8. Un premier aperçu du réglage d’hyperparamètres</h2>
@@ -637,35 +832,8 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="synthèse" class="level2">
-<h2 class="anchored" data-anchor-id="synthèse">9. Synthèse</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Je sais construire <span class="math inline">\(X\)</span> et <span class="math inline">\(y\)</span> à partir d’un <code>DataFrame</code> <code>pandas</code>.</label></li>
-<li><label><input type="checkbox">Je sais utiliser <code>train_test_split</code> et expliquer pourquoi <code>random_state</code> est fixé.</label></li>
-<li><label><input type="checkbox">Je peux tracer et interpréter une courbe d’erreur train/validation selon la complexité.</label></li>
-<li><label><input type="checkbox">Je sais utiliser <code>cross_val_score</code> et expliquer ce qu’apporte la validation croisée par rapport à un split unique.</label></li>
-<li><label><input type="checkbox">Je sais comparer un modèle à une <code>DummyClassifier</code>.</label></li>
-<li><label><input type="checkbox">Je sais produire et lire une matrice de confusion et un <code>classification_report</code>.</label></li>
-<li><label><input type="checkbox">Je peux reproduire, sur un exemple, l’écart de score causé par une fuite de données.</label></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
 <section id="sec-lab1-projet" class="level2">
-<h2 class="anchored" data-anchor-id="sec-lab1-projet">10. Lab Sheet — Projet guidé</h2>
+<h2 class="anchored" data-anchor-id="sec-lab1-projet">9. Travail</h2>
 <div class="callout callout-style-default callout-important callout-titled" title="Jeu de données du projet">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -676,38 +844,38 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce projet utilise le jeu de données <code>wine</code>, également fourni par <code>scikit-learn</code> (<code>from sklearn.datasets import load_wine</code>) : 178 vins italiens, décrits par 13 mesures chimiques, répartis en 3 cultivars (classes). C’est un jeu <strong>différent</strong> de celui utilisé en cours — à vous de refaire, seul(e), l’ensemble de la démarche.</p>
+<p>Ce projet utilise le jeu de données <code>wine</code>, également fourni par <code>scikit-learn</code> (<code>from sklearn.datasets import load_wine</code>) : 178 vins italiens, décrits par 13 mesures chimiques, répartis en 3 cultivars (classes). C’est un jeu <strong>différent</strong> de celui utilisé en cours - à vous de refaire, seul(e), l’ensemble de la démarche.</p>
 </div>
 </div>
-<section id="partie-a-prise-en-main" class="level3">
-<h3 class="anchored" data-anchor-id="partie-a-prise-en-main">Partie A — Prise en main</h3>
+<section id="partie-a---prise-en-main" class="level3">
+<h3 class="anchored" data-anchor-id="partie-a---prise-en-main">Partie A - Prise en main</h3>
 <ol type="1">
 <li>Chargez <code>load_wine(as_frame=True)</code>. Combien d’observations et de variables explicatives le jeu contient-il ? Les classes sont-elles équilibrées (comptez les occurrences de chaque classe) ?</li>
 <li>Séparez les données en Train (75 %) / Test (25 %), avec <code>stratify</code> sur la cible et un <code>random_state</code> de votre choix. Justifiez en une phrase l’usage de <code>stratify</code> ici.</li>
 </ol>
 </section>
-<section id="partie-b-baseline-et-premier-modèle" class="level3">
-<h3 class="anchored" data-anchor-id="partie-b-baseline-et-premier-modèle">Partie B — Baseline et premier modèle</h3>
+<section id="partie-b---baseline-et-premier-modèle" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b---baseline-et-premier-modèle">Partie B - Baseline et premier modèle</h3>
 <ol start="3" type="1">
 <li>Entraînez une <code>DummyClassifier</code> et notez son accuracy sur le jeu de test. À quoi correspond ce chiffre, compte tenu de votre réponse à la question 1 ?</li>
 <li>Entraînez un <code>KNeighborsClassifier</code> avec <span class="math inline">\(k=5\)</span> <strong>sans aucune mise à l’échelle préalable</strong>. Comparez son accuracy à celle de la baseline.</li>
 </ol>
 </section>
-<section id="partie-c-une-mise-à-léchelle-change-t-elle-tout" class="level3">
-<h3 class="anchored" data-anchor-id="partie-c-une-mise-à-léchelle-change-t-elle-tout">Partie C — Une mise à l’échelle change-t-elle tout ?</h3>
+<section id="partie-c---une-mise-à-léchelle-change-t-elle-tout" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c---une-mise-à-léchelle-change-t-elle-tout">Partie C - Une mise à l’échelle change-t-elle tout ?</h3>
 <ol start="5" type="1">
 <li>Refaites la question 4 en standardisant les données au préalable (avec la méthode <strong>correcte</strong>, sans fuite). L’accuracy change-t-elle ? Proposez une explication liée à la nature de l’algorithme KNN (indice : pensez à la notion de distance entre observations, chapitre 3 §5).</li>
 </ol>
 </section>
-<section id="partie-d-régler-lhyperparamètre-k" class="level3">
-<h3 class="anchored" data-anchor-id="partie-d-régler-lhyperparamètre-k">Partie D — Régler l’hyperparamètre <span class="math inline">\(k\)</span></h3>
+<section id="partie-d---régler-lhyperparamètre-k" class="level3">
+<h3 class="anchored" data-anchor-id="partie-d---régler-lhyperparamètre-k">Partie D - Régler l’hyperparamètre <span class="math inline">\(k\)</span></h3>
 <ol start="6" type="1">
 <li>Par validation croisée à 5 plis <strong>sur le jeu d’entraînement uniquement</strong>, testez au moins six valeurs de <span class="math inline">\(k\)</span> entre 1 et 25. Tracez un graphique accuracy moyenne (CV) en fonction de <span class="math inline">\(k\)</span>.</li>
 <li>Identifiez la valeur de <span class="math inline">\(k\)</span> qui vous semble la meilleure. Justifiez votre choix en vous appuyant sur le graphique (y a-t-il un signe de sur-apprentissage pour les très petites valeurs de <span class="math inline">\(k\)</span> ? de sous-apprentissage pour les très grandes ?).</li>
 </ol>
 </section>
-<section id="partie-e-évaluation-finale" class="level3">
-<h3 class="anchored" data-anchor-id="partie-e-évaluation-finale">Partie E — Évaluation finale</h3>
+<section id="partie-e---évaluation-finale" class="level3">
+<h3 class="anchored" data-anchor-id="partie-e---évaluation-finale">Partie E - Évaluation finale</h3>
 <ol start="8" type="1">
 <li>Réentraînez un modèle avec le <span class="math inline">\(k\)</span> retenu sur l’ensemble du jeu d’entraînement, puis évaluez-le <strong>une seule fois</strong> sur le jeu de test : accuracy, matrice de confusion et <code>classification_report</code>.</li>
 <li>Le modèle confond-il davantage certaines paires de cultivars que d’autres ? Formulez une hypothèse.</li>
@@ -721,25 +889,6 @@ window.Quarto = {
 <li>au moins deux graphiques (courbe de <span class="math inline">\(k\)</span>, matrice de confusion) dans <code>outputs/</code> ;</li>
 <li>vos réponses écrites aux questions 1, 2, 3, 5, 7, 9 et 10.</li>
 </ul>
-<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Checklist finale
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Le split Train/Test est stratifié et reproductible.</label></li>
-<li><label><input type="checkbox">Une baseline est calculée avant tout modèle sérieux.</label></li>
-<li><label><input type="checkbox"><span class="math inline">\(k\)</span> est choisi par validation croisée sur le train, jamais sur le test.</label></li>
-<li><label><input type="checkbox">Le jeu de test n’est utilisé qu’une seule fois, à la fin.</label></li>
-<li><label><input type="checkbox">La matrice de confusion et le <code>classification_report</code> sont produits et interprétés.</label></li>
-</ul>
-</div>
-</div>
 
 
 </section>
@@ -748,6 +897,19 @@ window.Quarto = {
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1148,13 +1310,13 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../tp/lab0_environnement_python.html" class="pagination-link" aria-label="Lab 0 — Environnement Python et premiers pas avec les données">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></span>
+      <a href="../tp/lab0_environnement_python.html" class="pagination-link" aria-label="Lab 0 - Environnement Python et premiers pas avec les données">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../tp/lab2_collecte_pretraitement.html" class="pagination-link" aria-label="Lab 2 — Collecte et prétraitement des données">
-        <span class="nav-page-text"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../tp/lab2_collecte_pretraitement.html" class="pagination-link" aria-label="Lab 2 - Collecte et prétraitement des données">
+        <span class="nav-page-text"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

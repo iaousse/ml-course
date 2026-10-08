@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapitres/02_pretraitement_donnees.html" rel="next">
+<link href="../chapitres/module_collecte_pretraitement_commun.html" rel="next">
 <link href="../chapitres/00_intro_ml.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -44,10 +44,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -107,9 +111,172 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -154,8 +321,27 @@ window.Quarto = {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -168,12 +354,14 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -188,7 +376,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -208,33 +396,33 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -265,6 +453,7 @@ window.Quarto = {
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -343,7 +532,7 @@ Table&nbsp;1: Notions et vocabulaire
 </div>
 </figure>
 </div>
-<p><strong>Notation mathématique standard</strong>, utilisée dans de ce cours :</p>
+<p><strong>Notation mathématique standard utilisée dans ce cours</strong> :</p>
 <ul>
 <li><span class="math inline">\(X\)</span> : la <strong>matrice de design</strong> contenant les variables explicatives (une ligne par observation, une colonne par variable) ;</li>
 <li><span class="math inline">\(y\)</span> : le <strong>vecteur cible</strong> (ou vecteur des étiquettes) ;</li>
@@ -398,10 +587,9 @@ Table&nbsp;1: Notions et vocabulaire
 <ul>
 <li><strong>l’apprentissage supervisé</strong> ;</li>
 <li><strong>l’apprentissage non supervisé</strong> ;</li>
-<li><strong>l’apprentissage non supervisé</strong>.</li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Supervisé</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Non supervisé</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">Supervisé</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Non supervisé</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>Le modèle apprend à partir de données <strong>étiquetées</strong> : chaque exemple d’entraînement est associé à une <strong>cible</strong> <span class="math inline">\(y\)</span> que le modèle cherche à prédire à partir des données d’entrée <span class="math inline">\(X\)</span>.</p>
@@ -467,7 +655,7 @@ Table&nbsp;1: Notions et vocabulaire
 </blockquote>
 <p>La <strong>généralisation</strong> est la capacité du modèle à produire une prédiction correcte face à une observation qu’il n’a jamais rencontrée. L’état d’un modèle se classe dans l’une de ces trois situations :</p>
 <ol type="1">
-<li><strong>Sous-apprentissage (<em>Underfitting</em>)</strong> : modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout — y compris sur les données d’entraînement.</li>
+<li><strong>Sous-apprentissage (<em>Underfitting</em>)</strong> : modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout - y compris sur les données d’entraînement.</li>
 <li><strong>Ajustement optimal (<em>Good fit</em>)</strong> : le modèle extrait les règles générales (le <strong>signal</strong>) et ignore les anomalies (le <strong>bruit</strong>).</li>
 <li><strong>Sur-apprentissage (<em>Overfitting</em>)</strong> : modèle trop complexe. Il mémorise le bruit spécifique aux données d’entraînement. Il excelle artificiellement sur l’historique mais échoue sur de nouvelles données.</li>
 </ol>
@@ -557,12 +745,12 @@ Figure&nbsp;2: Séparation typique d’un jeu de données en Train / Validation 
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Le jeu de <strong>Test</strong> ne doit être utilisé <strong>qu’une seule fois</strong>, tout à la fin du projet, pour obtenir une estimation honnête de la performance. Le consulter à répétition pour ajuster des choix de modélisation revient, de fait, à l’intégrer au jeu d’entraînement — et fausse l’estimation finale.</p>
+<p>Le jeu de <strong>Test</strong> ne doit être utilisé <strong>qu’une seule fois</strong>, tout à la fin du projet, pour obtenir une estimation honnête de la performance. Le consulter à répétition pour ajuster des choix de modélisation revient, de fait, à l’intégrer au jeu d’entraînement - et fausse l’estimation finale.</p>
 </div>
 </div>
 <section id="le-cas-particulier-des-données-temporelles" class="level3">
 <h3 class="anchored" data-anchor-id="le-cas-particulier-des-données-temporelles">4.1. Le cas particulier des données temporelles</h3>
-<p>Lorsque les observations sont <strong>datées</strong> (ex. transactions bancaires, ventes mensuelles), un découpage <strong>aléatoire</strong> de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d’informations « futures » par rapport à certaines observations de test, ce qui <strong>surestime artificiellement</strong> sa performance réelle. Dans ce cas, on applique plutôt un <strong>découpage chronologique</strong> : les données les plus anciennes forment le jeu d’entraînement, les plus récentes le jeu de test — reproduisant ainsi la situation réelle où le modèle doit prédire l’avenir à partir du passé.</p>
+<p>Lorsque les observations sont <strong>datées</strong> (ex. transactions bancaires, ventes mensuelles), un découpage <strong>aléatoire</strong> de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d’informations « futures » par rapport à certaines observations de test, ce qui <strong>surestime artificiellement</strong> sa performance réelle. Dans ce cas, on applique plutôt un <strong>découpage chronologique</strong> : les données les plus anciennes forment le jeu d’entraînement, les plus récentes le jeu de test - reproduisant ainsi la situation réelle où le modèle doit prédire l’avenir à partir du passé.</p>
 </section>
 <section id="la-fuite-de-données-data-leakage" class="level3">
 <h3 class="anchored" data-anchor-id="la-fuite-de-données-data-leakage">4.2. La fuite de données (<em>Data Leakage</em>)</h3>
@@ -622,7 +810,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>On ne règle <strong>jamais</strong> un hyperparamètre en observant sa performance sur le jeu de <strong>test</strong> — cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d’hyperparamètres uniquement sur le jeu de <strong>validation</strong> (<a href="#tbl-jeux-evaluation" class="quarto-xref">Table&nbsp;<span>2</span></a>), et à ne consulter le jeu de test qu’une fois le meilleur réglage définitivement choisi.</p>
+<p>On ne règle <strong>jamais</strong> un hyperparamètre en observant sa performance sur le jeu de <strong>test</strong> - cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d’hyperparamètres uniquement sur le jeu de <strong>validation</strong> (<a href="#tbl-jeux-evaluation" class="quarto-xref">Table&nbsp;<span>2</span></a>), et à ne consulter le jeu de test qu’une fois le meilleur réglage définitivement choisi.</p>
 </div>
 </div>
 </section>
@@ -639,7 +827,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline qui prédit systématiquement « Légitime » obtiendra <strong>99 % d’<em>accuracy</em></strong> (exactitude) — un score en apparence excellent — alors même que le modèle est totalement inutile, puisqu’il ne détecte jamais aucune fraude.</p>
+<p>Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline qui prédit systématiquement « Légitime » obtiendra <strong>99 % d’<em>accuracy</em></strong> (exactitude) - un score en apparence excellent - alors même que le modèle est totalement inutile, puisqu’il ne détecte jamais aucune fraude.</p>
 </div>
 </div>
 <p>Pour étudier plus finement les erreurs d’un modèle de classification, on utilise notamment la <strong>matrice de confusion</strong>, qui sera définie et étudiée dans le chapitre consacré à la classification.</p>
@@ -671,7 +859,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 <p><strong>L’éthique dans le ML :</strong></p>
 <ul>
 <li><strong>Biais de représentation</strong> : les données d’entraînement reflètent-elles fidèlement la population sur laquelle le modèle sera utilisé, ou risquent-elles de discriminer certains groupes ?</li>
-<li><strong>Explicabilité</strong> : peut-on justifier, a posteriori, la décision prise par la machine — en particulier lorsque celle-ci affecte directement une personne (crédit refusé, diagnostic médical) ?</li>
+<li><strong>Explicabilité</strong> : peut-on justifier, a posteriori, la décision prise par la machine - en particulier lorsque celle-ci affecte directement une personne (crédit refusé, diagnostic médical) ?</li>
 </ul>
 <p><strong>La Reproductibilité :</strong> un résultat scientifique ou industriel doit pouvoir être relancé à l’identique par une autre personne. Pratiques obligatoires :</p>
 <ol type="1">
@@ -682,21 +870,8 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </section>
 <section id="exercices" class="level2">
 <h2 class="anchored" data-anchor-id="exercices">Exercices</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Consigne">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Consigne
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit <strong>avant</strong> de les consulter.</p>
-</div>
-</div>
 <div id="exr-fond-1" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 1 (Vocabulaire et représentation)</strong></span> On dispose du tableau suivant, pour la tâche « prédire si un appartement sera vendu rapidement » :</p>
+<p><span class="theorem-title"><strong>Exercice 1</strong></span> On dispose du tableau suivant, pour la tâche « prédire si un appartement sera vendu rapidement » :</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -740,7 +915,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </ol>
 </div>
 <div id="exr-fond-2" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 2 (Diagnostiquer sous/sur-apprentissage)</strong></span> Deux modèles donnent les résultats suivants :</p>
+<p><span class="theorem-title"><strong>Exercice 2</strong></span> Deux modèles donnent les résultats suivants :</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -769,7 +944,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </ol>
 </div>
 <div id="exr-fond-3" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 3 (Fuite de données)</strong></span> Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, une équipe utilise :</p>
+<p><span class="theorem-title"><strong>Exercice 3</strong></span> Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, une équipe utilise :</p>
 <ul>
 <li>l’âge ;</li>
 <li>le diagnostic initial ;</li>
@@ -783,7 +958,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </ol>
 </div>
 <div id="exr-fond-4" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 4 (Paramètres vs Hyperparamètres)</strong></span> Pour chacun des éléments suivants, indiquez s’il s’agit d’un <strong>paramètre</strong> appris ou d’un <strong>hyperparamètre</strong> choisi par le développeur :</p>
+<p><span class="theorem-title"><strong>Exercice 4</strong></span> Pour chacun des éléments suivants, indiquez s’il s’agit d’un <strong>paramètre</strong> appris ou d’un <strong>hyperparamètre</strong> choisi par le développeur :</p>
 <ol type="1">
 <li>les coefficients d’une régression linéaire ;</li>
 <li>le nombre maximal de niveaux d’un arbre de décision ;</li>
@@ -791,7 +966,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </ol>
 </div>
 <div id="exr-fond-5" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 5 (Baseline et classes déséquilibrées)</strong></span> Dans un jeu de classification de 1 000 observations, la classe A représente 900 observations et la classe B seulement 100.</p>
+<p><span class="theorem-title"><strong>Exercice 5</strong></span> Dans un jeu de classification de 1 000 observations, la classe A représente 900 observations et la classe B seulement 100.</p>
 <ol type="1">
 <li>Quelle accuracy obtient la baseline qui prédit toujours A ?</li>
 <li>Pourquoi cette baseline peut-elle être utile malgré sa simplicité ?</li>
@@ -799,7 +974,7 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </ol>
 </div>
 <div id="exr-fond-6" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 6 (Préparer une évaluation)</strong></span> Une banque utilise un modèle pour repérer des demandes de prêt potentiellement frauduleuses. Les fraudes sont rares, mais manquer une fraude peut coûter très cher.</p>
+<p><span class="theorem-title"><strong>Exercice 6</strong></span> Une banque utilise un modèle pour repérer des demandes de prêt potentiellement frauduleuses. Les fraudes sont rares, mais manquer une fraude peut coûter très cher.</p>
 <ol type="1">
 <li>Pourquoi l’accuracy seule risque-t-elle d’être insuffisante ?</li>
 <li>Pourquoi faut-il discuter avec le métier avant de choisir une métrique ?</li>
@@ -807,14 +982,14 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </ol>
 </div>
 <div id="exr-fond-7" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 7 (Corrélation et causalité)</strong></span> Une analyse montre que les personnes qui utilisent davantage une application de e-learning réussissent mieux une formation. L’équipe pédagogique conclut que rendre l’application obligatoire fera automatiquement réussir davantage d’étudiants.</p>
+<p><span class="theorem-title"><strong>Exercice 7</strong></span> Une analyse montre que les personnes qui utilisent davantage une application de e-learning réussissent mieux une formation. L’équipe pédagogique conclut que rendre l’application obligatoire fera automatiquement réussir davantage d’étudiants.</p>
 <ol type="1">
 <li>Quelle est la corrélation observée ?</li>
 <li>Pourquoi cette conclusion causale peut-elle être injustifiée ?</li>
 </ol>
 </div>
 <div id="exr-fond-8" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 8 (Choisir entre supervisé et non supervisé)</strong></span> Pour chaque situation, indiquez si elle relève plutôt de l’apprentissage supervisé ou non supervisé, et justifiez brièvement.</p>
+<p><span class="theorem-title"><strong>Exercice 8</strong></span> Pour chaque situation, indiquez si elle relève plutôt de l’apprentissage supervisé ou non supervisé, et justifiez brièvement.</p>
 <ol type="1">
 <li>Prédire le prix d’un logement à partir de sa surface et de son quartier.</li>
 <li>Regrouper des clients selon leurs habitudes d’achat sans catégorie connue à l’avance.</li>
@@ -828,6 +1003,19 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1233,8 +1421,8 @@ Table&nbsp;3: Paramètres et hyperparamètres
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapitres/02_pretraitement_donnees.html" class="pagination-link" aria-label="Collecte et Prétraitement des Données">
-        <span class="nav-page-text"><span class="chapter-title">Collecte et Prétraitement des Données</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapitres/module_collecte_pretraitement_commun.html" class="pagination-link" aria-label="Collecte, Nettoyage et Préparation des Données">
+        <span class="nav-page-text"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

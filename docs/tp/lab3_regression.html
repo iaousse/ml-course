@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab 3 — Régression : prédire une valeur numérique – Machine Learning</title>
+<title>Lab 3 - Régression : prédire une valeur numérique – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -79,10 +79,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -142,9 +146,172 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -153,7 +320,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab3_regression.html"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab3_regression.html"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -166,7 +333,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></h1>
+      <h1 class="title"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></h1>
                       </div>
   </div>
     
@@ -189,8 +356,27 @@ window.Quarto = {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -203,12 +389,14 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -223,7 +411,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -243,33 +431,33 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -292,12 +480,11 @@ window.Quarto = {
   <li><a href="#diagnostiquer-un-modèle-par-ses-résidus" id="toc-diagnostiquer-un-modèle-par-ses-résidus" class="nav-link" data-scroll-target="#diagnostiquer-un-modèle-par-ses-résidus">4. Diagnostiquer un modèle par ses résidus</a></li>
   <li><a href="#régularisation-ridge-et-lasso" id="toc-régularisation-ridge-et-lasso" class="nav-link" data-scroll-target="#régularisation-ridge-et-lasso">5. Régularisation : <code>Ridge</code> et <code>Lasso</code></a></li>
   <li><a href="#régler-alpha-proprement-avec-gridsearchcv" id="toc-régler-alpha-proprement-avec-gridsearchcv" class="nav-link" data-scroll-target="#régler-alpha-proprement-avec-gridsearchcv">6. Régler <span class="math inline">\(\alpha\)</span> proprement avec <code>GridSearchCV</code></a></li>
-  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">7. Synthèse</a></li>
-  <li><a href="#sec-lab3-projet" id="toc-sec-lab3-projet" class="nav-link" data-scroll-target="#sec-lab3-projet">8. Lab Sheet — Projet guidé</a>
+  <li><a href="#sec-lab3-projet" id="toc-sec-lab3-projet" class="nav-link" data-scroll-target="#sec-lab3-projet">7. Travail</a>
   <ul class="collapse">
-  <li><a href="#partie-a-prise-en-main" id="toc-partie-a-prise-en-main" class="nav-link" data-scroll-target="#partie-a-prise-en-main">Partie A — Prise en main</a></li>
-  <li><a href="#partie-b-une-première-régression" id="toc-partie-b-une-première-régression" class="nav-link" data-scroll-target="#partie-b-une-première-régression">Partie B — Une première régression</a></li>
-  <li><a href="#partie-c-régularisation-et-réglage-dhyperparamètre" id="toc-partie-c-régularisation-et-réglage-dhyperparamètre" class="nav-link" data-scroll-target="#partie-c-régularisation-et-réglage-dhyperparamètre">Partie C — Régularisation et réglage d’hyperparamètre</a></li>
+  <li><a href="#partie-a---prise-en-main" id="toc-partie-a---prise-en-main" class="nav-link" data-scroll-target="#partie-a---prise-en-main">Partie A - Prise en main</a></li>
+  <li><a href="#partie-b---une-première-régression" id="toc-partie-b---une-première-régression" class="nav-link" data-scroll-target="#partie-b---une-première-régression">Partie B - Une première régression</a></li>
+  <li><a href="#partie-c---régularisation-et-réglage-dhyperparamètre" id="toc-partie-c---régularisation-et-réglage-dhyperparamètre" class="nav-link" data-scroll-target="#partie-c---régularisation-et-réglage-dhyperparamètre">Partie C - Régularisation et réglage d’hyperparamètre</a></li>
   <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
   </ul></li>
   </ul>
@@ -305,6 +492,7 @@ window.Quarto = {
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -332,17 +520,21 @@ window.Quarto = {
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout callout-style-default callout-note callout-titled" title="Téléchargement de la Lab Sheet">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Lien avec le cours
+<span class="screen-reader-only">Note</span>Téléchargement de la Lab Sheet
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce Lab correspond au chapitre 4 (<em>Modèles de régression</em>). Il réutilise directement les compétences des Labs précédents : construction de <span class="math inline">\(X\)</span>/<span class="math inline">\(y\)</span> et évaluation (Lab 1, chapitre 2), prétraitement et <code>ColumnTransformer</code> (Lab 2, chapitre 3). C’est ici que le réglage d’hyperparamètres, seulement esquissé au Lab 1, est traité <strong>en profondeur</strong> avec <code>GridSearchCV</code> — une méthode que vous réutiliserez telle quelle au Lab 4 (classification).</p>
+<p>Téléchargez un seul format avant de travailler :</p>
+<ul>
+<li><strong>Notebook <code>.ipynb</code></strong> pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/labsheets"><code>labsheets/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/labsheets/lab3_regression.ipynb">fichier source du Lab 3</a>.</li>
+<li><strong>Fichier <code>.qmd</code></strong> pour travailler avec Quarto : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/tp"><code>tp/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/tp/lab3_regression.qmd">fichier source du Lab 3</a>.</li>
+</ul>
 </div>
 </div>
 <section id="rappel-quest-ce-quapprend-une-régression-linéaire" class="level2">
@@ -397,32 +589,36 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="passer-à-la-régression-multiple">2. Passer à la régression multiple</h2>
 <p>En pratique, un seul prédicteur suffit rarement. Construisons un jeu de données d’annonces immobilières casablancaises plus riche, dans l’esprit du fil rouge du cours (chapitre 1, §3).</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">7</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>quartiers <span class="op">=</span> rng.choice([<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Agdal"</span>, <span class="st">"Ain Diab"</span>], size<span class="op">=</span>n)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>surface <span class="op">=</span> rng.uniform(<span class="dv">30</span>, <span class="dv">220</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>chambres <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">6</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>age_bien <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">40</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>etage <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">12</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>bonus_quartier <span class="op">=</span> pd.Series(quartiers).<span class="bu">map</span>({</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Maarif"</span>: <span class="dv">150_000</span>, <span class="st">"Hay Riad"</span>: <span class="dv">260_000</span>, <span class="st">"Gueliz"</span>: <span class="dv">90_000</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Agdal"</span>: <span class="dv">190_000</span>, <span class="st">"Ain Diab"</span>: <span class="dv">320_000</span>,</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>}).to_numpy()</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>prix <span class="op">=</span> (</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dv">8_200</span> <span class="op">*</span> surface <span class="op">+</span> <span class="dv">55_000</span> <span class="op">*</span> chambres <span class="op">-</span> <span class="dv">3_000</span> <span class="op">*</span> age_bien <span class="op">+</span> <span class="dv">15_000</span> <span class="op">*</span> etage</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> bonus_quartier <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="dv">70_000</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: surface.<span class="bu">round</span>(<span class="dv">0</span>), <span class="st">"nb_chambres"</span>: chambres, <span class="st">"age_bien"</span>: age_bien,</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"etage"</span>: etage, <span class="st">"quartier"</span>: quartiers, <span class="st">"prix_mad"</span>: prix.<span class="bu">round</span>(<span class="dv">0</span>),</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>annonces.to_csv(<span class="st">"data/processed/annonces_casablanca.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"data/processed"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"outputs"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">7</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>quartiers <span class="op">=</span> rng.choice([<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Agdal"</span>, <span class="st">"Ain Diab"</span>], size<span class="op">=</span>n)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>surface <span class="op">=</span> rng.uniform(<span class="dv">30</span>, <span class="dv">220</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>chambres <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">6</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>age_bien <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">40</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>etage <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">12</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>bonus_quartier <span class="op">=</span> pd.Series(quartiers).<span class="bu">map</span>({</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Maarif"</span>: <span class="dv">150_000</span>, <span class="st">"Hay Riad"</span>: <span class="dv">260_000</span>, <span class="st">"Gueliz"</span>: <span class="dv">90_000</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Agdal"</span>: <span class="dv">190_000</span>, <span class="st">"Ain Diab"</span>: <span class="dv">320_000</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>}).to_numpy()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>prix <span class="op">=</span> (</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dv">8_200</span> <span class="op">*</span> surface <span class="op">+</span> <span class="dv">55_000</span> <span class="op">*</span> chambres <span class="op">-</span> <span class="dv">3_000</span> <span class="op">*</span> age_bien <span class="op">+</span> <span class="dv">15_000</span> <span class="op">*</span> etage</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> bonus_quartier <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="dv">70_000</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: surface.<span class="bu">round</span>(<span class="dv">0</span>), <span class="st">"nb_chambres"</span>: chambres, <span class="st">"age_bien"</span>: age_bien,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"etage"</span>: etage, <span class="st">"quartier"</span>: quartiers, <span class="st">"prix_mad"</span>: prix.<span class="bu">round</span>(<span class="dv">0</span>),</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>annonces.to_csv(<span class="st">"data/processed/annonces_casablanca.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
@@ -495,7 +691,7 @@ window.Quarto = {
 <tr class="odd">
 <td>RMSE</td>
 <td>Celle de <span class="math inline">\(y\)</span> (MAD)</td>
-<td>Racine de la MSE, revient à l’unité d’origine — la plus lisible en pratique</td>
+<td>Racine de la MSE, revient à l’unité d’origine - la plus lisible en pratique</td>
 <td>Minimiser</td>
 </tr>
 <tr class="even">
@@ -516,7 +712,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Un <span class="math inline">\(R^2\)</span> de 0 correspond exactement à la performance d’une baseline qui prédirait toujours <span class="math inline">\(\bar{y}\)</span> (la moyenne). Un <span class="math inline">\(R^2\)</span> négatif signifie que votre modèle fait <strong>pire</strong> que cette baseline triviale — un signal d’alerte à ne jamais ignorer.</p>
+<p>Un <span class="math inline">\(R^2\)</span> de 0 correspond exactement à la performance d’une baseline qui prédirait toujours <span class="math inline">\(\bar{y}\)</span> (la moyenne). Un <span class="math inline">\(R^2\)</span> négatif signifie que votre modèle fait <strong>pire</strong> que cette baseline triviale - un signal d’alerte à ne jamais ignorer.</p>
 </div>
 </div>
 </section>
@@ -541,7 +737,7 @@ window.Quarto = {
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/diagnostic_residus.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Un bon modèle produit des résidus répartis <strong>aléatoirement autour de zéro</strong>, sans motif visible. Un nuage en forme d’entonnoir (variance croissante) ou une courbe systématique indique que le modèle rate quelque chose de structurel — une piste pour ajouter des variables ou transformer certaines d’entre elles (par exemple un logarithme sur <code>prix_mad</code>).</p>
+<p>Un bon modèle produit des résidus répartis <strong>aléatoirement autour de zéro</strong>, sans motif visible. Un nuage en forme d’entonnoir (variance croissante) ou une courbe systématique indique que le modèle rate quelque chose de structurel - une piste pour ajouter des variables ou transformer certaines d’entre elles (par exemple un logarithme sur <code>prix_mad</code>).</p>
 </section>
 <section id="régularisation-ridge-et-lasso" class="level2">
 <h2 class="anchored" data-anchor-id="régularisation-ridge-et-lasso">5. Régularisation : <code>Ridge</code> et <code>Lasso</code></h2>
@@ -551,7 +747,7 @@ window.Quarto = {
 \qquad\qquad
 \text{Lasso} : \quad \text{MSE}(\beta) + \alpha \sum_{j} |\beta_j|
 \]</span></p>
-<p>où <span class="math inline">\(\alpha \geq 0\)</span> contrôle l’intensité de la pénalité — un <strong>hyperparamètre</strong>, à ne pas confondre avec les coefficients <span class="math inline">\(\beta_j\)</span>, qui restent des paramètres appris.</p>
+<p>où <span class="math inline">\(\alpha \geq 0\)</span> contrôle l’intensité de la pénalité - un <strong>hyperparamètre</strong>, à ne pas confondre avec les coefficients <span class="math inline">\(\beta_j\)</span>, qui restent des paramètres appris.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Lasso, Ridge</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nom, modele_reg <span class="kw">in</span> [(<span class="st">"Ridge (α=1.0)"</span>, Ridge(alpha<span class="op">=</span><span class="fl">1.0</span>)), (<span class="st">"Lasso (α=1.0)"</span>, Lasso(alpha<span class="op">=</span><span class="fl">1.0</span>))]:</span>
@@ -568,13 +764,13 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>Ridge</code> réduit tous les coefficients sans jamais les annuler complètement. <code>Lasso</code> peut ramener certains coefficients <strong>exactement à zéro</strong> — il réalise de fait une sélection de variables automatique, utile quand on soupçonne que certaines colonnes n’apportent rien.</p>
+<p><code>Ridge</code> réduit tous les coefficients sans jamais les annuler complètement. <code>Lasso</code> peut ramener certains coefficients <strong>exactement à zéro</strong> - il réalise de fait une sélection de variables automatique, utile quand on soupçonne que certaines colonnes n’apportent rien.</p>
 </div>
 </div>
 </section>
 <section id="régler-alpha-proprement-avec-gridsearchcv" class="level2">
 <h2 class="anchored" data-anchor-id="régler-alpha-proprement-avec-gridsearchcv">6. Régler <span class="math inline">\(\alpha\)</span> proprement avec <code>GridSearchCV</code></h2>
-<p>Au Lab 1, nous avions comparé quelques valeurs de <span class="math inline">\(k\)</span> à la main, dans une boucle. <code>GridSearchCV</code> automatise entièrement cette démarche : il essaie chaque valeur d’hyperparamètre, évalue chacune par validation croisée, et conserve la meilleure — <strong>sans jamais toucher au jeu de test</strong>.</p>
+<p>Au Lab 1, nous avions comparé quelques valeurs de <span class="math inline">\(k\)</span> à la main, dans une boucle. <code>GridSearchCV</code> automatise entièrement cette démarche : il essaie chaque valeur d’hyperparamètre, évalue chacune par validation croisée, et conserve la meilleure - <strong>sans jamais toucher au jeu de test</strong>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>pipeline_ridge <span class="op">=</span> Pipeline([</span>
@@ -625,64 +821,26 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="synthèse" class="level2">
-<h2 class="anchored" data-anchor-id="synthèse">7. Synthèse</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Je sais calculer les coefficients d’une régression linéaire simple à la main et retrouver le même résultat avec <code>scikit-learn</code>.</label></li>
-<li><label><input type="checkbox">Je sais construire une régression multiple avec des variables numériques et catégorielles, via un pipeline.</label></li>
-<li><label><input type="checkbox">Je sais calculer et interpréter MAE, RMSE et <span class="math inline">\(R^2\)</span>, et dire laquelle privilégier selon le contexte.</label></li>
-<li><label><input type="checkbox">Je sais lire un graphique de résidus pour diagnostiquer un modèle.</label></li>
-<li><label><input type="checkbox">Je sais expliquer la différence entre <code>Ridge</code> et <code>Lasso</code>.</label></li>
-<li><label><input type="checkbox">Je sais utiliser <code>GridSearchCV</code> pour choisir un hyperparamètre par validation croisée, à l’intérieur d’un pipeline complet.</label></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
 <section id="sec-lab3-projet" class="level2">
-<h2 class="anchored" data-anchor-id="sec-lab3-projet">8. Lab Sheet — Projet guidé</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Jeu de données du projet">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Jeu de données du projet
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Ce projet utilise le jeu de données <code>diabetes</code> fourni par <code>scikit-learn</code> (<code>from sklearn.datasets import load_diabetes</code>) : 442 patients, 10 variables physiologiques standardisées, et une cible numérique mesurant la progression de la maladie un an après le diagnostic. C’est un vrai jeu de données médical, utilisé dans de nombreuses publications de référence sur la régression régularisée.</p>
-</div>
-</div>
-<section id="partie-a-prise-en-main" class="level3">
-<h3 class="anchored" data-anchor-id="partie-a-prise-en-main">Partie A — Prise en main</h3>
+<h2 class="anchored" data-anchor-id="sec-lab3-projet">7. Travail</h2>
+<p><strong>Jeu de données du projet</strong> Ce projet utilise le jeu de données <code>diabetes</code> fourni par <code>scikit-learn</code> (<code>from sklearn.datasets import load_diabetes</code>) : 442 patients, 10 variables physiologiques standardisées, et une cible numérique mesurant la progression de la maladie un an après le diagnostic. C’est un vrai jeu de données médical, utilisé dans de nombreuses publications de référence sur la régression régularisée.</p>
+<section id="partie-a---prise-en-main" class="level3">
+<h3 class="anchored" data-anchor-id="partie-a---prise-en-main">Partie A - Prise en main</h3>
 <ol type="1">
 <li>Chargez <code>load_diabetes(as_frame=True)</code>. Combien d’observations et de variables explicatives ? Toutes les variables sont-elles déjà numériques ?</li>
 <li>Séparez Train (80 %) / Test (20 %) avec un <code>random_state</code> fixé.</li>
 </ol>
 </section>
-<section id="partie-b-une-première-régression" class="level3">
-<h3 class="anchored" data-anchor-id="partie-b-une-première-régression">Partie B — Une première régression</h3>
+<section id="partie-b---une-première-régression" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b---une-première-régression">Partie B - Une première régression</h3>
 <ol start="3" type="1">
 <li>Entraînez une <code>LinearRegression</code> simple (sans régularisation). Calculez MAE, RMSE et <span class="math inline">\(R^2\)</span> sur le jeu de test.</li>
 <li>Affichez les coefficients appris (<code>.coef_</code>) associés à chaque variable. Quelle variable semble avoir le plus d’impact (en valeur absolue) ?</li>
 <li>Tracez le graphique résidus vs prédictions (§4). Observez-vous un motif particulier ?</li>
 </ol>
 </section>
-<section id="partie-c-régularisation-et-réglage-dhyperparamètre" class="level3">
-<h3 class="anchored" data-anchor-id="partie-c-régularisation-et-réglage-dhyperparamètre">Partie C — Régularisation et réglage d’hyperparamètre</h3>
+<section id="partie-c---régularisation-et-réglage-dhyperparamètre" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c---régularisation-et-réglage-dhyperparamètre">Partie C - Régularisation et réglage d’hyperparamètre</h3>
 <ol start="6" type="1">
 <li>Construisez une grille de valeurs de <span class="math inline">\(\alpha\)</span> pour <code>Ridge</code> (au moins 6 valeurs, sur plusieurs ordres de grandeur, par exemple de 0.01 à 100).</li>
 <li>Utilisez <code>GridSearchCV</code> (5 plis) pour trouver le meilleur <span class="math inline">\(\alpha\)</span>. Donnez la valeur retenue et le <span class="math inline">\(R^2\)</span> moyen obtenu en validation croisée.</li>
@@ -697,24 +855,6 @@ window.Quarto = {
 <li>au moins un graphique de diagnostic dans <code>outputs/</code> ;</li>
 <li>un court paragraphe comparant les modèles testés et justifiant le choix final.</li>
 </ul>
-<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Checklist finale
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Le split Train/Test est effectué avant tout calcul de statistique.</label></li>
-<li><label><input type="checkbox">Au moins trois métriques de régression sont calculées et interprétées.</label></li>
-<li><label><input type="checkbox">L’hyperparamètre <span class="math inline">\(\alpha\)</span> est choisi par validation croisée, jamais sur le test.</label></li>
-<li><label><input type="checkbox">Le jeu de test n’est utilisé qu’une seule fois, pour l’évaluation finale.</label></li>
-</ul>
-</div>
-</div>
 
 
 </section>
@@ -723,6 +863,19 @@ window.Quarto = {
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1123,13 +1276,13 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../tp/lab2_collecte_pretraitement.html" class="pagination-link" aria-label="Lab 2 — Collecte et prétraitement des données">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></span>
+      <a href="../tp/lab2_collecte_pretraitement.html" class="pagination-link" aria-label="Lab 2 - Collecte et prétraitement des données">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../tp/lab4_classification.html" class="pagination-link" aria-label="Lab 4 — Classification : prédire une catégorie">
-        <span class="nav-page-text"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../tp/lab4_classification.html" class="pagination-link" aria-label="Lab 4 - Classification : prédire une catégorie">
+        <span class="nav-page-text"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

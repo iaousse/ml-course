@@ -792,7 +792,7 @@ results = cross_validate(
 
 La validation croisée stratifiée est particulièrement utile si la classe positive est minoritaire.
 
-## 7. En résumé
+### 6.6 Résumé
 
 La classification binaire repose sur trois idées simples :
 
@@ -815,12 +815,8 @@ La régression logistique est un excellent point de départ. Elle est mathémati
 
 ## Exercices
 
-::: {.callout-note title="Consigne"}
-Les exercices suivants portent uniquement sur le calcul et la compréhension. Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable.
-:::
 
 ::: {#exr-class-1}
-### Probabilité logistique simple
 
 Un modèle logistique est défini par :
 
@@ -864,7 +860,6 @@ $$
 :::
 
 ::: {#exr-class-2}
-### Log loss d'une observation
 
 Pour une observation positive, le modèle prédit :
 
@@ -902,7 +897,6 @@ La meilleure prédiction est donc $p=0{,}9$, puis $0{,}5$, puis $0{,}1$.
 :::
 
 ::: {#exr-class-3}
-### Matrice de confusion
 
 Un modèle de détection donne :
 
@@ -961,7 +955,6 @@ $$
 :::
 
 ::: {#exr-class-4}
-### Effet du seuil
 
 Un modèle produit les probabilités suivantes :
 
@@ -994,7 +987,6 @@ $$
 :::
 
 ::: {#exr-class-5}
-### Classe majoritaire et accuracy trompeuse
 
 Dans un jeu de 1 000 observations, la classe 0 représente 950 observations et la classe 1 représente 50 observations.
 
@@ -1026,7 +1018,6 @@ $$
 :::
 
 ::: {#exr-class-6}
-### Choisir un bon premier modèle
 
 Choisissez un premier algorithme raisonnable dans chaque situation et justifiez :
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab 0 — Environnement Python et premiers pas avec les données – Machine Learning</title>
+<title>Lab 0 - Environnement Python et premiers pas avec les données – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -72,17 +72,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../tp/lab1_fondements_sklearn.html" rel="next">
-<link href="../references.html" rel="prev">
+<link href="../chapitres/05_ml_non_supervise.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -113,9 +117,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <style>html{ scroll-behavior: smooth; }</style>
 
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -124,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab0_environnement_python.html"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab0_environnement_python.html"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -137,7 +304,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></h1>
+      <h1 class="title"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></h1>
                       </div>
   </div>
     
@@ -160,8 +327,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -174,12 +360,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -194,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -214,33 +402,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -259,13 +447,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">1.2. Installation</a></li>
   <li><a href="#choisir-une-version-de-python" id="toc-choisir-une-version-de-python" class="nav-link" data-scroll-target="#choisir-une-version-de-python">1.3. Choisir une version de Python</a></li>
   </ul></li>
-  <li><a href="#créer-le-projet" id="toc-créer-le-projet" class="nav-link" data-scroll-target="#créer-le-projet">2. Créer le projet</a>
+  <li><a href="#préparer-lenvironnement-du-cours" id="toc-préparer-lenvironnement-du-cours" class="nav-link" data-scroll-target="#préparer-lenvironnement-du-cours">2. Préparer l’environnement du cours</a>
   <ul class="collapse">
-  <li><a href="#initialiser-avec-uv" id="toc-initialiser-avec-uv" class="nav-link" data-scroll-target="#initialiser-avec-uv">2.1. Initialiser avec <code>uv</code></a></li>
+  <li><a href="#synchroniser-le-projet-avec-uv" id="toc-synchroniser-le-projet-avec-uv" class="nav-link" data-scroll-target="#synchroniser-le-projet-avec-uv">2.1. Synchroniser le projet avec <code>uv</code></a></li>
   <li><a href="#le-dossier-.venv" id="toc-le-dossier-.venv" class="nav-link" data-scroll-target="#le-dossier-.venv">2.2. Le dossier <code>.venv</code></a></li>
-  <li><a href="#installer-les-bibliothèques-du-lab" id="toc-installer-les-bibliothèques-du-lab" class="nav-link" data-scroll-target="#installer-les-bibliothèques-du-lab">2.3. Installer les bibliothèques du Lab</a></li>
+  <li><a href="#bibliothèques-utilisées-dans-les-labs" id="toc-bibliothèques-utilisées-dans-les-labs" class="nav-link" data-scroll-target="#bibliothèques-utilisées-dans-les-labs">2.3. Bibliothèques utilisées dans les Labs</a></li>
   <li><a href="#vérifier-linstallation" id="toc-vérifier-linstallation" class="nav-link" data-scroll-target="#vérifier-linstallation">2.4. Vérifier l’installation</a></li>
-  <li><a href="#lancer-jupyter" id="toc-lancer-jupyter" class="nav-link" data-scroll-target="#lancer-jupyter">2.5. Lancer Jupyter</a></li>
+  <li><a href="#lancer-jupyter-et-choisir-le-bon-interpréteur" id="toc-lancer-jupyter-et-choisir-le-bon-interpréteur" class="nav-link" data-scroll-target="#lancer-jupyter-et-choisir-le-bon-interpréteur">2.5. Lancer Jupyter et choisir le bon interpréteur</a></li>
   </ul></li>
   <li><a href="#organiser-le-projet" id="toc-organiser-le-projet" class="nav-link" data-scroll-target="#organiser-le-projet">3. Organiser le projet</a></li>
   <li><a href="#premier-contact-avec-des-données-tabulaires" id="toc-premier-contact-avec-des-données-tabulaires" class="nav-link" data-scroll-target="#premier-contact-avec-des-données-tabulaires">4. Premier contact avec des données tabulaires</a>
@@ -280,12 +468,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#exemple-lapi-météo-open-meteo-sans-clé" id="toc-exemple-lapi-météo-open-meteo-sans-clé" class="nav-link" data-scroll-target="#exemple-lapi-météo-open-meteo-sans-clé">5.2. Exemple : l’API météo Open-Meteo (sans clé)</a></li>
   </ul></li>
   <li><a href="#vérifier-que-scikit-learn-fonctionne-le-filtre-anti-spam-du-chapitre-1" id="toc-vérifier-que-scikit-learn-fonctionne-le-filtre-anti-spam-du-chapitre-1" class="nav-link" data-scroll-target="#vérifier-que-scikit-learn-fonctionne-le-filtre-anti-spam-du-chapitre-1">6. Vérifier que <code>scikit-learn</code> fonctionne : le filtre anti-spam du chapitre 1</a></li>
-  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">7. Synthèse</a></li>
-  <li><a href="#sec-lab0-projet" id="toc-sec-lab0-projet" class="nav-link" data-scroll-target="#sec-lab0-projet">8. Lab Sheet — Projet guidé</a>
+  <li><a href="#sec-lab0-projet" id="toc-sec-lab0-projet" class="nav-link" data-scroll-target="#sec-lab0-projet">7. Travail</a>
   <ul class="collapse">
-  <li><a href="#partie-a-environnement" id="toc-partie-a-environnement" class="nav-link" data-scroll-target="#partie-a-environnement">Partie A — Environnement</a></li>
-  <li><a href="#partie-b-météo-au-maroc-à-vous-de-jouer" id="toc-partie-b-météo-au-maroc-à-vous-de-jouer" class="nav-link" data-scroll-target="#partie-b-météo-au-maroc-à-vous-de-jouer">Partie B — Météo au Maroc, à vous de jouer</a></li>
-  <li><a href="#partie-c-améliorer-le-mini-filtre-anti-spam" id="toc-partie-c-améliorer-le-mini-filtre-anti-spam" class="nav-link" data-scroll-target="#partie-c-améliorer-le-mini-filtre-anti-spam">Partie C — Améliorer le mini filtre anti-spam</a></li>
+  <li><a href="#partie-a---environnement" id="toc-partie-a---environnement" class="nav-link" data-scroll-target="#partie-a---environnement">Partie A - Environnement</a></li>
+  <li><a href="#partie-b---météo-au-maroc-à-vous-de-jouer" id="toc-partie-b---météo-au-maroc-à-vous-de-jouer" class="nav-link" data-scroll-target="#partie-b---météo-au-maroc-à-vous-de-jouer">Partie B - Météo au Maroc, à vous de jouer</a></li>
+  <li><a href="#partie-c---améliorer-le-mini-filtre-anti-spam" id="toc-partie-c---améliorer-le-mini-filtre-anti-spam" class="nav-link" data-scroll-target="#partie-c---améliorer-le-mini-filtre-anti-spam">Partie C - Améliorer le mini filtre anti-spam</a></li>
   <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
   </ul></li>
   </ul>
@@ -293,6 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -320,17 +508,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout callout-style-default callout-note callout-titled" title="Téléchargement de la Lab Sheet">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Lien avec le cours
+<span class="screen-reader-only">Note</span>Téléchargement de la Lab Sheet
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce Lab met en pratique le chapitre 1 (<em>Introduction au Machine Learning et à son écosystème</em>) : la distinction Exploration/Production (<a href="../chapitres/00_intro_ml.html#sec-outils" class="quarto-xref"><span>4.2. Environnements de développement : exploration et production</span></a>), la gestion de projet avec <code>uv</code> (§4.3), et l’exemple du filtre anti-spam (§2.2). Aucune notion de modélisation avancée n’est requise ici — l’objectif est uniquement de disposer d’un environnement de travail fiable et de premiers réflexes de manipulation de données. La théorie de l’apprentissage (§ généralisation, évaluation) sera mise en pratique au Lab 1.</p>
+<p>Téléchargez un seul format avant de travailler :</p>
+<ul>
+<li><strong>Notebook <code>.ipynb</code></strong> pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/labsheets"><code>labsheets/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/labsheets/lab0_environnement_python.ipynb">fichier source du Lab 0</a>.</li>
+<li><strong>Fichier <code>.qmd</code></strong> pour travailler avec Quarto : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/tp"><code>tp/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/tp/lab0_environnement_python.qmd">fichier source du Lab 0</a>.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Choisir un environnement compatible">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Choisir un environnement compatible
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le notebook <code>.ipynb</code> fonctionne dans Google Colab, JupyterLab, Jupyter Notebook et VS Code avec l’extension Jupyter. Sur Google Colab, installez les bibliothèques dans une cellule avec <code>%pip install numpy pandas scikit-learn matplotlib requests beautifulsoup4</code>. Sur un ordinateur, clonez le dépôt complet, exécutez <code>uv sync</code> depuis sa racine, puis sélectionnez le noyau Python de <code>.venv</code> dans votre éditeur.</p>
+<p>Le fichier <code>.qmd</code> nécessite <a href="https://quarto.org/">Quarto</a> et Python. Pour exécuter ses cellules avec les dépendances verrouillées, lancez <code>uv sync</code> depuis la racine du dépôt avant de l’ouvrir dans Quarto ou VS Code. Les commandes présentées ci-dessous sont destinées au terminal, pas aux cellules Python.</p>
 </div>
 </div>
 <p>Ce Lab suit cette progression :</p>
@@ -342,7 +548,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>premier contact avec des données tabulaires locales (<code>pandas</code>) ;</li>
 <li>récupérer des données réelles via une API publique (météo) ;</li>
 <li>vérifier que <code>scikit-learn</code> fonctionne (mini filtre anti-spam) ;</li>
-<li><strong>Lab Sheet</strong> — projet guidé à réaliser et à rendre.</li>
+<li><strong>Travail</strong> - mise en pratique autonome à réaliser et à rendre.</li>
 </ol>
 <section id="installer-uv" class="level2">
 <h2 class="anchored" data-anchor-id="installer-uv">1. Installer <code>uv</code></h2>
@@ -387,7 +593,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Comme pour tout script d’installation téléchargé depuis Internet, vérifiez la source officielle (<code>astral.sh/uv</code>) avant d’exécuter la commande. Sur un poste institutionnel, suivez la procédure validée par l’administrateur réseau.</p>
 </div>
 </div>
-<p>Fermez puis rouvrez le terminal, puis vérifiez :</p>
+<p>Fermez puis rouvrez le terminal, puis vérifiez dans le terminal :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> <span class="at">--version</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="choisir-une-version-de-python" class="level3">
@@ -396,20 +602,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> python install 3.12  <span class="co"># installe Python 3.12, géré par uv</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
-<section id="créer-le-projet" class="level2">
-<h2 class="anchored" data-anchor-id="créer-le-projet">2. Créer le projet</h2>
-<section id="initialiser-avec-uv" class="level3">
-<h3 class="anchored" data-anchor-id="initialiser-avec-uv">2.1. Initialiser avec <code>uv</code></h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> cours-machine-learning</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> cours-machine-learning</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> init <span class="at">--python</span> 3.12 ml-lab</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ml-lab</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Cette commande crée un <code>pyproject.toml</code> minimal, qui décrira le projet et ses dépendances tout au long du semestre.</p>
+<section id="préparer-lenvironnement-du-cours" class="level2">
+<h2 class="anchored" data-anchor-id="préparer-lenvironnement-du-cours">2. Préparer l’environnement du cours</h2>
+<section id="synchroniser-le-projet-avec-uv" class="level3">
+<h3 class="anchored" data-anchor-id="synchroniser-le-projet-avec-uv">2.1. Synchroniser le projet avec <code>uv</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> python install 3.12</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le dépôt du cours contient déjà <code>pyproject.toml</code>, qui décrit les dépendances utilisées dans les Labs, et <code>uv.lock</code>, qui en fixe les versions exactes. Exécutez ces commandes depuis le dossier racine du dépôt (celui qui contient <code>pyproject.toml</code>) ; ne lancez pas <code>uv init</code> dans un sous-dossier.</p>
 </section>
 <section id="le-dossier-.venv" class="level3">
 <h3 class="anchored" data-anchor-id="le-dossier-.venv">2.2. Le dossier <code>.venv</code></h3>
-<p>L’environnement virtuel est créé automatiquement au premier besoin :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">--version</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>uv sync</code> crée l’environnement <code>.venv/</code> à la racine du dépôt et y installe les dépendances du cours. Vérifiez la version de Python et les imports :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">--version</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">-c</span> <span class="st">"import numpy, pandas, sklearn, matplotlib, requests, bs4; print('Environnement prêt')"</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Il n’est <strong>jamais nécessaire de l’activer manuellement</strong> : <code>uv run &lt;commande&gt;</code> exécute directement la commande dans l’environnement du projet.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python script.py   <span class="co"># exécute un script</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python             <span class="co"># lance un interpréteur interactif</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
@@ -423,13 +628,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si vous préférez activer l’environnement dans votre terminal, c’est possible (<code>source .venv/bin/activate</code> sur macOS/Linux, <code>.venv\Scripts\Activate.ps1</code> sous PowerShell), mais ce Lab privilégie <code>uv run</code> pour éviter toute confusion entre plusieurs environnements installés sur la même machine.</p>
+<p>Si vous préférez activer l’environnement dans votre terminal, c’est possible : utilisez <code>source .venv/bin/activate</code> sous macOS/Linux ou <code>.venv\Scripts\Activate.ps1</code> sous Windows. Ce Lab privilégie toutefois <code>uv run</code> pour éviter toute confusion entre plusieurs environnements installés sur la même machine.</p>
 </div>
 </div>
 </section>
-<section id="installer-les-bibliothèques-du-lab" class="level3">
-<h3 class="anchored" data-anchor-id="installer-les-bibliothèques-du-lab">2.3. Installer les bibliothèques du Lab</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> add numpy pandas scikit-learn matplotlib requests jupyter ipykernel</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="bibliothèques-utilisées-dans-les-labs" class="level3">
+<h3 class="anchored" data-anchor-id="bibliothèques-utilisées-dans-les-labs">2.3. Bibliothèques utilisées dans les Labs</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -438,7 +642,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <thead>
 <tr class="header">
 <th>Bibliothèque</th>
-<th>Rôle dans ce Lab</th>
+<th>Rôle dans les Labs</th>
 </tr>
 </thead>
 <tbody>
@@ -463,44 +667,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Requêtes HTTP vers une API publique</td>
 </tr>
 <tr class="even">
+<td><code>beautifulsoup4</code></td>
+<td>Extraction d’informations depuis une page HTML</td>
+</tr>
+<tr class="odd">
 <td><code>jupyter</code>, <code>ipykernel</code></td>
 <td>Exécution en notebook</td>
 </tr>
 </tbody>
 </table>
+<p>Pour ajouter une nouvelle dépendance au projet, utilisez <code>uv add nom-du-paquet</code> depuis la racine du dépôt ; <code>uv</code> met alors à jour <code>pyproject.toml</code> et <code>uv.lock</code>.</p>
 </section>
 <section id="vérifier-linstallation" class="level3">
 <h3 class="anchored" data-anchor-id="vérifier-linstallation">2.4. Vérifier l’installation</h3>
-<p>Créez un fichier <code>check_environment.py</code> à la racine du projet :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Python       :"</span>, sys.version.split()[<span class="dv">0</span>])</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"NumPy        :"</span>, numpy.__version__)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pandas       :"</span>, pandas.__version__)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"scikit-learn :"</span>, sklearn.__version__)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"requests     :"</span>, requests.__version__)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"matplotlib   :"</span>, matplotlib.__version__)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python check_environment.py</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Créez un fichier <code>check_environment.py</code> à la racine du projet, si vous souhaitez vérifier les versions installées :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Python       :"</span>, sys.version.split()[<span class="dv">0</span>])</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"NumPy        :"</span>, numpy.__version__)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pandas       :"</span>, pandas.__version__)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"scikit-learn :"</span>, sklearn.__version__)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"requests     :"</span>, requests.__version__)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"matplotlib   :"</span>, matplotlib.__version__)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python check_environment.py</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si le script s’exécute sans erreur, l’environnement est prêt.</p>
 </section>
-<section id="lancer-jupyter" class="level3">
-<h3 class="anchored" data-anchor-id="lancer-jupyter">2.5. Lancer Jupyter</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run jupyter lab</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Pour enregistrer le noyau du projet (utile s’il existe déjà d’autres environnements sur la machine) :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">-m</span> ipykernel install <span class="at">--user</span> <span class="at">--name</span> ml-lab <span class="at">--display-name</span> <span class="st">"Python (ml-lab)"</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-important callout-titled" title="Reproductibilité — ce qu'on versionne">
+<section id="lancer-jupyter-et-choisir-le-bon-interpréteur" class="level3">
+<h3 class="anchored" data-anchor-id="lancer-jupyter-et-choisir-le-bon-interpréteur">2.5. Lancer Jupyter et choisir le bon interpréteur</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run jupyter lab</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dans VS Code ou Jupyter, sélectionnez l’interpréteur du dépôt (<code>.venv/bin/python</code> sur macOS/Linux ou <code>.venv\Scripts\python.exe</code> sous Windows). Ainsi, les notebooks utilisent les mêmes dépendances que <code>uv run</code>.</p>
+<p>Si vous ouvrez Jupyter depuis un autre environnement et souhaitez rendre le noyau du projet visible, enregistrez-le une fois :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">-m</span> ipykernel install <span class="at">--user</span> <span class="at">--name</span> ml-course <span class="at">--display-name</span> <span class="st">"Python (ml-course)"</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled" title="Reproductibilité - ce qu'on versionne">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Reproductibilité — ce qu’on versionne
+<span class="screen-reader-only">Important</span>Reproductibilité - ce qu’on versionne
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -545,60 +755,62 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 │   └── processed/
 ├── notebooks/
 └── outputs/</code></pre>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> data/raw data/processed notebooks outputs</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Utilisez <code>pathlib</code> plutôt que des chaînes concaténées pour construire vos chemins — cela évite les problèmes entre Windows, macOS et Linux :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>PROJECT_DIR <span class="op">=</span> Path.cwd()</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>RAW_DIR <span class="op">=</span> PROJECT_DIR <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"raw"</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>PROCESSED_DIR <span class="op">=</span> PROJECT_DIR <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"processed"</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>OUTPUT_DIR <span class="op">=</span> PROJECT_DIR <span class="op">/</span> <span class="st">"outputs"</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> directory <span class="kw">in</span> (RAW_DIR, PROCESSED_DIR, OUTPUT_DIR):</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    directory.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Utilisez <code>pathlib</code> plutôt que des chaînes concaténées pour construire vos chemins. Cette méthode fonctionne sous Windows, macOS et Linux :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>PROJECT_DIR <span class="op">=</span> Path.cwd()</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>RAW_DIR <span class="op">=</span> PROJECT_DIR <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"raw"</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>PROCESSED_DIR <span class="op">=</span> PROJECT_DIR <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"processed"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>OUTPUT_DIR <span class="op">=</span> PROJECT_DIR <span class="op">/</span> <span class="st">"outputs"</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> directory <span class="kw">in</span> (RAW_DIR, PROCESSED_DIR, OUTPUT_DIR):</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    directory.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Créez également les dossiers <code>data/interim</code> et <code>notebooks</code> si vous en avez besoin :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> directory <span class="kw">in</span> (PROJECT_DIR <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"interim"</span>, PROJECT_DIR <span class="op">/</span> <span class="st">"notebooks"</span>):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    directory.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="premier-contact-avec-des-données-tabulaires" class="level2">
 <h2 class="anchored" data-anchor-id="premier-contact-avec-des-données-tabulaires">4. Premier contact avec des données tabulaires</h2>
-<p>Créons un tout petit jeu de données local — quelques annonces immobilières, dans l’esprit de l’exemple fil rouge du chapitre 1 (§3) — pour manipuler <code>pandas</code> sans dépendre d’Internet.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"id"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>],</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"quartier"</span>: [<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Maarif"</span>, <span class="st">"Agdal"</span>, <span class="st">"Hay Riad"</span>],</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: [<span class="dv">65</span>, <span class="dv">90</span>, <span class="dv">120</span>, <span class="dv">48</span>, <span class="dv">75</span>, <span class="dv">110</span>],</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"nb_chambres"</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prix_mad"</span>: [<span class="dv">850_000</span>, <span class="dv">1_450_000</span>, <span class="dv">1_900_000</span>, <span class="dv">520_000</span>, <span class="dv">980_000</span>, <span class="dv">1_680_000</span>],</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>annonces.to_csv(<span class="st">"data/raw/annonces.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Créons un tout petit jeu de données local - quelques annonces immobilières, dans l’esprit de l’exemple fil rouge du chapitre 1 (§3) - pour manipuler <code>pandas</code> sans dépendre d’Internet.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>annonces <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"id"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>],</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"quartier"</span>: [<span class="st">"Maarif"</span>, <span class="st">"Hay Riad"</span>, <span class="st">"Gueliz"</span>, <span class="st">"Maarif"</span>, <span class="st">"Agdal"</span>, <span class="st">"Hay Riad"</span>],</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_m2"</span>: [<span class="dv">65</span>, <span class="dv">90</span>, <span class="dv">120</span>, <span class="dv">48</span>, <span class="dv">75</span>, <span class="dv">110</span>],</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"nb_chambres"</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prix_mad"</span>: [<span class="dv">850_000</span>, <span class="dv">1_450_000</span>, <span class="dv">1_900_000</span>, <span class="dv">520_000</span>, <span class="dv">980_000</span>, <span class="dv">1_680_000</span>],</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>annonces.to_csv(<span class="st">"data/raw/annonces.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(annonces)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="explorer-un-dataframe" class="level3">
 <h3 class="anchored" data-anchor-id="explorer-un-dataframe">4.1. Explorer un <code>DataFrame</code></h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/raw/annonces.csv"</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())        <span class="co"># les premières lignes</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.shape)          <span class="co"># (nombre de lignes, nombre de colonnes)</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.dtypes)         <span class="co"># le type de chaque colonne</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.describe())     <span class="co"># statistiques descriptives des colonnes numériques</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/raw/annonces.csv"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())        <span class="co"># les premières lignes</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.shape)          <span class="co"># (nombre de lignes, nombre de colonnes)</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.dtypes)         <span class="co"># le type de chaque colonne</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.describe())     <span class="co"># statistiques descriptives des colonnes numériques</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="sélectionner-filtrer-agréger" class="level3">
 <h3 class="anchored" data-anchor-id="sélectionner-filtrer-agréger">4.2. Sélectionner, filtrer, agréger</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sélectionner une colonne</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df[<span class="st">"prix_mad"</span>])</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># sélectionner plusieurs colonnes</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df[[<span class="st">"quartier"</span>, <span class="st">"prix_mad"</span>]])</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># filtrer des lignes</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>grands_biens <span class="op">=</span> df[df[<span class="st">"surface_m2"</span>] <span class="op">&gt;</span> <span class="dv">80</span>]</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grands_biens)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># prix moyen par quartier</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.groupby(<span class="st">"quartier"</span>)[<span class="st">"prix_mad"</span>].mean().<span class="bu">round</span>(<span class="dv">0</span>))</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># créer une nouvelle colonne</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"prix_m2"</span>] <span class="op">=</span> (df[<span class="st">"prix_mad"</span>] <span class="op">/</span> df[<span class="st">"surface_m2"</span>]).<span class="bu">round</span>(<span class="dv">0</span>)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.sort_values(<span class="st">"prix_m2"</span>, ascending<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sélectionner une colonne</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df[<span class="st">"prix_mad"</span>])</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># sélectionner plusieurs colonnes</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df[[<span class="st">"quartier"</span>, <span class="st">"prix_mad"</span>]])</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># filtrer des lignes</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>grands_biens <span class="op">=</span> df[df[<span class="st">"surface_m2"</span>] <span class="op">&gt;</span> <span class="dv">80</span>]</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grands_biens)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># prix moyen par quartier</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.groupby(<span class="st">"quartier"</span>)[<span class="st">"prix_mad"</span>].mean().<span class="bu">round</span>(<span class="dv">0</span>))</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co"># créer une nouvelle colonne</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"prix_m2"</span>] <span class="op">=</span> (df[<span class="st">"prix_mad"</span>] <span class="op">/</span> df[<span class="st">"surface_m2"</span>]).<span class="bu">round</span>(<span class="dv">0</span>)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.sort_values(<span class="st">"prix_m2"</span>, ascending<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled" title="Remarque">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -609,23 +821,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce petit jeu de données est directement lisible par des humains — c’est volontaire. Le chapitre 3 (Lab 2) travaillera sur des données plus grandes et volontairement imparfaites (valeurs manquantes, doublons, incohérences).</p>
+<p>Ce petit jeu de données est directement lisible par des humains - c’est volontaire. Le chapitre 3 (Lab 2) travaillera sur des données plus grandes et volontairement imparfaites (valeurs manquantes, doublons, incohérences).</p>
 </div>
 </div>
 </section>
 <section id="un-premier-graphique" class="level3">
 <h3 class="anchored" data-anchor-id="un-premier-graphique">4.3. Un premier graphique</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>ax.scatter(df[<span class="st">"surface_m2"</span>], df[<span class="st">"prix_mad"</span>], s<span class="op">=</span><span class="dv">60</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Surface (m²)"</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Prix (MAD)"</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Prix des annonces selon la surface"</span>)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/prix_vs_surface.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Même avec six observations, la relation entre surface et prix commence déjà à se dessiner à l’œil nu — c’est précisément ce type de relation qu’un modèle de régression (chapitre 4 / Lab 3) apprendra à quantifier.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>ax.scatter(df[<span class="st">"surface_m2"</span>], df[<span class="st">"prix_mad"</span>], s<span class="op">=</span><span class="dv">60</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Surface (m²)"</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Prix (MAD)"</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Prix des annonces selon la surface"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/prix_vs_surface.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Même avec six observations, la relation entre surface et prix commence déjà à se dessiner à l’œil nu - c’est précisément ce type de relation qu’un modèle de régression (chapitre 4 / Lab 3) apprendra à quantifier.</p>
 </section>
 </section>
 <section id="récupérer-des-données-réelles-via-une-api-publique" class="level2">
@@ -633,10 +845,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="principe" class="level3">
 <h3 class="anchored" data-anchor-id="principe">5.1. Principe</h3>
 <p>Une lecture de données en ligne suit toujours le même schéma : construire une URL, envoyer une requête HTTP, vérifier le code de réponse, puis interpréter le contenu (souvent du JSON).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(<span class="st">"https://example.com"</span>, timeout<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()   <span class="co"># lève une erreur si le code n'est pas 2xx</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://api.github.com/repos/pandas-dev/pandas"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()   <span class="co"># lève une erreur si le code n'est pas 2xx</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(response.json()[<span class="st">"full_name"</span>])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Toujours fixer un `timeout`">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -653,37 +869,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="exemple-lapi-météo-open-meteo-sans-clé" class="level3">
 <h3 class="anchored" data-anchor-id="exemple-lapi-météo-open-meteo-sans-clé">5.2. Exemple : l’API météo Open-Meteo (sans clé)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"latitude"</span>: <span class="fl">33.5731</span>,       <span class="co"># Casablanca</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>: <span class="op">-</span><span class="fl">7.5898</span>,</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hourly"</span>: <span class="st">"temperature_2m"</span>,</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"timezone"</span>: <span class="st">"Africa/Casablanca"</span>,</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forecast_days"</span>: <span class="dv">2</span>,</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://api.open-meteo.com/v1/forecast"</span>,</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>params,</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">30</span>,</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>payload <span class="op">=</span> response.json()</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>meteo <span class="op">=</span> pd.DataFrame(payload[<span class="st">"hourly"</span>])</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>meteo[<span class="st">"time"</span>] <span class="op">=</span> pd.to_datetime(meteo[<span class="st">"time"</span>])</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(meteo.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>ax.plot(meteo[<span class="st">"time"</span>], meteo[<span class="st">"temperature_2m"</span>])</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Heure"</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Température (°C)"</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Prévisions horaires — Casablanca"</span>)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>fig.autofmt_xdate()</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/meteo_casablanca.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"latitude"</span>: <span class="fl">33.5731</span>,       <span class="co"># Casablanca</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>: <span class="op">-</span><span class="fl">7.5898</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hourly"</span>: <span class="st">"temperature_2m"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"timezone"</span>: <span class="st">"Africa/Casablanca"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forecast_days"</span>: <span class="dv">2</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://api.open-meteo.com/v1/forecast"</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>params,</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">30</span>,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>payload <span class="op">=</span> response.json()</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>meteo <span class="op">=</span> pd.DataFrame(payload[<span class="st">"hourly"</span>])</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>meteo[<span class="st">"time"</span>] <span class="op">=</span> pd.to_datetime(meteo[<span class="st">"time"</span>])</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(meteo.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ax.plot(meteo[<span class="st">"time"</span>], meteo[<span class="st">"temperature_2m"</span>])</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Heure"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Température (°C)"</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Prévisions horaires - Casablanca"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>fig.autofmt_xdate()</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/meteo_casablanca.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-warning callout-titled" title="Une requête peut échouer">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -702,36 +918,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="vérifier-que-scikit-learn-fonctionne-le-filtre-anti-spam-du-chapitre-1" class="level2">
 <h2 class="anchored" data-anchor-id="vérifier-que-scikit-learn-fonctionne-le-filtre-anti-spam-du-chapitre-1">6. Vérifier que <code>scikit-learn</code> fonctionne : le filtre anti-spam du chapitre 1</h2>
 <p>Le chapitre 1 (§2.2) présente l’idée du filtre anti-spam comme premier exemple du paradigme Data-Driven. Reproduisons-le concrètement, avec un tout petit jeu d’e-mails fait main.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>emails_entrainement <span class="op">=</span> [</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gagnez de l'argent facilement, cliquez ici maintenant"</span>,</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Offre urgente : gagnez un iPhone gratuit aujourd'hui"</span>,</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Réunion projet reportée à demain 10h"</span>,</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Voici le compte-rendu de la réunion d'hier"</span>,</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Urgent : votre compte a gagné un prix, réclamez-le"</span>,</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Peux-tu relire mon rapport avant vendredi ?"</span>,</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>y_entrainement <span class="op">=</span> [<span class="st">"spam"</span>, <span class="st">"spam"</span>, <span class="st">"non-spam"</span>, <span class="st">"non-spam"</span>, <span class="st">"spam"</span>, <span class="st">"non-spam"</span>]</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>vectoriseur <span class="op">=</span> TfidfVectorizer()</span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>X_entrainement <span class="op">=</span> vectoriseur.fit_transform(emails_entrainement)</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>modele <span class="op">=</span> LogisticRegression()</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>modele.fit(X_entrainement, y_entrainement)</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>nouveaux_emails <span class="op">=</span> [</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Cliquez ici pour gagner un cadeau gratuit"</span>,</span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Peux-tu m'envoyer le fichier avant la réunion ?"</span>,</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>X_nouveaux <span class="op">=</span> vectoriseur.transform(nouveaux_emails)</span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> modele.predict(X_nouveaux)</span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> email, prediction <span class="kw">in</span> <span class="bu">zip</span>(nouveaux_emails, predictions):</span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[</span><span class="sc">{</span>prediction<span class="sc">}</span><span class="ss">] </span><span class="sc">{</span>email<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>emails_entrainement <span class="op">=</span> [</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gagnez de l'argent facilement, cliquez ici maintenant"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Offre urgente : gagnez un iPhone gratuit aujourd'hui"</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Réunion projet reportée à demain 10h"</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Voici le compte-rendu de la réunion d'hier"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Urgent : votre compte a gagné un prix, réclamez-le"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Peux-tu relire mon rapport avant vendredi ?"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>y_entrainement <span class="op">=</span> [<span class="st">"spam"</span>, <span class="st">"spam"</span>, <span class="st">"non-spam"</span>, <span class="st">"non-spam"</span>, <span class="st">"spam"</span>, <span class="st">"non-spam"</span>]</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>vectoriseur <span class="op">=</span> TfidfVectorizer()</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>X_entrainement <span class="op">=</span> vectoriseur.fit_transform(emails_entrainement)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>modele <span class="op">=</span> LogisticRegression()</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>modele.fit(X_entrainement, y_entrainement)</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>nouveaux_emails <span class="op">=</span> [</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Cliquez ici pour gagner un cadeau gratuit"</span>,</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Peux-tu m'envoyer le fichier avant la réunion ?"</span>,</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>X_nouveaux <span class="op">=</span> vectoriseur.transform(nouveaux_emails)</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> modele.predict(X_nouveaux)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> email, prediction <span class="kw">in</span> <span class="bu">zip</span>(nouveaux_emails, predictions):</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[</span><span class="sc">{</span>prediction<span class="sc">}</span><span class="ss">] </span><span class="sc">{</span>email<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si ce code s’exécute et affiche une prédiction <code>spam</code> ou <code>non-spam</code> pour chaque e-mail, votre environnement est prêt pour la suite du cours : <code>scikit-learn</code>, comme discuté au chapitre 1, a bien <strong>appris</strong> une règle de décision à partir des six exemples fournis, sans qu’aucune règle <code>SI ... ALORS ...</code> n’ait été écrite à la main.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Pourquoi si peu d'exemples ne suffisent pas en pratique">
 <div class="callout-header d-flex align-content-center">
@@ -747,34 +963,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="synthèse" class="level2">
-<h2 class="anchored" data-anchor-id="synthèse">7. Synthèse</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox"><code>uv --version</code> fonctionne sur ma machine.</label></li>
-<li><label><input type="checkbox">Mon projet possède un <code>pyproject.toml</code> et un <code>uv.lock</code>.</label></li>
-<li><label><input type="checkbox">Je sais lancer une commande avec <code>uv run</code> sans activer manuellement <code>.venv</code>.</label></li>
-<li><label><input type="checkbox">Je sais charger un CSV local avec <code>pandas</code> et en afficher un résumé (<code>head</code>, <code>dtypes</code>, <code>describe</code>).</label></li>
-<li><label><input type="checkbox">Je sais effectuer une requête HTTP avec <code>requests</code> et transformer une réponse JSON en <code>DataFrame</code>.</label></li>
-<li><label><input type="checkbox">J’ai exécuté avec succès le mini filtre anti-spam et compris ce qu’il illustre.</label></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
 <section id="sec-lab0-projet" class="level2">
-<h2 class="anchored" data-anchor-id="sec-lab0-projet">8. Lab Sheet — Projet guidé</h2>
+<h2 class="anchored" data-anchor-id="sec-lab0-projet">7. Travail</h2>
 <div class="callout callout-style-default callout-important callout-titled" title="Ce qui est attendu">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -788,16 +978,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Ce projet reprend, sur des données différentes de celles utilisées en cours, les compétences pratiquées dans ce Lab. Répondez aux questions dans un notebook ou un fichier <code>reponses.md</code>, et conservez tout le code utilisé pour y répondre.</p>
 </div>
 </div>
-<section id="partie-a-environnement" class="level3">
-<h3 class="anchored" data-anchor-id="partie-a-environnement">Partie A — Environnement</h3>
+<section id="partie-a---environnement" class="level3">
+<h3 class="anchored" data-anchor-id="partie-a---environnement">Partie A - Environnement</h3>
 <ol type="1">
 <li>Donnez la sortie de <code>uv --version</code> et de <code>uv python list</code> sur votre machine.</li>
 <li>Exécutez <code>check_environment.py</code>. Copiez la sortie obtenue.</li>
 <li>Expliquez, en deux phrases, la différence de rôle entre <code>pyproject.toml</code> et <code>uv.lock</code>.</li>
 </ol>
 </section>
-<section id="partie-b-météo-au-maroc-à-vous-de-jouer" class="level3">
-<h3 class="anchored" data-anchor-id="partie-b-météo-au-maroc-à-vous-de-jouer">Partie B — Météo au Maroc, à vous de jouer</h3>
+<section id="partie-b---météo-au-maroc-à-vous-de-jouer" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b---météo-au-maroc-à-vous-de-jouer">Partie B - Météo au Maroc, à vous de jouer</h3>
 <p>Choisissez <strong>trois villes marocaines différentes</strong> de celle utilisée en exemple (§5.2) et récupérez, pour chacune, les températures horaires prévues sur 2 jours via l’API Open-Meteo.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Coordonnées de quelques villes">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
@@ -857,8 +1047,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>En une phrase : que se passerait-il dans votre code si l’API Open-Meteo était temporairement indisponible ? Que faudrait-il ajouter pour s’en protéger ?</li>
 </ol>
 </section>
-<section id="partie-c-améliorer-le-mini-filtre-anti-spam" class="level3">
-<h3 class="anchored" data-anchor-id="partie-c-améliorer-le-mini-filtre-anti-spam">Partie C — Améliorer le mini filtre anti-spam</h3>
+<section id="partie-c---améliorer-le-mini-filtre-anti-spam" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c---améliorer-le-mini-filtre-anti-spam">Partie C - Améliorer le mini filtre anti-spam</h3>
 <ol start="8" type="1">
 <li>Ajoutez <strong>quatre nouveaux e-mails</strong> à la liste d’entraînement de la §6 (deux spams, deux non-spams), rédigés par vous-même, en français ou en darija translittérée.</li>
 <li>Réentraînez le modèle avec ces dix exemples, puis testez-le sur <strong>trois nouveaux e-mails</strong> que vous inventez (non utilisés à l’entraînement).</li>
@@ -873,25 +1063,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>au moins un graphique dans <code>outputs/</code> ;</li>
 <li>vos réponses écrites aux questions 3, 5, 7 et 10.</li>
 </ul>
-<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Checklist finale
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">L’environnement est reproductible (<code>uv sync</code> fonctionne sur une autre machine).</label></li>
-<li><label><input type="checkbox">Les données météo de trois villes sont récupérées et combinées.</label></li>
-<li><label><input type="checkbox">Un graphique comparatif est produit et sauvegardé.</label></li>
-<li><label><input type="checkbox">Le mini filtre anti-spam est réentraîné avec de nouveaux exemples et testé.</label></li>
-<li><label><input type="checkbox">Toutes les questions écrites ont une réponse.</label></li>
-</ul>
-</div>
-</div>
 
 
 </section>
@@ -900,6 +1071,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1300,13 +1484,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../references.html" class="pagination-link" aria-label="References">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">References</span>
+      <a href="../chapitres/05_ml_non_supervise.html" class="pagination-link" aria-label="Apprentissage non supervisé">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Apprentissage non supervisé</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../tp/lab1_fondements_sklearn.html" class="pagination-link" aria-label="Lab 1 — Généralisation et évaluation avec `scikit-learn`">
-        <span class="nav-page-text"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../tp/lab1_fondements_sklearn.html" class="pagination-link" aria-label="Lab 1 - Généralisation et évaluation avec `scikit-learn`">
+        <span class="nav-page-text"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

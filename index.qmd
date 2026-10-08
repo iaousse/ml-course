@@ -11,35 +11,54 @@ number-sections: false
 \pagestyle{empty}
 \thispagestyle{empty}
 \centering
-\vspace*{2cm}
+\vspace*{1.5cm}
 \includegraphics[width=6cm]{images/logo_estc.png}
 \vfill
-{\Huge\bfseries Machine Learning\par}
-\vspace{1cm}
-{\Large IAOUSSE M'barek\par}
+{\Huge\bfseries\textcolor[HTML]{164E82}{Ouvrage pédagogique}\par}
+\vspace{0.35cm}
+{\Huge\bfseries\textcolor[HTML]{17324D}{Machine Learning}\par}
 \vspace{0.5cm}
-{\large 2026\par}
+{\Large\textcolor[HTML]{17324D}{IAOUSSE M'barek}\par}
+\vspace{0.25cm}
+{\large\textcolor[HTML]{425466}{École Supérieure de Technologie de Casablanca}\par}
+{\large\textcolor[HTML]{425466}{Université Hassan II de Casablanca}\par}
+\vspace{0.4cm}
+{\large\textcolor[HTML]{425466}{Édition 2026}\par}
 \newpage
 \thispagestyle{empty}
 \centering
 \vspace*{\fill}
-\includegraphics[width=0.9\textwidth]{images/qrcode.png}
+{\Huge\bfseries\textcolor[HTML]{164E82}{Version en ligne}\par}
+\vspace{1cm}
+\includegraphics[width=10.5cm]{images/qrcode.png}\par
+\vspace{0.5cm}
+{\large\textcolor[HTML]{425466}{Scannez ce code pour accéder à la ressource éducative libre.}\par}
 \vspace*{\fill}
 \newpage
+\justifying
 ```
 
 ```{=html}
-<p style="text-align: center;">
-  <img src="images/qrcode.png" style="width: 60%;" alt="Code QR pour accéder à la ressource éducative libre">
-</p>
+<h1 class="visually-hidden">Machine Learning</h1>
+<section class="ml-cover" aria-label="Couverture de l'ouvrage pédagogique">
+  <img class="ml-cover-logo" src="images/logo_estc.png" alt="Logo de l'EST Casablanca" />
+  <h2>Machine Learning</h2>
+  <p class="ml-cover-author">IAOUSSE M'barek</p>
+  <p class="ml-cover-institution">École Supérieure de Technologie de Casablanca<br />Université Hassan II de Casablanca</p>
+  <p class="ml-cover-edition">Édition 2026</p>
+</section>
 ```
 
-::: {.content-visible when-format="pdf"}
-{{< include _deuxieme_page.qmd >}}
+::: {.content-visible when-format="epub"}
+# {.unnumbered .unlisted}
 :::
 
-::: {.content-visible when-format="html"}
-<h1 class="visually-hidden">Accueil</h1>
+```{=html}
+<section class="ml-qr-page" aria-label="Accès à la ressource éducative">
+  <h2>Version en ligne</h2>
+  <img src="images/qrcode.png" alt="Code QR pour accéder à la ressource éducative libre" />
+  <p>Scannez ce code pour accéder à la ressource éducative libre.</p>
+</section>
+```
 
 {{< include _deuxieme_page.qmd >}}
-:::

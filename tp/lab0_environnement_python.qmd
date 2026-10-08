@@ -1,4 +1,4 @@
-# Lab 0 — Environnement Python et premiers pas avec les données
+# Lab 0 - Environnement Python et premiers pas avec les données
 
 ::: {.callout-tip title="Objectifs du Lab"}
 À la fin de ce Lab, l'étudiant sera capable de :
@@ -12,8 +12,17 @@
 - **Vérifier** que `scikit-learn` fonctionne, en reprenant l'exemple du filtre anti-spam du chapitre 1.
 :::
 
-::: {.callout-note title="Lien avec le cours"}
-Ce Lab met en pratique le chapitre 1 (*Introduction au Machine Learning et à son écosystème*) : la distinction Exploration/Production (@sec-outils), la gestion de projet avec `uv` (§4.3), et l'exemple du filtre anti-spam (§2.2). Aucune notion de modélisation avancée n'est requise ici — l'objectif est uniquement de disposer d'un environnement de travail fiable et de premiers réflexes de manipulation de données. La théorie de l'apprentissage (§ généralisation, évaluation) sera mise en pratique au Lab 1.
+::: {.callout-note title="Téléchargement de la Lab Sheet"}
+Téléchargez un seul format avant de travailler :
+
+- **Notebook `.ipynb`** pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub [`labsheets/`](https://github.com/iaousse/ml-course/tree/main/labsheets) et téléchargez le [fichier source du Lab 0](https://github.com/iaousse/ml-course/blob/main/labsheets/lab0_environnement_python.ipynb).
+- **Fichier `.qmd`** pour travailler avec Quarto : ouvrez le dossier GitHub [`tp/`](https://github.com/iaousse/ml-course/tree/main/tp) et téléchargez le [fichier source du Lab 0](https://github.com/iaousse/ml-course/blob/main/tp/lab0_environnement_python.qmd).
+:::
+
+::: {.callout-note title="Choisir un environnement compatible"}
+Le notebook `.ipynb` fonctionne dans Google Colab, JupyterLab, Jupyter Notebook et VS Code avec l'extension Jupyter. Sur Google Colab, installez les bibliothèques dans une cellule avec `%pip install numpy pandas scikit-learn matplotlib requests beautifulsoup4`. Sur un ordinateur, clonez le dépôt complet, exécutez `uv sync` depuis sa racine, puis sélectionnez le noyau Python de `.venv` dans votre éditeur.
+
+Le fichier `.qmd` nécessite [Quarto](https://quarto.org/) et Python. Pour exécuter ses cellules avec les dépendances verrouillées, lancez `uv sync` depuis la racine du dépôt avant de l'ouvrir dans Quarto ou VS Code. Les commandes présentées ci-dessous sont destinées au terminal, pas aux cellules Python.
 :::
 
 Ce Lab suit cette progression :
@@ -25,7 +34,7 @@ Ce Lab suit cette progression :
 5. premier contact avec des données tabulaires locales (`pandas`) ;
 6. récupérer des données réelles via une API publique (météo) ;
 7. vérifier que `scikit-learn` fonctionne (mini filtre anti-spam) ;
-8. **Lab Sheet** — projet guidé à réaliser et à rendre.
+8. **Travail** - mise en pratique autonome à réaliser et à rendre.
 
 ## 1. Installer `uv`
 
@@ -59,7 +68,7 @@ irm https://astral.sh/uv/install.ps1 | iex
 Comme pour tout script d'installation téléchargé depuis Internet, vérifiez la source officielle (`astral.sh/uv`) avant d'exécuter la commande. Sur un poste institutionnel, suivez la procédure validée par l'administrateur réseau.
 :::
 
-Fermez puis rouvrez le terminal, puis vérifiez :
+Fermez puis rouvrez le terminal, puis vérifiez dans le terminal :
 
 ```bash
 uv --version
@@ -72,25 +81,24 @@ uv python list          # versions disponibles ou déjà installées
 uv python install 3.12  # installe Python 3.12, géré par uv
 ```
 
-## 2. Créer le projet
+## 2. Préparer l'environnement du cours
 
-### 2.1. Initialiser avec `uv`
+### 2.1. Synchroniser le projet avec `uv`
 
 ```bash
-mkdir -p cours-machine-learning
-cd cours-machine-learning
-uv init --python 3.12 ml-lab
-cd ml-lab
+uv python install 3.12
+uv sync
 ```
 
-Cette commande crée un `pyproject.toml` minimal, qui décrira le projet et ses dépendances tout au long du semestre.
+Le dépôt du cours contient déjà `pyproject.toml`, qui décrit les dépendances utilisées dans les Labs, et `uv.lock`, qui en fixe les versions exactes. Exécutez ces commandes depuis le dossier racine du dépôt (celui qui contient `pyproject.toml`) ; ne lancez pas `uv init` dans un sous-dossier.
 
 ### 2.2. Le dossier `.venv`
 
-L'environnement virtuel est créé automatiquement au premier besoin :
+`uv sync` crée l'environnement `.venv/` à la racine du dépôt et y installe les dépendances du cours. Vérifiez la version de Python et les imports :
 
 ```bash
 uv run python --version
+uv run python -c "import numpy, pandas, sklearn, matplotlib, requests, bs4; print('Environnement prêt')"
 ```
 
 Il n'est **jamais nécessaire de l'activer manuellement** : `uv run <commande>` exécute directement la commande dans l'environnement du projet.
@@ -101,27 +109,26 @@ uv run python             # lance un interpréteur interactif
 ```
 
 ::: {.callout-note title="Activation facultative"}
-Si vous préférez activer l'environnement dans votre terminal, c'est possible (`source .venv/bin/activate` sur macOS/Linux, `.venv\Scripts\Activate.ps1` sous PowerShell), mais ce Lab privilégie `uv run` pour éviter toute confusion entre plusieurs environnements installés sur la même machine.
+Si vous préférez activer l'environnement dans votre terminal, c'est possible : utilisez `source .venv/bin/activate` sous macOS/Linux ou `.venv\Scripts\Activate.ps1` sous Windows. Ce Lab privilégie toutefois `uv run` pour éviter toute confusion entre plusieurs environnements installés sur la même machine.
 :::
 
-### 2.3. Installer les bibliothèques du Lab
+### 2.3. Bibliothèques utilisées dans les Labs
 
-```bash
-uv add numpy pandas scikit-learn matplotlib requests jupyter ipykernel
-```
-
-| Bibliothèque | Rôle dans ce Lab |
+| Bibliothèque | Rôle dans les Labs |
 |---|---|
 | `numpy` | Calcul numérique, tableaux |
 | `pandas` | Données tabulaires, lecture de fichiers |
 | `scikit-learn` | Vérification que le ML fonctionne (mini filtre anti-spam) |
 | `matplotlib` | Premiers graphiques |
 | `requests` | Requêtes HTTP vers une API publique |
+| `beautifulsoup4` | Extraction d'informations depuis une page HTML |
 | `jupyter`, `ipykernel` | Exécution en notebook |
+
+Pour ajouter une nouvelle dépendance au projet, utilisez `uv add nom-du-paquet` depuis la racine du dépôt ; `uv` met alors à jour `pyproject.toml` et `uv.lock`.
 
 ### 2.4. Vérifier l'installation
 
-Créez un fichier `check_environment.py` à la racine du projet :
+Créez un fichier `check_environment.py` à la racine du projet, si vous souhaitez vérifier les versions installées :
 
 ```python
 import sys
@@ -146,19 +153,21 @@ uv run python check_environment.py
 
 Si le script s'exécute sans erreur, l'environnement est prêt.
 
-### 2.5. Lancer Jupyter
+### 2.5. Lancer Jupyter et choisir le bon interpréteur
 
 ```bash
 uv run jupyter lab
 ```
 
-Pour enregistrer le noyau du projet (utile s'il existe déjà d'autres environnements sur la machine) :
+Dans VS Code ou Jupyter, sélectionnez l'interpréteur du dépôt (`.venv/bin/python` sur macOS/Linux ou `.venv\Scripts\python.exe` sous Windows). Ainsi, les notebooks utilisent les mêmes dépendances que `uv run`.
+
+Si vous ouvrez Jupyter depuis un autre environnement et souhaitez rendre le noyau du projet visible, enregistrez-le une fois :
 
 ```bash
-uv run python -m ipykernel install --user --name ml-lab --display-name "Python (ml-lab)"
+uv run python -m ipykernel install --user --name ml-course --display-name "Python (ml-course)"
 ```
 
-::: {.callout-important title="Reproductibilité — ce qu'on versionne"}
+::: {.callout-important title="Reproductibilité - ce qu'on versionne"}
 | Fichier / dossier | À versionner (Git) ? |
 |---|:---:|
 | `pyproject.toml` | ✅ |
@@ -182,11 +191,7 @@ ml-lab/
 └── outputs/
 ```
 
-```bash
-mkdir -p data/raw data/processed notebooks outputs
-```
-
-Utilisez `pathlib` plutôt que des chaînes concaténées pour construire vos chemins — cela évite les problèmes entre Windows, macOS et Linux :
+Utilisez `pathlib` plutôt que des chaînes concaténées pour construire vos chemins. Cette méthode fonctionne sous Windows, macOS et Linux :
 
 ```python
 from pathlib import Path
@@ -200,9 +205,16 @@ for directory in (RAW_DIR, PROCESSED_DIR, OUTPUT_DIR):
     directory.mkdir(parents=True, exist_ok=True)
 ```
 
+Créez également les dossiers `data/interim` et `notebooks` si vous en avez besoin :
+
+```python
+for directory in (PROJECT_DIR / "data" / "interim", PROJECT_DIR / "notebooks"):
+    directory.mkdir(parents=True, exist_ok=True)
+```
+
 ## 4. Premier contact avec des données tabulaires
 
-Créons un tout petit jeu de données local — quelques annonces immobilières, dans l'esprit de l'exemple fil rouge du chapitre 1 (§3) — pour manipuler `pandas` sans dépendre d'Internet.
+Créons un tout petit jeu de données local - quelques annonces immobilières, dans l'esprit de l'exemple fil rouge du chapitre 1 (§3) - pour manipuler `pandas` sans dépendre d'Internet.
 
 ```python
 import pandas as pd
@@ -252,7 +264,7 @@ print(df.sort_values("prix_m2", ascending=False))
 ```
 
 ::: {.callout-note title="Remarque"}
-Ce petit jeu de données est directement lisible par des humains — c'est volontaire. Le chapitre 3 (Lab 2) travaillera sur des données plus grandes et volontairement imparfaites (valeurs manquantes, doublons, incohérences).
+Ce petit jeu de données est directement lisible par des humains - c'est volontaire. Le chapitre 3 (Lab 2) travaillera sur des données plus grandes et volontairement imparfaites (valeurs manquantes, doublons, incohérences).
 :::
 
 ### 4.3. Un premier graphique
@@ -270,7 +282,7 @@ fig.savefig("outputs/prix_vs_surface.png", dpi=150)
 plt.show()
 ```
 
-Même avec six observations, la relation entre surface et prix commence déjà à se dessiner à l'œil nu — c'est précisément ce type de relation qu'un modèle de régression (chapitre 4 / Lab 3) apprendra à quantifier.
+Même avec six observations, la relation entre surface et prix commence déjà à se dessiner à l'œil nu - c'est précisément ce type de relation qu'un modèle de régression (chapitre 4 / Lab 3) apprendra à quantifier.
 
 ## 5. Récupérer des données réelles via une API publique
 
@@ -281,8 +293,12 @@ Une lecture de données en ligne suit toujours le même schéma : construire une
 ```python
 import requests
 
-response = requests.get("https://example.com", timeout=20)
+response = requests.get(
+    "https://api.github.com/repos/pandas-dev/pandas",
+    timeout=20,
+)
 response.raise_for_status()   # lève une erreur si le code n'est pas 2xx
+print(response.json()["full_name"])
 ```
 
 ::: {.callout-tip title="Toujours fixer un `timeout`"}
@@ -321,7 +337,7 @@ fig, ax = plt.subplots(figsize=(8, 4))
 ax.plot(meteo["time"], meteo["temperature_2m"])
 ax.set_xlabel("Heure")
 ax.set_ylabel("Température (°C)")
-ax.set_title("Prévisions horaires — Casablanca")
+ax.set_title("Prévisions horaires - Casablanca")
 fig.autofmt_xdate()
 fig.tight_layout()
 fig.savefig("outputs/meteo_casablanca.png", dpi=150)
@@ -375,30 +391,19 @@ Si ce code s'exécute et affiche une prédiction `spam` ou `non-spam` pour chaqu
 Six exemples d'entraînement, c'est très peu : le modèle risque de mal généraliser à des e-mails très différents de ceux vus à l'entraînement (voir la notion de généralisation, chapitre 2 / Lab 1). Ce mini-exemple sert uniquement à vérifier que l'environnement fonctionne de bout en bout.
 :::
 
-## 7. Synthèse
-
-::: {.callout-note title="Auto-évaluation" collapse="true"}
-- [ ] `uv --version` fonctionne sur ma machine.
-- [ ] Mon projet possède un `pyproject.toml` et un `uv.lock`.
-- [ ] Je sais lancer une commande avec `uv run` sans activer manuellement `.venv`.
-- [ ] Je sais charger un CSV local avec `pandas` et en afficher un résumé (`head`, `dtypes`, `describe`).
-- [ ] Je sais effectuer une requête HTTP avec `requests` et transformer une réponse JSON en `DataFrame`.
-- [ ] J'ai exécuté avec succès le mini filtre anti-spam et compris ce qu'il illustre.
-:::
-
-## 8. Lab Sheet — Projet guidé {#sec-lab0-projet}
+## 7. Travail {#sec-lab0-projet}
 
 ::: {.callout-important title="Ce qui est attendu"}
 Ce projet reprend, sur des données différentes de celles utilisées en cours, les compétences pratiquées dans ce Lab. Répondez aux questions dans un notebook ou un fichier `reponses.md`, et conservez tout le code utilisé pour y répondre.
 :::
 
-### Partie A — Environnement
+### Partie A - Environnement
 
 1. Donnez la sortie de `uv --version` et de `uv python list` sur votre machine.
 2. Exécutez `check_environment.py`. Copiez la sortie obtenue.
 3. Expliquez, en deux phrases, la différence de rôle entre `pyproject.toml` et `uv.lock`.
 
-### Partie B — Météo au Maroc, à vous de jouer
+### Partie B - Météo au Maroc, à vous de jouer
 
 Choisissez **trois villes marocaines différentes** de celle utilisée en exemple (§5.2) et récupérez, pour chacune, les températures horaires prévues sur 2 jours via l'API Open-Meteo.
 
@@ -417,7 +422,7 @@ Choisissez **trois villes marocaines différentes** de celle utilisée en exempl
 6. Produisez un graphique superposant les trois courbes de température (une couleur par ville) et sauvegardez-le dans `outputs/`.
 7. En une phrase : que se passerait-il dans votre code si l'API Open-Meteo était temporairement indisponible ? Que faudrait-il ajouter pour s'en protéger ?
 
-### Partie C — Améliorer le mini filtre anti-spam
+### Partie C - Améliorer le mini filtre anti-spam
 
 8. Ajoutez **quatre nouveaux e-mails** à la liste d'entraînement de la §6 (deux spams, deux non-spams), rédigés par vous-même, en français ou en darija translittérée.
 9. Réentraînez le modèle avec ces dix exemples, puis testez-le sur **trois nouveaux e-mails** que vous inventez (non utilisés à l'entraînement).
@@ -429,11 +434,3 @@ Choisissez **trois villes marocaines différentes** de celle utilisée en exempl
 - un notebook ou script contenant le code des parties A, B et C ;
 - au moins un graphique dans `outputs/` ;
 - vos réponses écrites aux questions 3, 5, 7 et 10.
-
-::: {.callout-tip title="Checklist finale"}
-- [ ] L'environnement est reproductible (`uv sync` fonctionne sur une autre machine).
-- [ ] Les données météo de trois villes sont récupérées et combinées.
-- [ ] Un graphique comparatif est produit et sauvegardé.
-- [ ] Le mini filtre anti-spam est réentraîné avec de nouveaux exemples et testé.
-- [ ] Toutes les questions écrites ont une réponse.
-:::

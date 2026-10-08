@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab 4 — Classification : prédire une catégorie – Machine Learning</title>
+<title>Lab 4 - Classification : prédire une catégorie – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
 <link href="../tp/lab3_regression.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -78,10 +79,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -112,9 +117,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <style>html{ scroll-behavior: smooth; }</style>
 
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -123,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab4_classification.html"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab4_classification.html"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -136,7 +304,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></h1>
+      <h1 class="title"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></h1>
                       </div>
   </div>
     
@@ -159,8 +327,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -173,12 +360,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -193,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -213,33 +402,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -254,17 +443,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#construire-un-jeu-de-données-de-churn" id="toc-construire-un-jeu-de-données-de-churn" class="nav-link active" data-scroll-target="#construire-un-jeu-de-données-de-churn">1. Construire un jeu de données de <em>churn</em></a></li>
   <li><a href="#un-pipeline-de-classification-de-bout-en-bout" id="toc-un-pipeline-de-classification-de-bout-en-bout" class="nav-link" data-scroll-target="#un-pipeline-de-classification-de-bout-en-bout">2. Un pipeline de classification, de bout en bout</a></li>
-  <li><a href="#au-delà-de-laccuracy-précision-rappel-f1-roc-auc" id="toc-au-delà-de-laccuracy-précision-rappel-f1-roc-auc" class="nav-link" data-scroll-target="#au-delà-de-laccuracy-précision-rappel-f1-roc-auc">3. Au-delà de l’accuracy : précision, rappel, F1, ROC-AUC</a></li>
+  <li><a href="#évaluer-sur-le-jeu-de-validation" id="toc-évaluer-sur-le-jeu-de-validation" class="nav-link" data-scroll-target="#évaluer-sur-le-jeu-de-validation">3. Évaluer sur le jeu de validation</a></li>
   <li><a href="#le-seuil-de-décision-nest-pas-obligatoirement-05" id="toc-le-seuil-de-décision-nest-pas-obligatoirement-05" class="nav-link" data-scroll-target="#le-seuil-de-décision-nest-pas-obligatoirement-05">4. Le seuil de décision n’est pas obligatoirement 0,5</a></li>
   <li><a href="#gérer-le-déséquilibre-des-classes" id="toc-gérer-le-déséquilibre-des-classes" class="nav-link" data-scroll-target="#gérer-le-déséquilibre-des-classes">5. Gérer le déséquilibre des classes</a></li>
   <li><a href="#comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres" id="toc-comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres" class="nav-link" data-scroll-target="#comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres">6. Comparer plusieurs algorithmes, avec réglage d’hyperparamètres</a></li>
-  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">7. Synthèse</a></li>
-  <li><a href="#sec-lab4-projet" id="toc-sec-lab4-projet" class="nav-link" data-scroll-target="#sec-lab4-projet">8. Lab Sheet — Projet guidé</a>
+  <li><a href="#évaluation-finale-sur-le-jeu-de-test" id="toc-évaluation-finale-sur-le-jeu-de-test" class="nav-link" data-scroll-target="#évaluation-finale-sur-le-jeu-de-test">7. Évaluation finale sur le jeu de test</a></li>
+  <li><a href="#sec-lab4-projet" id="toc-sec-lab4-projet" class="nav-link" data-scroll-target="#sec-lab4-projet">8. Travail</a>
   <ul class="collapse">
-  <li><a href="#partie-a-reprendre-le-pipeline-du-lab-2" id="toc-partie-a-reprendre-le-pipeline-du-lab-2" class="nav-link" data-scroll-target="#partie-a-reprendre-le-pipeline-du-lab-2">Partie A — Reprendre le pipeline du Lab 2</a></li>
-  <li><a href="#partie-b-premier-modèle-et-métriques" id="toc-partie-b-premier-modèle-et-métriques" class="nav-link" data-scroll-target="#partie-b-premier-modèle-et-métriques">Partie B — Premier modèle et métriques</a></li>
-  <li><a href="#partie-c-seuil-et-déséquilibre" id="toc-partie-c-seuil-et-déséquilibre" class="nav-link" data-scroll-target="#partie-c-seuil-et-déséquilibre">Partie C — Seuil et déséquilibre</a></li>
-  <li><a href="#partie-d-comparaison-de-modèles-et-hyperparamètres" id="toc-partie-d-comparaison-de-modèles-et-hyperparamètres" class="nav-link" data-scroll-target="#partie-d-comparaison-de-modèles-et-hyperparamètres">Partie D — Comparaison de modèles et hyperparamètres</a></li>
+  <li><a href="#partie-a---préparer-les-jeux-de-données" id="toc-partie-a---préparer-les-jeux-de-données" class="nav-link" data-scroll-target="#partie-a---préparer-les-jeux-de-données">Partie A - Préparer les jeux de données</a></li>
+  <li><a href="#partie-b---premier-modèle-et-métriques" id="toc-partie-b---premier-modèle-et-métriques" class="nav-link" data-scroll-target="#partie-b---premier-modèle-et-métriques">Partie B - Premier modèle et métriques</a></li>
+  <li><a href="#partie-c---seuil-et-déséquilibre" id="toc-partie-c---seuil-et-déséquilibre" class="nav-link" data-scroll-target="#partie-c---seuil-et-déséquilibre">Partie C - Seuil et déséquilibre</a></li>
+  <li><a href="#partie-d---comparaison-de-modèles-et-hyperparamètres" id="toc-partie-d---comparaison-de-modèles-et-hyperparamètres" class="nav-link" data-scroll-target="#partie-d---comparaison-de-modèles-et-hyperparamètres">Partie D - Comparaison de modèles et hyperparamètres</a></li>
   <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
   </ul></li>
   </ul>
@@ -272,6 +461,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -298,52 +488,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout callout-style-default callout-note callout-titled" title="Téléchargement de la Lab Sheet">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Lien avec le cours
+<span class="screen-reader-only">Note</span>Téléchargement de la Lab Sheet
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce Lab correspond au chapitre 5 (<em>Modèles de classification</em>). Il réutilise directement les acquis des Labs précédents : matrice de confusion (Lab 1, chapitre 2), pipeline de prétraitement (Lab 2, chapitre 3) et <code>GridSearchCV</code> (Lab 3, chapitre 4). Le fil conducteur est l’exemple de la <strong>résiliation d’abonnement (<em>churn</em>)</strong> introduit au chapitre 1 (§1.2) comme second exemple du triplet (T, P, E).</p>
+<p>Téléchargez un seul format avant de travailler :</p>
+<ul>
+<li><strong>Notebook <code>.ipynb</code></strong> pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/labsheets"><code>labsheets/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/labsheets/lab4_classification.ipynb">fichier source du Lab 4</a>.</li>
+<li><strong>Fichier <code>.qmd</code></strong> pour travailler avec Quarto : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/tp"><code>tp/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/tp/lab4_classification.qmd">fichier source du Lab 4</a>.</li>
+</ul>
 </div>
 </div>
 <section id="construire-un-jeu-de-données-de-churn" class="level2">
 <h2 class="anchored" data-anchor-id="construire-un-jeu-de-données-de-churn">1. Construire un jeu de données de <em>churn</em></h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">3</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"outputs"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>anciennete_mois <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">72</span>, size<span class="op">=</span>n)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>appels_service_client <span class="op">=</span> rng.poisson(<span class="fl">1.5</span>, size<span class="op">=</span>n)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>facture_mensuelle <span class="op">=</span> rng.uniform(<span class="dv">80</span>, <span class="dv">600</span>, size<span class="op">=</span>n)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>type_contrat <span class="op">=</span> rng.choice([<span class="st">"Mensuel"</span>, <span class="st">"Annuel"</span>, <span class="st">"Deux ans"</span>], size<span class="op">=</span>n, p<span class="op">=</span>[<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>])</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Probabilité de résiliation : augmente avec les appels au service client et</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># les contrats mensuels, diminue avec l'ancienneté — une structure réaliste.</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>logit <span class="op">=</span> (</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="fl">2.0</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> <span class="fl">0.35</span> <span class="op">*</span> appels_service_client</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> <span class="fl">0.03</span> <span class="op">*</span> anciennete_mois</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> <span class="fl">0.004</span> <span class="op">*</span> facture_mensuelle</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> pd.Series(type_contrat).<span class="bu">map</span>({<span class="st">"Mensuel"</span>: <span class="fl">1.2</span>, <span class="st">"Annuel"</span>: <span class="op">-</span><span class="fl">0.3</span>, <span class="st">"Deux ans"</span>: <span class="op">-</span><span class="fl">1.0</span>}).to_numpy()</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>probabilite_churn <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> np.exp(<span class="op">-</span>logit))</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>churn <span class="op">=</span> rng.binomial(<span class="dv">1</span>, probabilite_churn)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>clients <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"anciennete_mois"</span>: anciennete_mois,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"appels_service_client"</span>: appels_service_client,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facture_mensuelle"</span>: facture_mensuelle.<span class="bu">round</span>(<span class="dv">2</span>),</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"type_contrat"</span>: type_contrat,</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"churn"</span>: churn,</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients[<span class="st">"churn"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>).<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">3</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>anciennete_mois <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">72</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>appels_service_client <span class="op">=</span> rng.poisson(<span class="fl">1.5</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>facture_mensuelle <span class="op">=</span> rng.uniform(<span class="dv">80</span>, <span class="dv">600</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>type_contrat <span class="op">=</span> rng.choice([<span class="st">"Mensuel"</span>, <span class="st">"Annuel"</span>, <span class="st">"Deux ans"</span>], size<span class="op">=</span>n, p<span class="op">=</span>[<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>])</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Probabilité de résiliation : augmente avec les appels au service client et</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># les contrats mensuels, diminue avec l'ancienneté - une structure réaliste.</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>logit <span class="op">=</span> (</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="fl">2.0</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> <span class="fl">0.35</span> <span class="op">*</span> appels_service_client</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> <span class="fl">0.03</span> <span class="op">*</span> anciennete_mois</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> <span class="fl">0.004</span> <span class="op">*</span> facture_mensuelle</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> pd.Series(type_contrat).<span class="bu">map</span>({<span class="st">"Mensuel"</span>: <span class="fl">1.2</span>, <span class="st">"Annuel"</span>: <span class="op">-</span><span class="fl">0.3</span>, <span class="st">"Deux ans"</span>: <span class="op">-</span><span class="fl">1.0</span>}).to_numpy()</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>probabilite_churn <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> np.exp(<span class="op">-</span>logit))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>churn <span class="op">=</span> rng.binomial(<span class="dv">1</span>, probabilite_churn)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>clients <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"anciennete_mois"</span>: anciennete_mois,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"appels_service_client"</span>: appels_service_client,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facture_mensuelle"</span>: facture_mensuelle.<span class="bu">round</span>(<span class="dv">2</span>),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"type_contrat"</span>: type_contrat,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"churn"</span>: churn,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients[<span class="st">"churn"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>).<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Comme souvent en pratique, les classes sont <strong>déséquilibrées</strong> : gardez ce chiffre en tête, il conditionne toute la suite (chapitre 2, §6, « le piège des classes déséquilibrées »).</p>
 </section>
 <section id="un-pipeline-de-classification-de-bout-en-bout" class="level2">
@@ -357,52 +554,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> clients.drop(columns<span class="op">=</span><span class="st">"churn"</span>)</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> clients[<span class="st">"churn"</span>]</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>X_dev, X_test, y_dev, y_test <span class="op">=</span> train_test_split(</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.25</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y,</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>colonnes_numeriques <span class="op">=</span> [<span class="st">"anciennete_mois"</span>, <span class="st">"appels_service_client"</span>, <span class="st">"facture_mensuelle"</span>]</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>colonnes_categorielles <span class="op">=</span> [<span class="st">"type_contrat"</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>X_train, X_val, y_train, y_val <span class="op">=</span> train_test_split(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    X_dev, y_dev, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y_dev,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>pretraitement <span class="op">=</span> ColumnTransformer([</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, StandardScaler(), colonnes_numeriques),</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>), colonnes_categorielles),</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>pipeline_logit <span class="op">=</span> Pipeline([</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pretraitement"</span>, pretraitement),</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"modele"</span>, LogisticRegression()),</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>pipeline_logit.fit(X_train, y_train)</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy test :"</span>, <span class="bu">round</span>(pipeline_logit.score(X_test, y_test), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Entraînement : </span><span class="sc">{</span><span class="bu">len</span>(X_train)<span class="sc">}</span><span class="ss"> observations"</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Validation   : </span><span class="sc">{</span><span class="bu">len</span>(X_val)<span class="sc">}</span><span class="ss"> observations"</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test final   : </span><span class="sc">{</span><span class="bu">len</span>(X_test)<span class="sc">}</span><span class="ss"> observations (réservé jusqu'à la fin)"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>colonnes_numeriques <span class="op">=</span> [<span class="st">"anciennete_mois"</span>, <span class="st">"appels_service_client"</span>, <span class="st">"facture_mensuelle"</span>]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>colonnes_categorielles <span class="op">=</span> [<span class="st">"type_contrat"</span>]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>pretraitement <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, StandardScaler(), colonnes_numeriques),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>), colonnes_categorielles),</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>pipeline_logit <span class="op">=</span> Pipeline([</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pretraitement"</span>, pretraitement),</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"modele"</span>, LogisticRegression()),</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>pipeline_logit.fit(X_train, y_train)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy validation :"</span>, <span class="bu">round</span>(pipeline_logit.score(X_val, y_val), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="au-delà-de-laccuracy-précision-rappel-f1-roc-auc" class="level2">
-<h2 class="anchored" data-anchor-id="au-delà-de-laccuracy-précision-rappel-f1-roc-auc">3. Au-delà de l’accuracy : précision, rappel, F1, ROC-AUC</h2>
+<section id="évaluer-sur-le-jeu-de-validation" class="level2">
+<h2 class="anchored" data-anchor-id="évaluer-sur-le-jeu-de-validation">3. Évaluer sur le jeu de validation</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    ConfusionMatrixDisplay, RocCurveDisplay, classification_report,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    ConfusionMatrixDisplay, RocCurveDisplay, classification_report, f1_score,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    confusion_matrix, roc_auc_score,</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> pipeline_logit.predict(X_test)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>y_proba <span class="op">=</span> pipeline_logit.predict_proba(X_test)[:, <span class="dv">1</span>]   <span class="co"># probabilité de la classe "churn"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>y_pred_val <span class="op">=</span> pipeline_logit.predict(X_val)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>y_proba_val <span class="op">=</span> pipeline_logit.predict_proba(X_val)[:, <span class="dv">1</span>]   <span class="co"># probabilité de la classe "churn"</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"ROC-AUC :"</span>, <span class="bu">round</span>(roc_auc_score(y_test, y_proba), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_val, y_pred_val, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"ROC-AUC validation :"</span>, <span class="bu">round</span>(roc_auc_score(y_val, y_proba_val), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    confusion_matrix(y_test, y_pred), display_labels<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>],</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    confusion_matrix(y_val, y_pred_val), display_labels<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>],</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>).plot(ax<span class="op">=</span>axes[<span class="dv">0</span>], cmap<span class="op">=</span><span class="st">"Blues"</span>)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Matrice de confusion"</span>)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>RocCurveDisplay.from_predictions(y_test, y_proba, ax<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>RocCurveDisplay.from_predictions(y_val, y_proba_val, ax<span class="op">=</span>axes[<span class="dv">1</span>])</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Courbe ROC"</span>)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/evaluation_churn.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/evaluation_validation_churn.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled" title="Lire la courbe ROC">
 <div class="callout-header d-flex align-content-center">
@@ -414,7 +618,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>La courbe ROC (<em>Receiver Operating Characteristic</em>) trace le taux de vrais positifs contre le taux de faux positifs, pour <strong>tous les seuils de décision possibles</strong>. Un modèle inutile (équivalent à un tirage au hasard) suit la diagonale ; plus la courbe s’en écarte vers le coin supérieur gauche, meilleur est le modèle. L’aire sous la courbe (<strong>AUC</strong>) résume cette qualité en un seul nombre entre 0,5 (hasard) et 1 (parfait).</p>
+<p>La courbe ROC (<em>Receiver Operating Characteristic</em>) trace le taux de vrais positifs contre le taux de faux positifs, pour <strong>tous les seuils de décision possibles</strong>. Un modèle sans pouvoir discriminant suit en moyenne la diagonale ; plus sa courbe s’en écarte vers le coin supérieur gauche, meilleur est son pouvoir de classement. L’aire sous la courbe (<strong>AUC</strong>) résume cette capacité dans un nombre compris entre 0 et 1 ; une valeur de 0,5 correspond au hasard et une valeur de 1 à un classement parfait.</p>
 </div>
 </div>
 </section>
@@ -424,9 +628,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_score, recall_score</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> seuil <span class="kw">in</span> [<span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>]:</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    y_pred_seuil <span class="op">=</span> (y_proba <span class="op">&gt;=</span> seuil).astype(<span class="bu">int</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    precision <span class="op">=</span> precision_score(y_test, y_pred_seuil)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    rappel <span class="op">=</span> recall_score(y_test, y_pred_seuil)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    y_pred_seuil <span class="op">=</span> (y_proba_val <span class="op">&gt;=</span> seuil).astype(<span class="bu">int</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    precision <span class="op">=</span> precision_score(y_val, y_pred_seuil, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    rappel <span class="op">=</span> recall_score(y_val, y_pred_seuil, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Seuil = </span><span class="sc">{</span>seuil<span class="sc">}</span><span class="ss"> → précision = </span><span class="sc">{</span>precision<span class="sc">:.3f}</span><span class="ss">, rappel = </span><span class="sc">{</span>rappel<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Abaisser le seuil <strong>augmente le rappel</strong> (on détecte plus de vrais churners) mais <strong>diminue généralement la précision</strong> (on se trompe aussi plus souvent sur des clients qui n’allaient pas partir). Ce compromis, illustré concrètement ici, est au cœur de toute décision de déploiement d’un classifieur.</p>
 </section>
@@ -438,9 +642,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>])</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>pipeline_pondere.fit(X_train, y_train)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>y_pred_pondere <span class="op">=</span> pipeline_pondere.predict(X_test)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred_pondere, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>class_weight="balanced"</code> donne automatiquement plus de poids à la classe minoritaire pendant l’entraînement, sans avoir à dupliquer ou supprimer des observations. Comparez le rappel de la classe « churn » avec et sans cette option : c’est généralement là que l’écart est le plus visible.</p>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>y_pred_pondere <span class="op">=</span> pipeline_pondere.predict(X_val)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_val, y_pred_pondere, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>class_weight="balanced"</code> donne automatiquement plus de poids à la classe minoritaire pendant l’entraînement, sans avoir à dupliquer ou supprimer des observations. Comparez le rappel de la classe « churn » sur la validation avec et sans cette option : c’est généralement là que l’écart est le plus visible.</p>
 </section>
 <section id="comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres" class="level2">
 <h2 class="anchored" data-anchor-id="comparer-plusieurs-algorithmes-avec-réglage-dhyperparamètres">6. Comparer plusieurs algorithmes, avec réglage d’hyperparamètres</h2>
@@ -464,12 +668,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    ),</span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nom, (estimateur, grille) <span class="kw">in</span> modeles_a_comparer.items():</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    pipeline_candidat <span class="op">=</span> Pipeline([(<span class="st">"pretraitement"</span>, pretraitement), (<span class="st">"modele"</span>, estimateur)])</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    recherche <span class="op">=</span> GridSearchCV(pipeline_candidat, param_grid<span class="op">=</span>grille, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">"f1"</span>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    recherche.fit(X_train, y_train)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    score_test <span class="op">=</span> recherche.score(X_test, y_test)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>nom<span class="sc">:25s}</span><span class="ss"> → meilleurs paramètres = </span><span class="sc">{</span>recherche<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ss">, F1 (test) = </span><span class="sc">{</span>score_test<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>resultats <span class="op">=</span> []</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nom, (estimateur, grille) <span class="kw">in</span> modeles_a_comparer.items():</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    pipeline_candidat <span class="op">=</span> Pipeline([(<span class="st">"pretraitement"</span>, pretraitement), (<span class="st">"modele"</span>, estimateur)])</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    recherche <span class="op">=</span> GridSearchCV(</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        pipeline_candidat,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        param_grid<span class="op">=</span>grille,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        scoring<span class="op">=</span><span class="st">"f1"</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        n_jobs<span class="op">=-</span><span class="dv">1</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    recherche.fit(X_train, y_train)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    score_validation <span class="op">=</span> f1_score(</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        y_val,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        recherche.best_estimator_.predict(X_val),</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        zero_division<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    resultats.append({</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">"nom"</span>: nom,</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>        <span class="st">"recherche"</span>: recherche,</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>        <span class="st">"score_cv"</span>: recherche.best_score_,</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">"score_validation"</span>: score_validation,</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span>nom<span class="sc">:25s}</span><span class="ss"> → paramètres = </span><span class="sc">{</span>recherche<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"F1 CV = </span><span class="sc">{</span>recherche<span class="sc">.</span>best_score_<span class="sc">:.3f}</span><span class="ss">, "</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"F1 validation = </span><span class="sc">{</span>score_validation<span class="sc">:.3f}</span><span class="ss">"</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>meilleur_resultat <span class="op">=</span> <span class="bu">max</span>(resultats, key<span class="op">=</span><span class="kw">lambda</span> resultat: resultat[<span class="st">"score_validation"</span>])</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Modèle retenu : </span><span class="sc">{</span>meilleur_resultat[<span class="st">'nom'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Pourquoi `scoring=&quot;f1&quot;` plutôt que l'accuracy ?">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -484,77 +712,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="synthèse" class="level2">
-<h2 class="anchored" data-anchor-id="synthèse">7. Synthèse</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Je sais construire un pipeline de classification complet, prétraitement inclus.</label></li>
-<li><label><input type="checkbox">Je sais calculer et interpréter précision, rappel, F1-score et ROC-AUC.</label></li>
-<li><label><input type="checkbox">Je sais expliquer ce que montre une courbe ROC et à quoi correspond l’AUC.</label></li>
-<li><label><input type="checkbox">Je sais faire varier le seuil de décision et en expliquer l’effet sur précision et rappel.</label></li>
-<li><label><input type="checkbox">Je sais utiliser <code>class_weight="balanced"</code> et justifier son intérêt sur des classes déséquilibrées.</label></li>
-<li><label><input type="checkbox">Je sais utiliser <code>GridSearchCV</code> avec <code>scoring="f1"</code> pour comparer plusieurs familles de modèles.</label></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="sec-lab4-projet" class="level2">
-<h2 class="anchored" data-anchor-id="sec-lab4-projet">8. Lab Sheet — Projet guidé</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Jeu de données du projet : le Titanic, à nouveau">
+<section id="évaluation-finale-sur-le-jeu-de-test" class="level2">
+<h2 class="anchored" data-anchor-id="évaluation-finale-sur-le-jeu-de-test">7. Évaluation finale sur le jeu de test</h2>
+<p>Le jeu de test n’a pas servi à choisir le modèle ni ses hyperparamètres. Une fois le modèle retenu sur la validation, on le réentraîne sur l’ensemble des données de développement, puis on évalue <strong>une seule fois</strong> ses performances sur le test.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> clone</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>modele_final <span class="op">=</span> clone(meilleur_resultat[<span class="st">"recherche"</span>].best_estimator_)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>modele_final.fit(X_dev, y_dev)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>y_pred_test <span class="op">=</span> modele_final.predict(X_test)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>y_proba_test <span class="op">=</span> modele_final.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred_test, target_names<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>]))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"ROC-AUC test :"</span>, <span class="bu">round</span>(roc_auc_score(y_test, y_proba_test), <span class="dv">3</span>))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>matrice_test <span class="op">=</span> confusion_matrix(y_test, y_pred_test)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay(</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    matrice_test, display_labels<span class="op">=</span>[<span class="st">"reste"</span>, <span class="st">"churn"</span>],</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>).plot(ax<span class="op">=</span>axes[<span class="dv">0</span>], cmap<span class="op">=</span><span class="st">"Blues"</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Matrice de confusion - test final"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>RocCurveDisplay.from_predictions(y_test, y_proba_test, ax<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Courbe ROC - test final"</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"outputs/evaluation_finale_churn.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Ne pas réutiliser le test">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Jeu de données du projet : le Titanic, à nouveau
+<span class="screen-reader-only">Avertissement</span>Ne pas réutiliser le test
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l’objectif n’est plus seulement de le nettoyer, mais de réellement <strong>prédire</strong> la survie (<code>survived</code>) d’un passager.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>titanic <span class="op">=</span> pd.read_csv(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Après cette évaluation, ne modifiez pas le modèle, ses hyperparamètres ou son seuil en fonction du score obtenu sur le test. Si vous le faites, ce jeu ne constitue plus une évaluation finale indépendante.</p>
 </div>
 </div>
-<section id="partie-a-reprendre-le-pipeline-du-lab-2" class="level3">
-<h3 class="anchored" data-anchor-id="partie-a-reprendre-le-pipeline-du-lab-2">Partie A — Reprendre le pipeline du Lab 2</h3>
+</section>
+<section id="sec-lab4-projet" class="level2">
+<h2 class="anchored" data-anchor-id="sec-lab4-projet">8. Travail</h2>
+<p><strong>Jeu de données du projet : le Titanic, à nouveau</strong> Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l’objectif n’est plus seulement de le nettoyer, mais de réellement <strong>prédire</strong> la survie (<code>survived</code>) d’un passager.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>titanic <span class="op">=</span> pd.read_csv(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="partie-a---préparer-les-jeux-de-données" class="level3">
+<h3 class="anchored" data-anchor-id="partie-a---préparer-les-jeux-de-données">Partie A - Préparer les jeux de données</h3>
 <ol type="1">
-<li>Réappliquez (ou reconstruisez) le pipeline de prétraitement du Lab 2 sur les variables <code>pclass</code>, <code>sex</code>, <code>age</code>, <code>fare</code>, <code>embarked</code>, <code>sibsp</code>, <code>parch</code>, avec <code>survived</code> comme cible. Séparez Train (75 %) / Test (25 %), stratifiés.</li>
+<li>Réappliquez (ou reconstruisez) le pipeline de prétraitement du Lab 2 sur les variables <code>pclass</code>, <code>sex</code>, <code>age</code>, <code>fare</code>, <code>embarked</code>, <code>sibsp</code>, <code>parch</code>, avec <code>survived</code> comme cible. Réservez d’abord 25 % des données au test final, puis séparez les données de développement en entraînement (80 %) et validation (20 %). Utilisez <code>stratify</code> à chaque séparation.</li>
 <li>Le jeu est-il déséquilibré ? Donnez la proportion de survivants.</li>
 </ol>
 </section>
-<section id="partie-b-premier-modèle-et-métriques" class="level3">
-<h3 class="anchored" data-anchor-id="partie-b-premier-modèle-et-métriques">Partie B — Premier modèle et métriques</h3>
+<section id="partie-b---premier-modèle-et-métriques" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b---premier-modèle-et-métriques">Partie B - Premier modèle et métriques</h3>
 <ol start="3" type="1">
-<li>Entraînez une <code>LogisticRegression</code> (pipeline complet). Calculez accuracy, précision, rappel, F1-score et ROC-AUC sur le test.</li>
-<li>Tracez la matrice de confusion et la courbe ROC.</li>
-<li>Une <code>DummyClassifier</code> (baseline) obtiendrait quelle accuracy sur ce jeu ? Votre modèle fait-il significativement mieux ?</li>
+<li>Entraînez une <code>LogisticRegression</code> (pipeline complet). Calculez accuracy, précision, rappel, F1-score et ROC-AUC sur la validation.</li>
+<li>Tracez la matrice de confusion et la courbe ROC pour la validation.</li>
+<li>Une <code>DummyClassifier</code> (baseline) obtiendrait quelle accuracy sur la validation ? Votre modèle fait-il significativement mieux ?</li>
 </ol>
 </section>
-<section id="partie-c-seuil-et-déséquilibre" class="level3">
-<h3 class="anchored" data-anchor-id="partie-c-seuil-et-déséquilibre">Partie C — Seuil et déséquilibre</h3>
+<section id="partie-c---seuil-et-déséquilibre" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c---seuil-et-déséquilibre">Partie C - Seuil et déséquilibre</h3>
 <ol start="6" type="1">
-<li>Testez trois seuils de décision différents (par exemple 0.3, 0.5, 0.7). Lequel choisiriez-vous si l’objectif prioritaire était de <strong>ne rater aucun survivant potentiel</strong> (maximiser le rappel), quitte à avoir plus de fausses alertes ?</li>
+<li>Testez trois seuils de décision différents (par exemple 0.3, 0.5, 0.7) avec les probabilités prédites sur la validation. Lequel choisiriez-vous si l’objectif prioritaire était de <strong>ne rater aucun survivant potentiel</strong> (maximiser le rappel), quitte à avoir plus de fausses alertes ?</li>
 <li>Comparez, avec et sans <code>class_weight="balanced"</code>, le rappel obtenu pour la classe minoritaire.</li>
 </ol>
 </section>
-<section id="partie-d-comparaison-de-modèles-et-hyperparamètres" class="level3">
-<h3 class="anchored" data-anchor-id="partie-d-comparaison-de-modèles-et-hyperparamètres">Partie D — Comparaison de modèles et hyperparamètres</h3>
+<section id="partie-d---comparaison-de-modèles-et-hyperparamètres" class="level3">
+<h3 class="anchored" data-anchor-id="partie-d---comparaison-de-modèles-et-hyperparamètres">Partie D - Comparaison de modèles et hyperparamètres</h3>
 <ol start="8" type="1">
-<li>Comparez, par <code>GridSearchCV</code> avec <code>scoring="f1"</code>, une régression logistique (hyperparamètre <code>C</code>), un KNN (hyperparamètre <code>n_neighbors</code>) et un arbre de décision (hyperparamètre <code>max_depth</code>).</li>
-<li>Quel modèle obtient le meilleur F1-score sur le jeu de test ? Ce résultat était-il celui que vous attendiez, compte tenu des données (variables catégorielles nombreuses, taille du jeu, etc.) ?</li>
+<li>Comparez, par <code>GridSearchCV</code> avec <code>scoring="f1"</code>, une régression logistique (hyperparamètre <code>C</code>), un KNN (hyperparamètre <code>n_neighbors</code>) et un arbre de décision (hyperparamètre <code>max_depth</code>). Ajustez les modèles uniquement sur l’entraînement ; utilisez la validation pour retenir la famille de modèle.</li>
+<li>Réentraînez le modèle retenu sur toutes les données de développement et évaluez-le une seule fois sur le test final. Quel F1-score obtient-il ? Ce résultat était-il celui que vous attendiez, compte tenu des données (variables catégorielles nombreuses, taille du jeu, etc.) ?</li>
 <li><em>(Bonus)</em> Affichez l’importance des variables pour votre meilleur modèle (<code>.coef_</code> pour la régression logistique, ou <code>.feature_importances_</code> pour l’arbre). Quelle variable semble la plus déterminante pour la survie ? Ce résultat correspond-il à ce que vous savez de l’histoire du naufrage ?</li>
 </ol>
 </section>
@@ -562,28 +791,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="livrables">Livrables</h3>
 <ul>
 <li>un notebook ou script contenant le code des parties A à D ;</li>
-<li>au moins deux graphiques (matrice de confusion, courbe ROC) dans <code>outputs/</code> ;</li>
+<li>les graphiques d’évaluation sur la validation et une évaluation finale du test dans <code>outputs/</code> ;</li>
 <li>un court paragraphe de conclusion, comparant les modèles testés et justifiant votre choix final.</li>
 </ul>
-<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Checklist finale
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Le déséquilibre des classes est mesuré avant toute modélisation.</label></li>
-<li><label><input type="checkbox">Au moins trois métriques de classification (au-delà de l’accuracy) sont calculées.</label></li>
-<li><label><input type="checkbox">L’effet du seuil de décision est illustré avec au moins deux valeurs différentes.</label></li>
-<li><label><input type="checkbox">Tous les hyperparamètres sont réglés par validation croisée sur le train, jamais sur le test.</label></li>
-<li><label><input type="checkbox">Le jeu de test n’est utilisé qu’une seule fois, pour l’évaluation finale.</label></li>
-</ul>
-</div>
-</div>
 
 
 </section>
@@ -592,6 +802,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -992,11 +1215,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../tp/lab3_regression.html" class="pagination-link" aria-label="Lab 3 — Régression : prédire une valeur numérique">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></span>
+      <a href="../tp/lab3_regression.html" class="pagination-link" aria-label="Lab 3 - Régression : prédire une valeur numérique">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

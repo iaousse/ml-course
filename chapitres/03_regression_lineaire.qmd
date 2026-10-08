@@ -624,11 +624,11 @@ La régression linéaire est puissante, mais elle n'est pas adaptée à toute si
 
 Dans ces cas, il faut parfois transformer les variables, ajouter des caractéristiques, ou utiliser d'autres familles de modèles. Mais la logique centrale reste la même : expliquer une cible numérique par des variables explicatives.
 
-## 8. Exercices théoriques
+## Exercices
 
-Les exercices suivants sont purement théoriques. Ils servent à consolider les idées, sans demander de code exécutable.
 
-### Exercice 1. Identifier le type de problème
+::: {#exr-reg-1}
+### Identifier le type de problème
 
 Pour chaque situation, indique si l'on parle d'une tâche de régression ou de classification :
 
@@ -637,8 +637,20 @@ Pour chaque situation, indique si l'on parle d'une tâche de régression ou de c
 3. Estimer le montant d'une facture.
 4. Classer une image en "chien" ou "chat".
 5. Prédire le nombre d'accidents pendant un mois.
+:::
 
-### Exercice 2. Interpréter un coefficient
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-1"}
+1. Régression : la température est une valeur numérique.
+2. Classification : la cible est une catégorie (« spam » ou « non-spam »).
+3. Régression : le montant est une valeur numérique.
+4. Classification : la cible est une catégorie (« chien » ou « chat »).
+5. Régression : l'objectif est de prédire un nombre. Même si le nombre d'accidents est discret, la tâche demandée porte sur une quantité numérique.
+:::
+:::
+
+::: {#exr-reg-2}
+### Interpréter un coefficient
 
 On considère le modèle :
 
@@ -646,9 +658,17 @@ $$
 \hat{y} = 50 + 2x_1 - 3x_2
 $$
 
-Interprète le sens de $\beta_1 = 2$ et $\beta_2 = -3$.
+Interprétez le sens des coefficients associés à $x_1$ et $x_2$, toutes choses égales par ailleurs.
+:::
 
-### Exercice 3. Calculer une régression simple
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-2"}
+À $x_2$ fixé, une augmentation d'une unité de $x_1$ augmente la prédiction de $2$ unités. À $x_1$ fixé, une augmentation d'une unité de $x_2$ diminue la prédiction de $3$ unités.
+:::
+:::
+
+::: {#exr-reg-3}
+### Calculer une régression simple
 
 On donne les observations suivantes :
 
@@ -659,26 +679,82 @@ On donne les observations suivantes :
 | 3 | 6 |
 
 Calculez la pente et l'ordonnée à l'origine de la droite de régression par les MCO.
+:::
 
-### Exercice 4. Expliquer le résidu
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-3"}
+Les moyennes sont $\bar{x}=2$ et $\bar{y}=13/3$. La pente vaut
+
+$$
+\beta_1 =
+\frac{\sum_i (x_i-\bar{x})(y_i-\bar{y})}
+     {\sum_i (x_i-\bar{x})^2}
+=\frac{4}{2}=2.
+$$
+
+L'ordonnée à l'origine est donc $\beta_0=\bar{y}-\beta_1\bar{x}=13/3-4=1/3$. La droite ajustée est $\hat{y}=1/3+2x$.
+:::
+:::
+
+::: {#exr-reg-4}
+### Expliquer le résidu
 
 Pourquoi le résidu $e_i = y_i - \hat{y}_i$ est-il important ? Donnez deux raisons.
+:::
 
-### Exercice 5. Choisir une métrique
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-4"}
+Le résidu mesure l'écart entre la valeur observée et la prédiction. L'examiner permet de mesurer les erreurs du modèle et de repérer des motifs systématiques (courbure, dispersion qui augmente, observations atypiques) qui signalent une inadéquation possible du modèle.
+:::
+:::
+
+::: {#exr-reg-5}
+### Choisir une métrique
 
 Un responsable veut éviter les grandes erreurs de prévision, même si elles sont rares. Quelle métrique entre MAE, MSE et RMSE est la plus adaptée ? Justifiez.
+:::
 
-### Exercice 6. Vérifier les hypothèses
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-5"}
+La **RMSE** convient si l'on veut pénaliser davantage les grandes erreurs tout en conservant la même unité que la cible. La MSE applique aussi une pénalisation quadratique, mais son unité est celle de la cible au carré, donc moins directement interprétable.
+:::
+:::
+
+::: {#exr-reg-6}
+### Vérifier les hypothèses
 
 Donnez une situation où une régression linéaire risque d'être peu adaptée. Expliquez pourquoi.
+:::
 
-### Exercice 7. Comprendre le gradient
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-6"}
+Si la relation entre la variable explicative et la cible est fortement non linéaire, une droite risque de ne pas représenter correctement cette relation et de produire des erreurs systématiques. On peut alors transformer les variables ou choisir un modèle adapté à cette forme de relation.
+:::
+:::
+
+::: {#exr-reg-7}
+### Comprendre le gradient
 
 Expliquez en une phrase le rôle du gradient dans la descente de gradient.
+:::
 
-### Exercice 8. Comparer les deux approches
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-7"}
+Le gradient indique la direction de plus forte augmentation de la fonction de coût ; la descente de gradient met à jour les paramètres dans la direction opposée afin de réduire cette fonction.
+:::
+:::
+
+::: {#exr-reg-8}
+### Comparer les deux approches
 
 Comparez brièvement la méthode MCO et la descente de gradient pour la régression linéaire.
+:::
+
+:::{.content-visible when-profile="teacher"}
+::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-reg-8"}
+Les **MCO** calculent directement une solution analytique (lorsqu'elle est bien définie), tandis que la **descente de gradient** l'approche par mises à jour successives des paramètres. La première est directe pour les problèmes de taille raisonnable ; la seconde est une méthode itérative qui peut être utile pour des jeux de données très grands, mais dépend notamment du taux d'apprentissage et des conditions de convergence.
+:::
+:::
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip title="Synthèse"}

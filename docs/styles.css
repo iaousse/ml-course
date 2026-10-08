@@ -1,0 +1,59 @@
+.ml-cover {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 72vh;
+  page-break-after: always;
+  text-align: center;
+}
+
+body:has(.ml-cover) #title-block-header {
+  display: none;
+}
+
+.ml-cover-logo {
+  margin: 0 auto 2rem;
+  max-height: 12rem;
+  max-width: min(60vw, 24rem);
+  object-fit: contain;
+}
+
+.ml-cover h2 {
+  border: 0;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  margin: 0 0 0.5rem;
+}
+
+.ml-cover-type {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.ml-cover-author {
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.ml-cover-institution,
+.ml-cover-edition {
+  color: var(--bs-secondary-color);
+  font-size: 1.05rem;
+}
+
+.ml-cover-edition {
+  margin-top: 0.75rem;
+}
+
+.ml-qr-page {
+  text-align: center;
+}
+
+.ml-qr-page img {
+  display: block;
+  height: auto;
+  margin: 2rem auto;
+  max-width: min(75vw, 28rem);
+  width: 100%;
+}

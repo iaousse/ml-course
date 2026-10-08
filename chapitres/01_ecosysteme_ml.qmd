@@ -24,7 +24,7 @@ Avant de choisir un algorithme, il faut formaliser algébriquement le jeu de don
 
 : Notions et vocabulaire {#tbl-jeu-donnees}
 
-**Notation mathématique standard**, utilisée dans de ce cours :
+**Notation mathématique standard utilisée dans ce cours** :
 
 - $X$ : la **matrice de design** contenant les variables explicatives (une ligne par observation, une colonne par variable) ;
 - $y$ : le **vecteur cible** (ou vecteur des étiquettes) ;
@@ -56,7 +56,7 @@ On retient ici deux **grands paradigmes**, étudiés dans les chapitres suivants
 
 * **l'apprentissage supervisé** ;
 * **l'apprentissage non supervisé** ;
-* **l'apprentissage non supervisé**.
+
 
 :::: {.panel-tabset}
 
@@ -119,7 +119,7 @@ Le présent cours se concentrera sur une sélection d'algorithmes fondamentaux i
 
 La **généralisation** est la capacité du modèle à produire une prédiction correcte face à une observation qu'il n'a jamais rencontrée. L'état d'un modèle se classe dans l'une de ces trois situations :
 
-1. **Sous-apprentissage (*Underfitting*)** : modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout — y compris sur les données d'entraînement.
+1. **Sous-apprentissage (*Underfitting*)** : modèle trop simple. Incapable de capturer la structure des données. Performances médiocres partout - y compris sur les données d'entraînement.
 2. **Ajustement optimal (*Good fit*)** : le modèle extrait les règles générales (le **signal**) et ignore les anomalies (le **bruit**).
 3. **Sur-apprentissage (*Overfitting*)** : modèle trop complexe. Il mémorise le bruit spécifique aux données d'entraînement. Il excelle artificiellement sur l'historique mais échoue sur de nouvelles données.
 
@@ -146,12 +146,12 @@ Pour diagnostiquer la généralisation, on divise l'échantillon initial en **tr
 ![Séparation typique d'un jeu de données en Train / Validation / Test](../images/train-val-test-split.svg){#fig-train-val-test}
 
 ::: {.callout-warning title="Règle d'or"}
-Le jeu de **Test** ne doit être utilisé **qu'une seule fois**, tout à la fin du projet, pour obtenir une estimation honnête de la performance. Le consulter à répétition pour ajuster des choix de modélisation revient, de fait, à l'intégrer au jeu d'entraînement — et fausse l'estimation finale.
+Le jeu de **Test** ne doit être utilisé **qu'une seule fois**, tout à la fin du projet, pour obtenir une estimation honnête de la performance. Le consulter à répétition pour ajuster des choix de modélisation revient, de fait, à l'intégrer au jeu d'entraînement - et fausse l'estimation finale.
 :::
 
 ### 4.1. Le cas particulier des données temporelles
 
-Lorsque les observations sont **datées** (ex. transactions bancaires, ventes mensuelles), un découpage **aléatoire** de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d'informations « futures » par rapport à certaines observations de test, ce qui **surestime artificiellement** sa performance réelle. Dans ce cas, on applique plutôt un **découpage chronologique** : les données les plus anciennes forment le jeu d'entraînement, les plus récentes le jeu de test — reproduisant ainsi la situation réelle où le modèle doit prédire l'avenir à partir du passé.
+Lorsque les observations sont **datées** (ex. transactions bancaires, ventes mensuelles), un découpage **aléatoire** de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d'informations « futures » par rapport à certaines observations de test, ce qui **surestime artificiellement** sa performance réelle. Dans ce cas, on applique plutôt un **découpage chronologique** : les données les plus anciennes forment le jeu d'entraînement, les plus récentes le jeu de test - reproduisant ainsi la situation réelle où le modèle doit prédire l'avenir à partir du passé.
 
 ### 4.2. La fuite de données (*Data Leakage*)
 
@@ -174,7 +174,7 @@ Pour éviter ce type d'erreur, on utilise des **Pipelines** : des enchaînements
 : Paramètres et hyperparamètres {#tbl-parametres}
 
 ::: {.callout-tip title="Comment choisir un hyperparamètre sans tricher ?"}
-On ne règle **jamais** un hyperparamètre en observant sa performance sur le jeu de **test** — cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d'hyperparamètres uniquement sur le jeu de **validation** (@tbl-jeux-evaluation), et à ne consulter le jeu de test qu'une fois le meilleur réglage définitivement choisi.
+On ne règle **jamais** un hyperparamètre en observant sa performance sur le jeu de **test** - cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d'hyperparamètres uniquement sur le jeu de **validation** (@tbl-jeux-evaluation), et à ne consulter le jeu de test qu'une fois le meilleur réglage définitivement choisi.
 :::
 
 ## 6. La Baseline et les limites de l'Accuracy
@@ -182,7 +182,7 @@ On ne règle **jamais** un hyperparamètre en observant sa performance sur le je
 Une **baseline** est une règle de décision extrêmement simple (ex. « toujours prédire la classe majoritaire »). Elle répond à la question : *le modèle ML complexe fait-il réellement mieux que l'approche la plus basique possible ?*
 
 ::: {.callout-caution title="Le piège des classes déséquilibrées"}
-Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline qui prédit systématiquement « Légitime » obtiendra **99 % d'*accuracy*** (exactitude) — un score en apparence excellent — alors même que le modèle est totalement inutile, puisqu'il ne détecte jamais aucune fraude.
+Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline qui prédit systématiquement « Légitime » obtiendra **99 % d'*accuracy*** (exactitude) - un score en apparence excellent - alors même que le modèle est totalement inutile, puisqu'il ne détecte jamais aucune fraude.
 :::
 
 Pour étudier plus finement les erreurs d'un modèle de classification, on utilise notamment la **matrice de confusion**, qui sera définie et étudiée dans le chapitre consacré à la classification.
@@ -206,7 +206,7 @@ Avant de transformer une corrélation détectée par un modèle en **décision d
 **L'éthique dans le ML :**
 
 - **Biais de représentation** : les données d'entraînement reflètent-elles fidèlement la population sur laquelle le modèle sera utilisé, ou risquent-elles de discriminer certains groupes ?
-- **Explicabilité** : peut-on justifier, a posteriori, la décision prise par la machine — en particulier lorsque celle-ci affecte directement une personne (crédit refusé, diagnostic médical) ?
+- **Explicabilité** : peut-on justifier, a posteriori, la décision prise par la machine - en particulier lorsque celle-ci affecte directement une personne (crédit refusé, diagnostic médical) ?
 
 **La Reproductibilité :** un résultat scientifique ou industriel doit pouvoir être relancé à l'identique par une autre personne. Pratiques obligatoires :
 
@@ -226,12 +226,8 @@ Avant de transformer une corrélation détectée par un modèle en **décision d
 
 ## Exercices
 
-::: {.callout-note title="Consigne"}
-Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit **avant** de les consulter.
-:::
-
 ::: {#exr-fond-1}
-### Vocabulaire et représentation
+
 
 On dispose du tableau suivant, pour la tâche « prédire si un appartement sera vendu rapidement » :
 
@@ -260,7 +256,7 @@ On dispose du tableau suivant, pour la tâche « prédire si un appartement sera
 :::
 
 ::: {#exr-fond-2}
-### Diagnostiquer sous/sur-apprentissage
+
 
 Deux modèles donnent les résultats suivants :
 
@@ -277,13 +273,13 @@ Deux modèles donnent les résultats suivants :
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-2"}
 1. Le **modèle B** généralise le mieux : son accuracy de test (81 %) est nettement supérieure à celle du modèle A (61 %), et l'écart train/test y est faible.
-2. Le **modèle A** est en sur-apprentissage : l'écart de 38 points entre train (99 %) et test (61 %) est la signature typique décrite en @fig-overfitting — le modèle a mémorisé le bruit des données d'entraînement.
+2. Le **modèle A** est en sur-apprentissage : l'écart de 38 points entre train (99 %) et test (61 %) est la signature typique décrite en @fig-overfitting - le modèle a mémorisé le bruit des données d'entraînement.
 3. L'accuracy d'entraînement seule ne mesure **jamais** la capacité de généralisation : un modèle peut atteindre 100 % sur ses données d'entraînement en les mémorisant purement, tout en étant inutilisable sur de nouvelles données.
 :::
 :::
 
 ::: {#exr-fond-3}
-### Fuite de données
+
 
 Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, une équipe utilise :
 
@@ -300,12 +296,12 @@ Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, u
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-3"}
 1. La **date de la prochaine consultation** est potentiellement une fuite.
-2. Cette information n'est généralement connue **qu'après** la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) — elle n'est donc pas disponible au moment réel où l'on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en §4.2.
+2. Cette information n'est généralement connue **qu'après** la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) - elle n'est donc pas disponible au moment réel où l'on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en §4.2.
 :::
 :::
 
 ::: {#exr-fond-4}
-### Paramètres vs Hyperparamètres
+
 
 Pour chacun des éléments suivants, indiquez s'il s'agit d'un **paramètre** appris ou d'un **hyperparamètre** choisi par le développeur :
 
@@ -318,14 +314,14 @@ Pour chacun des éléments suivants, indiquez s'il s'agit d'un **paramètre** ap
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-4"}
 D'après la @tbl-parametres :
 
-1. **Paramètre** — les coefficients sont appris automatiquement par l'algorithme à partir des données.
-2. **Hyperparamètre** — la profondeur maximale est un choix fait par le développeur avant l'entraînement.
-3. **Hyperparamètre** — la valeur de $k$ est fixée avant l'entraînement (et se règle typiquement sur le jeu de validation, jamais sur le test).
+1. **Paramètre** - les coefficients sont appris automatiquement par l'algorithme à partir des données.
+2. **Hyperparamètre** - la profondeur maximale est un choix fait par le développeur avant l'entraînement.
+3. **Hyperparamètre** - la valeur de $k$ est fixée avant l'entraînement (et se règle typiquement sur le jeu de validation, jamais sur le test).
 :::
 :::
 
 ::: {#exr-fond-5}
-### Baseline et classes déséquilibrées
+
 
 Dans un jeu de classification de 1 000 observations, la classe A représente 900 observations et la classe B seulement 100.
 
@@ -343,7 +339,7 @@ Dans un jeu de classification de 1 000 observations, la classe A représente 900
 :::
 
 ::: {#exr-fond-6}
-### Préparer une évaluation
+
 
 Une banque utilise un modèle pour repérer des demandes de prêt potentiellement frauduleuses. Les fraudes sont rares, mais manquer une fraude peut coûter très cher.
 
@@ -361,7 +357,7 @@ Une banque utilise un modèle pour repérer des demandes de prêt potentiellemen
 :::
 
 ::: {#exr-fond-7}
-### Corrélation et causalité
+
 
 Une analyse montre que les personnes qui utilisent davantage une application de e-learning réussissent mieux une formation. L'équipe pédagogique conclut que rendre l'application obligatoire fera automatiquement réussir davantage d'étudiants.
 
@@ -372,12 +368,12 @@ Une analyse montre que les personnes qui utilisent davantage une application de 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-7"}
 1. La corrélation observée est entre **le niveau d'utilisation de l'application** et **la réussite à la formation**.
-2. Comme expliqué en §7, une corrélation ne prouve pas une causalité : il est possible qu'une **variable cachée** — par exemple la motivation intrinsèque des étudiants — explique à la fois une utilisation plus fréquente de l'application **et** de meilleurs résultats, sans que l'application elle-même soit la cause de la réussite. Rendre l'application obligatoire pourrait donc n'avoir aucun effet sur les étudiants peu motivés.
+2. Comme expliqué en §7, une corrélation ne prouve pas une causalité : il est possible qu'une **variable cachée** - par exemple la motivation intrinsèque des étudiants - explique à la fois une utilisation plus fréquente de l'application **et** de meilleurs résultats, sans que l'application elle-même soit la cause de la réussite. Rendre l'application obligatoire pourrait donc n'avoir aucun effet sur les étudiants peu motivés.
 :::
 :::
 
 ::: {#exr-fond-8}
-### Choisir entre supervisé et non supervisé
+
 
 Pour chaque situation, indiquez si elle relève plutôt de l'apprentissage supervisé ou non supervisé, et justifiez brièvement.
 

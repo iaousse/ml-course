@@ -612,14 +612,26 @@ Le bon nombre de clusters dépend du problème, des données et du contexte mét
 
 L'ACP cherche à maximiser la variance, pas à optimiser une performance métier. Une composante de faible variance peut néanmoins contenir une information très importante pour une tâche précise.
 
-## 7. Exercices de compréhension
+## 7. Synthèse
 
-::: {.callout-note title="Consigne"}
-Les exercices ci-dessous portent sur le calcul et la compréhension. Essayez de répondre par écrit avant de consulter la solution.
+L'apprentissage non supervisé cherche des structures dans les variables observées sans cible connue. L'ACP résume la variabilité des données par des axes de projection, tandis que K-Means regroupe les observations selon leur proximité. Ces méthodes dépendent du prétraitement et des choix d'analyse ; leurs résultats doivent être interprétés avec prudence et validés dans le contexte d'utilisation.
+
+:::{.content-visible when-profile="teacher"}
+::: {.callout-note title="Auto-évaluation"}
+- [ ] Je sais distinguer une tâche supervisée d'une tâche non supervisée.
+- [ ] Je peux expliquer le rôle du centrage et de la standardisation avant l'ACP ou K-Means.
+- [ ] Je sais interpréter la variance expliquée et l'inertie.
+- [ ] Je peux décrire les étapes d'affectation et de mise à jour des centroïdes de K-Means.
+- [ ] Je sais expliquer pourquoi un cluster ne prouve ni une catégorie naturelle ni un lien de causalité.
+:::
 :::
 
+## Exercices
+
+
+
 ::: {#exr-unsup-1}
-### 1. Supervisé ou non supervisé ?
+### Supervisé ou non supervisé ?
 
 Pour chaque situation, indiquez s'il s'agit d'un problème supervisé ou non supervisé, puis précisez la tâche principale :
 
@@ -640,7 +652,7 @@ Pour chaque situation, indiquez s'il s'agit d'un problème supervisé ou non sup
 :::
 
 ::: {#exr-unsup-2}
-### 2. Centrage d'une matrice
+### Centrage d'une matrice
 
 On considère :
 
@@ -690,7 +702,7 @@ $$
 :::
 
 ::: {#exr-unsup-3}
-### 3. Matrice de covariance
+### Matrice de covariance
 
 On considère les données centrées :
 
@@ -742,7 +754,7 @@ Les deux variables varient donc dans le même sens : leur covariance est positiv
 :::
 
 ::: {#exr-unsup-4}
-### 4. Variance expliquée
+### Variance expliquée
 
 Une matrice de covariance possède les valeurs propres suivantes :
 
@@ -780,7 +792,7 @@ $$
 :::
 
 ::: {#exr-unsup-5}
-### 5. Affectation K-Means
+### Affectation K-Means
 
 On considère un point :
 
@@ -815,7 +827,7 @@ Le point est à égale distance des deux centroïdes. Il y a donc une égalité.
 :::
 
 ::: {#exr-unsup-6}
-### 6. Recalculer un centroïde
+### Recalculer un centroïde
 
 Un cluster contient les observations :
 
@@ -837,7 +849,7 @@ $$
 :::
 
 ::: {#exr-unsup-7}
-### 7. Inertie d'un cluster
+### Calculer l'inertie d'un cluster
 
 Un cluster contient :
 
@@ -879,7 +891,7 @@ $$
 :::
 
 ::: {#exr-unsup-8}
-### 8. Effet de l'échelle
+### Effet de l'échelle
 
 Une équipe applique K-Means à deux variables :
 
@@ -900,7 +912,7 @@ Une équipe applique K-Means à deux variables :
 :::
 
 ::: {#exr-unsup-9}
-### 9. Lecture d'un résultat de clustering
+### Interpréter un résultat de clustering
 
 K-Means produit trois groupes de clients. Le groupe 2 a en moyenne une dépense plus élevée que les autres.
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab 2 — Collecte et prétraitement des données – Machine Learning</title>
+<title>Lab 2 - Collecte et prétraitement des données – Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -79,10 +79,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -142,9 +146,172 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -153,7 +320,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab2_collecte_pretraitement.html"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tp/lab2_collecte_pretraitement.html"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
@@ -166,7 +333,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></h1>
+      <h1 class="title"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></h1>
                       </div>
   </div>
     
@@ -189,8 +356,27 @@ window.Quarto = {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -203,12 +389,14 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -223,7 +411,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -243,33 +431,33 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -310,13 +498,11 @@ window.Quarto = {
   <li><a href="#et-si-une-variable-a-des-valeurs-extrêmes" id="toc-et-si-une-variable-a-des-valeurs-extrêmes" class="nav-link" data-scroll-target="#et-si-une-variable-a-des-valeurs-extrêmes">6.3. Et si une variable a des valeurs extrêmes ?</a></li>
   </ul></li>
   <li><a href="#construire-le-pipeline-complet-sans-fuite" id="toc-construire-le-pipeline-complet-sans-fuite" class="nav-link" data-scroll-target="#construire-le-pipeline-complet-sans-fuite">7. Construire le pipeline complet, sans fuite</a></li>
-  <li><a href="#synthèse" id="toc-synthèse" class="nav-link" data-scroll-target="#synthèse">8. Synthèse</a></li>
-  <li><a href="#sec-lab2-projet" id="toc-sec-lab2-projet" class="nav-link" data-scroll-target="#sec-lab2-projet">9. Lab Sheet — Projet guidé</a>
+  <li><a href="#sec-lab2-projet" id="toc-sec-lab2-projet" class="nav-link" data-scroll-target="#sec-lab2-projet">8. Travail</a>
   <ul class="collapse">
-  <li><a href="#partie-a-diagnostic" id="toc-partie-a-diagnostic" class="nav-link" data-scroll-target="#partie-a-diagnostic">Partie A — Diagnostic</a></li>
-  <li><a href="#partie-b-nettoyage-et-décisions-justifiées" id="toc-partie-b-nettoyage-et-décisions-justifiées" class="nav-link" data-scroll-target="#partie-b-nettoyage-et-décisions-justifiées">Partie B — Nettoyage et décisions justifiées</a></li>
-  <li><a href="#partie-c-encodage-et-mise-à-léchelle" id="toc-partie-c-encodage-et-mise-à-léchelle" class="nav-link" data-scroll-target="#partie-c-encodage-et-mise-à-léchelle">Partie C — Encodage et mise à l’échelle</a></li>
-  <li><a href="#partie-d-pipeline-complet" id="toc-partie-d-pipeline-complet" class="nav-link" data-scroll-target="#partie-d-pipeline-complet">Partie D — Pipeline complet</a></li>
+  <li><a href="#partie-b---nettoyage-et-décisions-justifiées" id="toc-partie-b---nettoyage-et-décisions-justifiées" class="nav-link" data-scroll-target="#partie-b---nettoyage-et-décisions-justifiées">Partie B - Nettoyage et décisions justifiées</a></li>
+  <li><a href="#partie-c---encodage-et-mise-à-léchelle" id="toc-partie-c---encodage-et-mise-à-léchelle" class="nav-link" data-scroll-target="#partie-c---encodage-et-mise-à-léchelle">Partie C - Encodage et mise à l’échelle</a></li>
+  <li><a href="#partie-d---pipeline-complet" id="toc-partie-d---pipeline-complet" class="nav-link" data-scroll-target="#partie-d---pipeline-complet">Partie D - Pipeline complet</a></li>
   <li><a href="#livrables" id="toc-livrables" class="nav-link" data-scroll-target="#livrables">Livrables</a></li>
   </ul></li>
   </ul>
@@ -324,6 +510,7 @@ window.Quarto = {
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -350,17 +537,21 @@ window.Quarto = {
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled" title="Lien avec le cours">
+<div class="callout callout-style-default callout-note callout-titled" title="Téléchargement de la Lab Sheet">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Lien avec le cours
+<span class="screen-reader-only">Note</span>Téléchargement de la Lab Sheet
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ce Lab met en pratique le chapitre 3 (<em>Collecte et Prétraitement des Données</em>) dans son intégralité : sources de données (§1), valeurs manquantes et MCAR/MAR/MNAR (§3.1), valeurs aberrantes (§3.2), encodage (§4), mise à l’échelle (§5) et pipelines (§6). Les exercices « papier » du chapitre 3 vous ont fait calculer ces transformations à la main sur un jeu minuscule ; ce Lab vous fait passer à l’échelle avec du vrai code, sur des données plus volumineuses et réellement imparfaites.</p>
+<p>Téléchargez un seul format avant de travailler :</p>
+<ul>
+<li><strong>Notebook <code>.ipynb</code></strong> pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/labsheets"><code>labsheets/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/labsheets/lab2_collecte_pretraitement.ipynb">fichier source du Lab 2</a>.</li>
+<li><strong>Fichier <code>.qmd</code></strong> pour travailler avec Quarto : ouvrez le dossier GitHub <a href="https://github.com/iaousse/ml-course/tree/main/tp"><code>tp/</code></a> et téléchargez le <a href="https://github.com/iaousse/ml-course/blob/main/tp/lab2_collecte_pretraitement.qmd">fichier source du Lab 2</a>.</li>
+</ul>
 </div>
 </div>
 <section id="lire-des-données-depuis-plusieurs-sources" class="level2">
@@ -369,8 +560,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="csv-local">1.1. CSV local</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>clients <span class="op">=</span> pd.read_csv(<span class="st">"data/raw/clients_bruts.csv"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pandas prêt à lire le CSV qui sera créé en section 2."</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>(Nous allons construire ce fichier nous-mêmes en §2.)</p>
 </section>
 <section id="une-api-json" class="level3">
@@ -388,26 +578,30 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="une-base-sqlite">1.3. Une base SQLite</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>connexion <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"data/interim/clients.sqlite"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>connexion.execute(<span class="st">"""</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="st">CREATE TABLE IF NOT EXISTS clients (</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="st">    client_id INTEGER,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="st">    ville TEXT,</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="st">    revenu REAL</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>connexion.executemany(</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"INSERT INTO clients VALUES (?, ?, ?)"</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    [(<span class="dv">101</span>, <span class="st">"Rabat"</span>, <span class="fl">6500.0</span>), (<span class="dv">102</span>, <span class="st">"Casablanca"</span>, <span class="fl">12000.0</span>)],</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>connexion.commit()</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>resultat <span class="op">=</span> pd.read_sql_query(</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SELECT * FROM clients WHERE revenu &gt;= ?"</span>, connexion, params<span class="op">=</span>(<span class="dv">7000</span>,),</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(resultat)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>connexion.close()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"data/interim"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>connexion <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"data/interim/clients.sqlite"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>connexion.execute(<span class="st">"""</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="st">CREATE TABLE IF NOT EXISTS clients (</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">    client_id INTEGER PRIMARY KEY,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">    ville TEXT,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="st">    revenu REAL</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>connexion.execute(<span class="st">"DELETE FROM clients"</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>connexion.executemany(</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"INSERT INTO clients VALUES (?, ?, ?)"</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    [(<span class="dv">101</span>, <span class="st">"Rabat"</span>, <span class="fl">6500.0</span>), (<span class="dv">102</span>, <span class="st">"Casablanca"</span>, <span class="fl">12000.0</span>)],</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>connexion.commit()</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>resultat <span class="op">=</span> pd.read_sql_query(</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SELECT * FROM clients WHERE revenu &gt;= ?"</span>, connexion, params<span class="op">=</span>(<span class="dv">7000</span>,),</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(resultat)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>connexion.close()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-warning callout-titled" title="Paramètres SQL, pas concaténation">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -418,7 +612,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>params=(7000,)</code> évite de construire la requête par concaténation de chaînes — une concaténation directe de données utilisateur peut provoquer une injection SQL, même dans un projet pédagogique.</p>
+<p><code>params=(7000,)</code> évite de construire la requête par concaténation de chaînes - une concaténation directe de données utilisateur peut provoquer une injection SQL, même dans un projet pédagogique.</p>
 </div>
 </div>
 </section>
@@ -436,7 +630,7 @@ window.Quarto = {
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> livre <span class="kw">in</span> livres:</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    titre <span class="op">=</span> livre.select_one(<span class="st">"h3 a"</span>)[<span class="st">"title"</span>]</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    prix <span class="op">=</span> livre.select_one(<span class="st">".price_color"</span>).get_text(strip<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>titre<span class="sc">}</span><span class="ss"> — </span><span class="sc">{</span>prix<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>titre<span class="sc">}</span><span class="ss"> - </span><span class="sc">{</span>prix<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-warning callout-titled" title="Éthique et robustesse (rappel chapitre 3, §1.2)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -470,7 +664,10 @@ window.Quarto = {
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"client_actif"</span>:    [<span class="st">"oui"</span>, <span class="st">"oui"</span>, <span class="st">"non"</span>, <span class="st">"non"</span>, <span class="st">"oui"</span>, <span class="st">"non"</span>, <span class="st">"oui"</span>, <span class="st">"oui"</span>, <span class="st">"oui"</span>],</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>clients_bruts.to_csv(<span class="st">"data/raw/clients_bruts.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients_bruts)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients_bruts)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>clients <span class="op">=</span> pd.read_csv(<span class="st">"data/raw/clients_bruts.csv"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ce petit jeu contient, volontairement :</p>
 <ul>
 <li>des <strong>valeurs manquantes</strong> (<code>age</code>, <code>ville</code>) ;</li>
@@ -504,7 +701,7 @@ window.Quarto = {
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Intervalle acceptable : [</span><span class="sc">{</span>borne_basse<span class="sc">:.1f}</span><span class="ss">, </span><span class="sc">{</span>borne_haute<span class="sc">:.1f}</span><span class="ss">]"</span>)</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>aberrantes <span class="op">=</span> clients[(clients[<span class="st">"age"</span>] <span class="op">&lt;</span> borne_basse) <span class="op">|</span> (clients[<span class="st">"age"</span>] <span class="op">&gt;</span> borne_haute)]</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(aberrantes[[<span class="st">"client_id"</span>, <span class="st">"age"</span>]])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ici, <code>age = 250</code> est manifestement une <strong>erreur de saisie</strong> (un âge humain plausible) plutôt qu’une observation rare et légitime (chapitre 3, §3.2) — on la remplace par une valeur manquante, qui sera traitée comme telle :</p>
+<p>Ici, <code>age = 250</code> est manifestement une <strong>erreur de saisie</strong> (un âge humain plausible) plutôt qu’une observation rare et légitime (chapitre 3, §3.2) - on la remplace par une valeur manquante, qui sera traitée comme telle :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>clients.loc[clients[<span class="st">"age"</span>] <span class="op">&gt;</span> <span class="dv">120</span>, <span class="st">"age"</span>] <span class="op">=</span> <span class="va">None</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="harmoniser-les-catégories-textuelles" class="level3">
@@ -631,7 +828,7 @@ window.Quarto = {
 <span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>comparaison <span class="op">=</span> pd.DataFrame({<span class="st">"valeur"</span>: revenu_avec_extreme, <span class="st">"standard"</span>: standard.<span class="bu">round</span>(<span class="dv">2</span>), <span class="st">"robuste"</span>: robuste.<span class="bu">round</span>(<span class="dv">2</span>)})</span>
 <span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(comparaison.tail(<span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Observez comme la valeur extrême écrase les autres avec <code>StandardScaler</code> (des valeurs standardisées proches de 0 pour presque tout le monde), alors que <code>RobustScaler</code> — fondé sur la médiane et l’écart interquartile — reste nettement plus stable (chapitre 3, <a href="../chapitres/02_pretraitement_donnees.html#tbl-scaling" class="quarto-xref">Table&nbsp;<span>5</span></a>).</p>
+<p>Observez comme la valeur extrême écrase les autres avec <code>StandardScaler</code> (des valeurs standardisées proches de 0 pour presque tout le monde), alors que <code>RobustScaler</code> - fondé sur la médiane et l’écart interquartile - reste nettement plus stable (chapitre 3, <a href="../chapitres/module_collecte_pretraitement_commun.html#tbl-scaling" class="quarto-xref">Table&nbsp;<span>7</span></a>).</p>
 </section>
 </section>
 <section id="construire-le-pipeline-complet-sans-fuite" class="level2">
@@ -661,7 +858,7 @@ window.Quarto = {
 <span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>pipeline_categorielle <span class="op">=</span> Pipeline([</span>
 <span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"imputation"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)),</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"encodage"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>, handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)),</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"encodage"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>, handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, sparse_output<span class="op">=</span><span class="va">False</span>)),</span>
 <span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>])</span>
 <span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>pretraitement <span class="op">=</span> ColumnTransformer([</span>
@@ -692,76 +889,35 @@ window.Quarto = {
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>X_test_pret_df <span class="op">=</span> pretraitement.transform(X_test)</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X_train_pret_df.head())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="synthèse" class="level2">
-<h2 class="anchored" data-anchor-id="synthèse">8. Synthèse</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Auto-évaluation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Auto-évaluation
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Je sais lire un CSV, appeler une API JSON et interroger une base SQLite avec <code>pandas</code>.</label></li>
-<li><label><input type="checkbox">Je sais diagnostiquer valeurs manquantes, doublons et valeurs aberrantes avant de nettoyer.</label></li>
-<li><label><input type="checkbox">Je sais calculer une imputation et une standardisation <em>from scratch</em> et vérifier qu’elles correspondent aux outils <code>scikit-learn</code>.</label></li>
-<li><label><input type="checkbox">Je sais expliquer la différence d’usage entre <code>LabelEncoder</code> et <code>OrdinalEncoder</code>.</label></li>
-<li><label><input type="checkbox">Je sais construire un <code>ColumnTransformer</code> combinant imputation, encodage et mise à l’échelle.</label></li>
-<li><label><input type="checkbox">Je sais expliquer pourquoi <code>fit_transform</code> s’applique au train et <code>transform</code> seul au test.</label></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
 <section id="sec-lab2-projet" class="level2">
-<h2 class="anchored" data-anchor-id="sec-lab2-projet">9. Lab Sheet — Projet guidé</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Jeu de données du projet : le Titanic">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Jeu de données du projet : le Titanic
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Ce projet utilise le célèbre jeu de données des passagers du Titanic, disponible publiquement :</p>
+<h2 class="anchored" data-anchor-id="sec-lab2-projet">8. Travail</h2>
+<p><strong>Jeu de données du projet : le Titanic</strong> Ce projet utilise le célèbre jeu de données des passagers du Titanic, disponible publiquement :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>titanic <span class="op">=</span> pd.read_csv(</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>C’est un jeu <strong>réel</strong>, avec de véritables valeurs manquantes et un mélange de variables numériques et catégorielles — pas un jeu fabriqué pour l’exercice.</p>
-</div>
-</div>
-<section id="partie-a-diagnostic" class="level3">
-<h3 class="anchored" data-anchor-id="partie-a-diagnostic">Partie A — Diagnostic</h3>
+<p>C’est un jeu <strong>réel</strong>, avec de véritables valeurs manquantes et un mélange de variables numériques et catégorielles - pas un jeu fabriqué pour l’exercice. ### Partie A - Diagnostic</p>
 <ol type="1">
 <li>Chargez le jeu de données. Combien d’observations et de variables contient-il ?</li>
 <li>Pour chaque colonne, calculez le pourcentage de valeurs manquantes. Quelle colonne est la plus touchée ? Proposez une hypothèse sur la raison probable de ces absences (est-ce plutôt MCAR, MAR ou MNAR, à votre avis ?).</li>
 <li>Y a-t-il des lignes strictement dupliquées ?</li>
 </ol>
-</section>
-<section id="partie-b-nettoyage-et-décisions-justifiées" class="level3">
-<h3 class="anchored" data-anchor-id="partie-b-nettoyage-et-décisions-justifiées">Partie B — Nettoyage et décisions justifiées</h3>
+<section id="partie-b---nettoyage-et-décisions-justifiées" class="level3">
+<h3 class="anchored" data-anchor-id="partie-b---nettoyage-et-décisions-justifiées">Partie B - Nettoyage et décisions justifiées</h3>
 <ol start="4" type="1">
-<li>La colonne <code>deck</code> (ou <code>cabin</code> selon la source) a un taux de valeurs manquantes très élevé. Que proposez-vous de faire, et pourquoi (référez-vous au tableau des stratégies d’imputation, <a href="../chapitres/02_pretraitement_donnees.html#tbl-imputation" class="quarto-xref">Table&nbsp;<span>2</span></a>) ?</li>
+<li>La colonne <code>deck</code> (ou <code>cabin</code> selon la source) a un taux de valeurs manquantes très élevé. Que proposez-vous de faire, et pourquoi (référez-vous au tableau des stratégies d’imputation, <a href="../chapitres/module_collecte_pretraitement_commun.html#tbl-imputation" class="quarto-xref">Table&nbsp;<span>4</span></a>) ?</li>
 <li>Choisissez, en le justifiant, comment traiter les valeurs manquantes de <code>age</code> : suppression, imputation simple, imputation par groupe (par exemple, par classe de billet) ?</li>
 <li>La variable <code>fare</code> (prix du billet) contient-elle des valeurs qui pourraient être considérées comme aberrantes selon la méthode IQR ? Affichez-les. S’agit-il probablement d’erreurs ou d’observations réelles mais extrêmes ?</li>
 </ol>
 </section>
-<section id="partie-c-encodage-et-mise-à-léchelle" class="level3">
-<h3 class="anchored" data-anchor-id="partie-c-encodage-et-mise-à-léchelle">Partie C — Encodage et mise à l’échelle</h3>
+<section id="partie-c---encodage-et-mise-à-léchelle" class="level3">
+<h3 class="anchored" data-anchor-id="partie-c---encodage-et-mise-à-léchelle">Partie C - Encodage et mise à l’échelle</h3>
 <ol start="7" type="1">
 <li>Parmi les variables catégorielles du jeu (<code>sex</code>, <code>embarked</code>, <code>class</code>…), laquelle est <strong>ordinale</strong> et laquelle est <strong>nominale</strong> ? Justifiez, puis choisissez l’encodage approprié pour chacune.</li>
-<li>La variable <code>fare</code> a une distribution très asymétrique (quelques billets très chers). Quelle méthode de mise à l’échelle du chapitre 3 (<a href="../chapitres/02_pretraitement_donnees.html#tbl-scaling" class="quarto-xref">Table&nbsp;<span>5</span></a>) recommanderiez-vous, et pourquoi ?</li>
+<li>La variable <code>fare</code> a une distribution très asymétrique (quelques billets très chers). Quelle méthode de mise à l’échelle du chapitre 3 (<a href="../chapitres/module_collecte_pretraitement_commun.html#tbl-scaling" class="quarto-xref">Table&nbsp;<span>7</span></a>) recommanderiez-vous, et pourquoi ?</li>
 </ol>
 </section>
-<section id="partie-d-pipeline-complet" class="level3">
-<h3 class="anchored" data-anchor-id="partie-d-pipeline-complet">Partie D — Pipeline complet</h3>
+<section id="partie-d---pipeline-complet" class="level3">
+<h3 class="anchored" data-anchor-id="partie-d---pipeline-complet">Partie D - Pipeline complet</h3>
 <ol start="9" type="1">
 <li>Construisez un <code>ColumnTransformer</code> complet (imputation + encodage + mise à l’échelle adaptés à chaque type de colonne) pour préparer <code>X</code>, avec <code>survived</code> comme cible <span class="math inline">\(y\)</span>.</li>
 <li>Séparez Train/Test (80/20, stratifié sur <code>survived</code>), ajustez votre pipeline <strong>uniquement sur le train</strong>, puis transformez le test. Affichez la forme (<code>shape</code>) du tableau obtenu.</li>
@@ -775,24 +931,6 @@ window.Quarto = {
 <li>un court texte (quelques phrases) justifiant chacune de vos décisions de nettoyage ;</li>
 <li>le pipeline final, exécutable de bout en bout sur les données brutes.</li>
 </ul>
-<div class="callout callout-style-default callout-tip callout-titled" title="Checklist finale">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Astuce</span>Checklist finale
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul class="task-list">
-<li><label><input type="checkbox">Chaque décision de nettoyage est justifiée, pas seulement appliquée.</label></li>
-<li><label><input type="checkbox">Aucune statistique (moyenne, médiane, min/max) n’est calculée sur l’ensemble des données avant le split.</label></li>
-<li><label><input type="checkbox">Le pipeline distingue correctement colonnes numériques et catégorielles.</label></li>
-<li><label><input type="checkbox">Le pipeline s’exécute sans erreur de bout en bout sur des données brutes jamais vues.</label></li>
-</ul>
-</div>
-</div>
 
 
 </section>
@@ -801,6 +939,19 @@ window.Quarto = {
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1201,13 +1352,13 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../tp/lab1_fondements_sklearn.html" class="pagination-link" aria-label="Lab 1 — Généralisation et évaluation avec `scikit-learn`">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></span>
+      <a href="../tp/lab1_fondements_sklearn.html" class="pagination-link" aria-label="Lab 1 - Généralisation et évaluation avec `scikit-learn`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../tp/lab3_regression.html" class="pagination-link" aria-label="Lab 3 — Régression : prédire une valeur numérique">
-        <span class="nav-page-text"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../tp/lab3_regression.html" class="pagination-link" aria-label="Lab 3 - Régression : prédire une valeur numérique">
+        <span class="nav-page-text"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

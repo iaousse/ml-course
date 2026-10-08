@@ -1,4 +1,4 @@
-# Lab 3 — Régression : prédire une valeur numérique
+# Lab 3 - Régression : prédire une valeur numérique
 
 ::: {.callout-tip title="Objectifs du Lab"}
 À la fin de ce Lab, l'étudiant sera capable de :
@@ -12,8 +12,11 @@
 - **Assembler** un pipeline complet, du prétraitement au modèle final.
 :::
 
-::: {.callout-note title="Lien avec le cours"}
-Ce Lab correspond au chapitre 4 (*Modèles de régression*). Il réutilise directement les compétences des Labs précédents : construction de $X$/$y$ et évaluation (Lab 1, chapitre 2), prétraitement et `ColumnTransformer` (Lab 2, chapitre 3). C'est ici que le réglage d'hyperparamètres, seulement esquissé au Lab 1, est traité **en profondeur** avec `GridSearchCV` — une méthode que vous réutiliserez telle quelle au Lab 4 (classification).
+::: {.callout-note title="Téléchargement de la Lab Sheet"}
+Téléchargez un seul format avant de travailler :
+
+- **Notebook `.ipynb`** pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub [`labsheets/`](https://github.com/iaousse/ml-course/tree/main/labsheets) et téléchargez le [fichier source du Lab 3](https://github.com/iaousse/ml-course/blob/main/labsheets/lab3_regression.ipynb).
+- **Fichier `.qmd`** pour travailler avec Quarto : ouvrez le dossier GitHub [`tp/`](https://github.com/iaousse/ml-course/tree/main/tp) et téléchargez le [fichier source du Lab 3](https://github.com/iaousse/ml-course/blob/main/tp/lab3_regression.qmd).
 :::
 
 ## 1. Rappel : qu'est-ce qu'apprend une régression linéaire ?
@@ -67,6 +70,10 @@ En pratique, un seul prédicteur suffit rarement. Construisons un jeu de donnée
 
 ```python
 import pandas as pd
+from pathlib import Path
+
+Path("data/processed").mkdir(parents=True, exist_ok=True)
+Path("outputs").mkdir(parents=True, exist_ok=True)
 
 n = 300
 rng = np.random.default_rng(7)
@@ -145,11 +152,11 @@ print(f"R²   = {r2:.3f}")
 |---|---|---|---|
 | MAE | Celle de $y$ (MAD) | Erreur absolue moyenne, peu sensible aux valeurs extrêmes | Minimiser |
 | MSE | Celle de $y$ au carré | Pénalise fortement les grosses erreurs | Minimiser |
-| RMSE | Celle de $y$ (MAD) | Racine de la MSE, revient à l'unité d'origine — la plus lisible en pratique | Minimiser |
+| RMSE | Celle de $y$ (MAD) | Racine de la MSE, revient à l'unité d'origine - la plus lisible en pratique | Minimiser |
 | $R^2$ | Sans unité, $\le 1$ | Proportion de variance expliquée par le modèle par rapport à une baseline qui prédit toujours la moyenne | Maximiser |
 
 ::: {.callout-note title="R² et baseline (rappel chapitre 2, §6)"}
-Un $R^2$ de 0 correspond exactement à la performance d'une baseline qui prédirait toujours $\bar{y}$ (la moyenne). Un $R^2$ négatif signifie que votre modèle fait **pire** que cette baseline triviale — un signal d'alerte à ne jamais ignorer.
+Un $R^2$ de 0 correspond exactement à la performance d'une baseline qui prédirait toujours $\bar{y}$ (la moyenne). Un $R^2$ négatif signifie que votre modèle fait **pire** que cette baseline triviale - un signal d'alerte à ne jamais ignorer.
 :::
 
 ## 4. Diagnostiquer un modèle par ses résidus
@@ -176,7 +183,7 @@ fig.savefig("outputs/diagnostic_residus.png", dpi=150)
 plt.show()
 ```
 
-Un bon modèle produit des résidus répartis **aléatoirement autour de zéro**, sans motif visible. Un nuage en forme d'entonnoir (variance croissante) ou une courbe systématique indique que le modèle rate quelque chose de structurel — une piste pour ajouter des variables ou transformer certaines d'entre elles (par exemple un logarithme sur `prix_mad`).
+Un bon modèle produit des résidus répartis **aléatoirement autour de zéro**, sans motif visible. Un nuage en forme d'entonnoir (variance croissante) ou une courbe systématique indique que le modèle rate quelque chose de structurel - une piste pour ajouter des variables ou transformer certaines d'entre elles (par exemple un logarithme sur `prix_mad`).
 
 ## 5. Régularisation : `Ridge` et `Lasso`
 
@@ -188,7 +195,7 @@ $$
 \text{Lasso} : \quad \text{MSE}(\beta) + \alpha \sum_{j} |\beta_j|
 $$
 
-où $\alpha \geq 0$ contrôle l'intensité de la pénalité — un **hyperparamètre**, à ne pas confondre avec les coefficients $\beta_j$, qui restent des paramètres appris.
+où $\alpha \geq 0$ contrôle l'intensité de la pénalité - un **hyperparamètre**, à ne pas confondre avec les coefficients $\beta_j$, qui restent des paramètres appris.
 
 ```python
 from sklearn.linear_model import Lasso, Ridge
@@ -200,12 +207,12 @@ for nom, modele_reg in [("Ridge (α=1.0)", Ridge(alpha=1.0)), ("Lasso (α=1.0)",
 ```
 
 ::: {.callout-tip title="Ridge vs Lasso"}
-`Ridge` réduit tous les coefficients sans jamais les annuler complètement. `Lasso` peut ramener certains coefficients **exactement à zéro** — il réalise de fait une sélection de variables automatique, utile quand on soupçonne que certaines colonnes n'apportent rien.
+`Ridge` réduit tous les coefficients sans jamais les annuler complètement. `Lasso` peut ramener certains coefficients **exactement à zéro** - il réalise de fait une sélection de variables automatique, utile quand on soupçonne que certaines colonnes n'apportent rien.
 :::
 
 ## 6. Régler $\alpha$ proprement avec `GridSearchCV`
 
-Au Lab 1, nous avions comparé quelques valeurs de $k$ à la main, dans une boucle. `GridSearchCV` automatise entièrement cette démarche : il essaie chaque valeur d'hyperparamètre, évalue chacune par validation croisée, et conserve la meilleure — **sans jamais toucher au jeu de test**.
+Au Lab 1, nous avions comparé quelques valeurs de $k$ à la main, dans une boucle. `GridSearchCV` automatise entièrement cette démarche : il essaie chaque valeur d'hyperparamètre, évalue chacune par validation croisée, et conserve la meilleure - **sans jamais toucher au jeu de test**.
 
 ```python
 from sklearn.model_selection import GridSearchCV
@@ -242,35 +249,23 @@ print("R² sur le test, avec le meilleur modèle :", round(recherche.score(X_tes
 Choisir $\alpha$ à l'œil, ou pire sur le jeu de test, revient à une fuite de données par les hyperparamètres (chapitre 2, §5) : le score obtenu serait artificiellement optimiste et ne refléterait pas la performance réelle attendue en production.
 :::
 
-## 7. Synthèse
+## 7. Travail {#sec-lab3-projet}
 
-::: {.callout-note title="Auto-évaluation" collapse="true"}
-- [ ] Je sais calculer les coefficients d'une régression linéaire simple à la main et retrouver le même résultat avec `scikit-learn`.
-- [ ] Je sais construire une régression multiple avec des variables numériques et catégorielles, via un pipeline.
-- [ ] Je sais calculer et interpréter MAE, RMSE et $R^2$, et dire laquelle privilégier selon le contexte.
-- [ ] Je sais lire un graphique de résidus pour diagnostiquer un modèle.
-- [ ] Je sais expliquer la différence entre `Ridge` et `Lasso`.
-- [ ] Je sais utiliser `GridSearchCV` pour choisir un hyperparamètre par validation croisée, à l'intérieur d'un pipeline complet.
-:::
-
-## 8. Lab Sheet — Projet guidé {#sec-lab3-projet}
-
-::: {.callout-important title="Jeu de données du projet"}
+**Jeu de données du projet**
 Ce projet utilise le jeu de données `diabetes` fourni par `scikit-learn` (`from sklearn.datasets import load_diabetes`) : 442 patients, 10 variables physiologiques standardisées, et une cible numérique mesurant la progression de la maladie un an après le diagnostic. C'est un vrai jeu de données médical, utilisé dans de nombreuses publications de référence sur la régression régularisée.
-:::
 
-### Partie A — Prise en main
+### Partie A - Prise en main
 
 1. Chargez `load_diabetes(as_frame=True)`. Combien d'observations et de variables explicatives ? Toutes les variables sont-elles déjà numériques ?
 2. Séparez Train (80 %) / Test (20 %) avec un `random_state` fixé.
 
-### Partie B — Une première régression
+### Partie B - Une première régression
 
 3. Entraînez une `LinearRegression` simple (sans régularisation). Calculez MAE, RMSE et $R^2$ sur le jeu de test.
 4. Affichez les coefficients appris (`.coef_`) associés à chaque variable. Quelle variable semble avoir le plus d'impact (en valeur absolue) ?
 5. Tracez le graphique résidus vs prédictions (§4). Observez-vous un motif particulier ?
 
-### Partie C — Régularisation et réglage d'hyperparamètre
+### Partie C - Régularisation et réglage d'hyperparamètre
 
 6. Construisez une grille de valeurs de $\alpha$ pour `Ridge` (au moins 6 valeurs, sur plusieurs ordres de grandeur, par exemple de 0.01 à 100).
 7. Utilisez `GridSearchCV` (5 plis) pour trouver le meilleur $\alpha$. Donnez la valeur retenue et le $R^2$ moyen obtenu en validation croisée.
@@ -282,10 +277,3 @@ Ce projet utilise le jeu de données `diabetes` fourni par `scikit-learn` (`from
 - un notebook ou script contenant le code des parties A à C ;
 - au moins un graphique de diagnostic dans `outputs/` ;
 - un court paragraphe comparant les modèles testés et justifiant le choix final.
-
-::: {.callout-tip title="Checklist finale"}
-- [ ] Le split Train/Test est effectué avant tout calcul de statistique.
-- [ ] Au moins trois métriques de régression sont calculées et interprétées.
-- [ ] L'hyperparamètre $\alpha$ est choisi par validation croisée, jamais sur le test.
-- [ ] Le jeu de test n'est utilisé qu'une seule fois, pour l'évaluation finale.
-:::

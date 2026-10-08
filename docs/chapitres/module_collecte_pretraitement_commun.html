@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Collecte, Nettoyage et Préparation des Données – Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapitres/03_regression_lineaire.html" rel="next">
+<link href="../chapitres/01_ecosysteme_ml.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapitres/module_collecte_pretraitement_commun.html"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/logo_estc.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Machine Learning</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Recherche"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/00_intro_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction au Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/01_ecosysteme_ml.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/03_regression_lineaire.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Régression</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/04_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapitres/05_ml_non_supervise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Apprentissage non supervisé</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Dans ce chapitre</h2>
+   
+  <ul>
+  <li><a href="#où-trouver-les-données-les-stratégies-de-collecte" id="toc-où-trouver-les-données-les-stratégies-de-collecte" class="nav-link active" data-scroll-target="#où-trouver-les-données-les-stratégies-de-collecte">1. Où trouver les données ? Les stratégies de collecte</a>
+  <ul class="collapse">
+  <li><a href="#les-bases-de-données" id="toc-les-bases-de-données" class="nav-link" data-scroll-target="#les-bases-de-données">1.1. Les bases de données</a></li>
+  <li><a href="#les-fichiers-plats-et-les-principaux-formats-de-données" id="toc-les-fichiers-plats-et-les-principaux-formats-de-données" class="nav-link" data-scroll-target="#les-fichiers-plats-et-les-principaux-formats-de-données">1.2. Les fichiers plats et les principaux formats de données</a></li>
+  <li><a href="#les-api" id="toc-les-api" class="nav-link" data-scroll-target="#les-api">1.3. Les API</a></li>
+  <li><a href="#le-web-scraping" id="toc-le-web-scraping" class="nav-link" data-scroll-target="#le-web-scraping">1.4. Le <em>web scraping</em></a></li>
+  <li><a href="#données-ouvertes-et-capteurs-connectés" id="toc-données-ouvertes-et-capteurs-connectés" class="nav-link" data-scroll-target="#données-ouvertes-et-capteurs-connectés">1.5. Données ouvertes et capteurs connectés</a></li>
+  </ul></li>
+  <li><a href="#représentativité-et-biais-déchantillonnage" id="toc-représentativité-et-biais-déchantillonnage" class="nav-link" data-scroll-target="#représentativité-et-biais-déchantillonnage">2. Représentativité et biais d’échantillonnage</a></li>
+  <li><a href="#nettoyage-des-données" id="toc-nettoyage-des-données" class="nav-link" data-scroll-target="#nettoyage-des-données">3. Nettoyage des données</a>
+  <ul class="collapse">
+  <li><a href="#les-valeurs-manquantes" id="toc-les-valeurs-manquantes" class="nav-link" data-scroll-target="#les-valeurs-manquantes">3.1. Les valeurs manquantes</a></li>
+  <li><a href="#les-valeurs-aberrantes-outliers" id="toc-les-valeurs-aberrantes-outliers" class="nav-link" data-scroll-target="#les-valeurs-aberrantes-outliers">3.2. Les valeurs aberrantes (<em>outliers</em>)</a></li>
+  <li><a href="#les-doublons-et-les-incohérences" id="toc-les-doublons-et-les-incohérences" class="nav-link" data-scroll-target="#les-doublons-et-les-incohérences">3.3. Les doublons et les incohérences</a></li>
+  <li><a href="#vers-une-démarche-de-qualité-systématique" id="toc-vers-une-démarche-de-qualité-systématique" class="nav-link" data-scroll-target="#vers-une-démarche-de-qualité-systématique">3.4. Vers une démarche de qualité systématique</a></li>
+  </ul></li>
+  <li><a href="#encodage-des-variables-catégorielles" id="toc-encodage-des-variables-catégorielles" class="nav-link" data-scroll-target="#encodage-des-variables-catégorielles">4. Encodage des variables catégorielles</a>
+  <ul class="collapse">
+  <li><a href="#encodage-rapide-avec-pandas-da" id="toc-encodage-rapide-avec-pandas-da" class="nav-link" data-scroll-target="#encodage-rapide-avec-pandas-da">4.1. Encodage rapide avec <code>pandas</code> (DA)</a></li>
+  <li><a href="#encodage-robuste-avec-scikit-learn-ml" id="toc-encodage-robuste-avec-scikit-learn-ml" class="nav-link" data-scroll-target="#encodage-robuste-avec-scikit-learn-ml">4.2. Encodage robuste avec <code>scikit-learn</code> (ML)</a></li>
+  <li><a href="#comparatif-des-méthodes-dencodage" id="toc-comparatif-des-méthodes-dencodage" class="nav-link" data-scroll-target="#comparatif-des-méthodes-dencodage">4.3. Comparatif des méthodes d’encodage</a></li>
+  </ul></li>
+  <li><a href="#mise-à-léchelle-standardisation-et-normalisation" id="toc-mise-à-léchelle-standardisation-et-normalisation" class="nav-link" data-scroll-target="#mise-à-léchelle-standardisation-et-normalisation">5. Mise à l’échelle : standardisation et normalisation</a>
+  <ul class="collapse">
+  <li><a href="#les-deux-transformations-de-référence" id="toc-les-deux-transformations-de-référence" class="nav-link" data-scroll-target="#les-deux-transformations-de-référence">5.1. Les deux transformations de référence</a></li>
+  <li><a href="#quand-utiliser-lune-ou-lautre" id="toc-quand-utiliser-lune-ou-lautre" class="nav-link" data-scroll-target="#quand-utiliser-lune-ou-lautre">5.2. Quand utiliser l’une ou l’autre ?</a></li>
+  <li><a href="#pourquoi-certains-algorithmes-y-sont-ils-sensibles-ml" id="toc-pourquoi-certains-algorithmes-y-sont-ils-sensibles-ml" class="nav-link" data-scroll-target="#pourquoi-certains-algorithmes-y-sont-ils-sensibles-ml">5.3. Pourquoi certains algorithmes y sont-ils sensibles ? (ML)</a></li>
+  </ul></li>
+  <li><a href="#transformations-complémentaires-pour-lexploration-da" id="toc-transformations-complémentaires-pour-lexploration-da" class="nav-link" data-scroll-target="#transformations-complémentaires-pour-lexploration-da">6. Transformations complémentaires pour l’exploration (DA)</a>
+  <ul class="collapse">
+  <li><a href="#discrétisation-binning" id="toc-discrétisation-binning" class="nav-link" data-scroll-target="#discrétisation-binning">6.1. Discrétisation (<em>binning</em>)</a></li>
+  <li><a href="#quelques-transformations-usuelles-supplémentaires" id="toc-quelques-transformations-usuelles-supplémentaires" class="nav-link" data-scroll-target="#quelques-transformations-usuelles-supplémentaires">6.2. Quelques transformations usuelles supplémentaires</a></li>
+  </ul></li>
+  <li><a href="#construire-un-pipeline-de-prétraitement-automatisé-ml" id="toc-construire-un-pipeline-de-prétraitement-automatisé-ml" class="nav-link" data-scroll-target="#construire-un-pipeline-de-prétraitement-automatisé-ml">7. Construire un pipeline de prétraitement automatisé (ML)</a>
+  <ul class="collapse">
+  <li><a href="#columntransformer-et-pipeline-de-scikit-learn" id="toc-columntransformer-et-pipeline-de-scikit-learn" class="nav-link" data-scroll-target="#columntransformer-et-pipeline-de-scikit-learn">7.1. <code>ColumnTransformer</code> et <code>Pipeline</code> de <code>scikit-learn</code></a></li>
+  <li><a href="#mettre-à-jour-lenvironnement-du-projet" id="toc-mettre-à-jour-lenvironnement-du-projet" class="nav-link" data-scroll-target="#mettre-à-jour-lenvironnement-du-projet">7.2. Mettre à jour l’environnement du projet</a></li>
+  </ul></li>
+  <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">Exercices</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+
+<div class="callout callout-style-default callout-important callout-titled" title="Un chapitre commun à deux cours">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Un chapitre commun à deux cours
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ce chapitre appartient à un <strong>module</strong> qui réunit deux éléments de formation distincts : le cours <strong>« Analyse de Données et Data Visualisation »</strong> et le cours <strong>« Machine Learning »</strong>. Dans les deux cas, avant de pouvoir explorer, visualiser ou modéliser un jeu de données, il faut d’abord savoir où le trouver, comment diagnostiquer et corriger ses défauts, puis comment le transformer pour la suite du travail. Ce socle de compétences est commun aux deux cours et n’est donc écrit qu’<strong>une seule fois</strong>, dans ce chapitre partagé.</p>
+<p>Certaines notions, cependant, ne sont utiles que dans l’un des deux cours : la construction d’un pipeline <code>scikit-learn</code> destiné à alimenter un algorithme n’a de sens qu’en Machine Learning ; l’extraction de composantes temporelles pour enrichir un tableau de bord relève davantage de l’analyse de données. Pour s’y retrouver :</p>
+<ul>
+<li>une section <strong>sans mention particulière</strong> est commune aux deux cours : tous les étudiants doivent la maîtriser ;</li>
+<li>une section suivie de <strong>(ML)</strong> est spécifique au cours de Machine Learning ;</li>
+<li>une section suivie de <strong>(DA)</strong> est spécifique au cours d’Analyse de Données et Data Visualisation.</li>
+</ul>
+<p>Un étudiant du cours d’Analyse de Données peut parcourir les sections (ML) à titre culturel, pour comprendre comment les mêmes données seraient ensuite utilisées par un modèle ; symétriquement, un étudiant de Machine Learning gagne à comprendre les sections (DA), qui montrent comment les mêmes données brutes serviraient à construire un tableau de bord. Mais seules les sections sans mention et celles correspondant à son propre cours sont exigibles à l’évaluation.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Objectifs du chapitre">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Objectifs du chapitre
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>À la fin de ce chapitre, l’étudiant sera capable de :</p>
+<ul>
+<li><strong>Identifier</strong> les principales sources de collecte de données (bases de données, fichiers plats, API, <em>web scraping</em>, données ouvertes) et les principaux formats dans lesquels elles se présentent ;</li>
+<li><strong>Diagnostiquer</strong> la représentativité d’un échantillon et les problèmes de qualité d’un jeu de données (valeurs manquantes, aberrantes, dupliquées, incohérentes) ;</li>
+<li><strong>Appliquer</strong>, avec <code>pandas</code>, des stratégies adaptées de traitement des valeurs manquantes et aberrantes ;</li>
+<li><strong>Transformer</strong> des variables catégorielles (encodage) et numériques (mise à l’échelle), en justifiant la méthode choisie ;</li>
+<li><strong>(DA)</strong> Discrétiser une variable numérique et en dériver de nouvelles variables utiles à l’exploration et à la visualisation ;</li>
+<li><strong>(ML)</strong> Construire, avec <code>scikit-learn</code>, un pipeline de prétraitement complet (<code>ColumnTransformer</code> + <code>Pipeline</code>) exempt de fuite de données.</li>
+</ul>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Si les données sont de mauvaise qualité, corrompues ou biaisées, ni les conclusions d’une analyse aussi soignée soit-elle, ni les prédictions d’un modèle aussi sophistiqué soit-il, ne pourront être fiables (<em>Garbage In, Garbage Out</em>).</p>
+<p>— Principe fondamental de la Data Science</p>
+</blockquote>
+<p>Ce chapitre couvre l’ensemble du travail qui précède l’analyse ou la modélisation à proprement parler : où trouver les données, comment s’assurer qu’elles sont représentatives, comment détecter et corriger leurs défauts, puis comment les transformer - qu’il s’agisse de les préparer pour l’exploration et la visualisation (cours d’Analyse de Données), ou pour les transmettre à un algorithme d’apprentissage (cours de Machine Learning). Dans les deux cours, ces étapes correspondent aux mêmes phases du cycle de vie d’un projet fondé sur la donnée, telles que présentées dans le chapitre d’introduction propre à chacun de vos deux cours.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Une notation à connaître : le tableau de données, $X$ et $y$">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Une notation à connaître : le tableau de données, <span class="math inline">\(X\)</span> et <span class="math inline">\(y\)</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tout au long de ce chapitre, une observation est une <strong>ligne</strong> d’un tableau et une variable est une <strong>colonne</strong>. En cours de Machine Learning, on distingue plus précisément les variables explicatives, regroupées dans une matrice notée <span class="math inline">\(X\)</span>, de la variable à prédire, notée <span class="math inline">\(y\)</span> - une notation que vous retrouverez dans toute la suite de ce cours. En Analyse de Données, cette distinction <span class="math inline">\(X\)</span>/<span class="math inline">\(y\)</span> n’est pas toujours nécessaire : on manipule plus simplement un unique tableau <code>pandas</code> (un <code>DataFrame</code>), dont certaines colonnes serviront à l’exploration et d’autres à la visualisation.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Réflexe de départ : connaître son tableau avant d'y toucher">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Réflexe de départ : connaître son tableau avant d’y toucher
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avant toute modification, conservez une copie du fichier original et rédigez un petit <strong>dictionnaire de données</strong>. Pour chaque colonne, notez son nom, sa signification, son unité, son type attendu et les valeurs possibles. Par exemple, <code>prix</code> peut être un nombre positif en MAD, tandis que <code>type_bien</code> peut prendre les valeurs « appartement », « maison » ou « terrain ». Ce dictionnaire évite de corriger à tort une valeur qui était en réalité parfaitement valide, et il documente le sens exact de chaque colonne pour quiconque reprendra votre travail par la suite.</p>
+</div>
+</div>
+<section id="où-trouver-les-données-les-stratégies-de-collecte" class="level2">
+<h2 class="anchored" data-anchor-id="où-trouver-les-données-les-stratégies-de-collecte">1. Où trouver les données ? Les stratégies de collecte</h2>
+<p>Avant tout projet, il faut identifier la ou les sources permettant de constituer le jeu de données à traiter. Plusieurs grandes familles de sources coexistent dans la pratique professionnelle, qu’il s’agisse d’alimenter un tableau de bord ou d’entraîner un modèle.</p>
+<section id="les-bases-de-données" class="level3">
+<h3 class="anchored" data-anchor-id="les-bases-de-données">1.1. Les bases de données</h3>
+<p>La source la plus courante en entreprise reste la base de données interne, qu’elle soit :</p>
+<ul>
+<li><strong>relationnelle (SQL)</strong> : les données sont organisées en tables reliées par des clés (ex. PostgreSQL, MySQL, SQL Server) et interrogées via le langage <strong>SQL</strong> (<em>Structured Query Language</em>) ;</li>
+<li><strong>non-relationnelle (NoSQL)</strong> : les données sont stockées sous une forme plus flexible - documents JSON (MongoDB), paires clé-valeur (Redis), ou graphes (Neo4j) - adaptée aux données peu structurées ou à très grande échelle.</li>
+</ul>
+<p><code>pandas</code> permet de charger directement le résultat d’une requête SQL dans un <code>DataFrame</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>connexion <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"ventes.db"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_sql(<span class="st">"SELECT * FROM transactions WHERE annee = 2025"</span>, connexion)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="les-fichiers-plats-et-les-principaux-formats-de-données" class="level3">
+<h3 class="anchored" data-anchor-id="les-fichiers-plats-et-les-principaux-formats-de-données">1.2. Les fichiers plats et les principaux formats de données</h3>
+<p>En dehors des bases de données, les données sont fréquemment échangées sous forme de fichiers. Savoir reconnaître un format et choisir le bon outil de lecture est un prérequis à toute étape suivante :</p>
+<div id="tbl-formats-donnees" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-formats-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Principaux formats de données rencontrés en pratique
+</figcaption>
+<div aria-describedby="tbl-formats-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Format</th>
+<th style="text-align: left;">Caractéristiques</th>
+<th style="text-align: left;">Lecture avec <code>pandas</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>CSV</strong></td>
+<td style="text-align: left;">Texte tabulaire, très répandu, lisible par un humain</td>
+<td style="text-align: left;"><code>pd.read_csv()</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>JSON</strong></td>
+<td style="text-align: left;">Structure hiérarchique (objets imbriqués), courant pour les API</td>
+<td style="text-align: left;"><code>pd.read_json()</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Excel (<code>.xlsx</code>)</strong></td>
+<td style="text-align: left;">Tableur, souvent utilisé en entreprise</td>
+<td style="text-align: left;"><code>pd.read_excel()</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Parquet</strong></td>
+<td style="text-align: left;">Format binaire columnaire, compressé, optimisé pour l’analytique</td>
+<td style="text-align: left;"><code>pd.read_parquet()</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="Zoom sur le format Parquet">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Zoom sur le format Parquet
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Contrairement au CSV, le format <strong>Parquet</strong> stocke les données par colonne plutôt que par ligne. Cela permet de ne lire que les colonnes réellement nécessaires à une analyse, de bénéficier d’une compression efficace et de conserver les types de données (un entier reste un entier, pas une chaîne de caractères à réinterpréter). Il est aujourd’hui privilégié pour les jeux de données volumineux, et s’utilise nativement avec <code>pandas</code>, <code>Polars</code> ou <code>DuckDB</code>.</p>
+</div>
+</div>
+</section>
+<section id="les-api" class="level3">
+<h3 class="anchored" data-anchor-id="les-api">1.3. Les API</h3>
+<p>Une <strong>API</strong> (<em>Application Programming Interface</em>) est une interface mise à disposition par un fournisseur de données, qui permet d’obtenir des données structurées de façon normalisée - sans avoir à analyser du HTML. On distingue notamment :</p>
+<ul>
+<li>les <strong>API REST</strong>, les plus répandues, où chaque ressource est accessible via une URL et une méthode HTTP (<code>GET</code>, <code>POST</code>…), avec une réponse généralement au format JSON ;</li>
+<li>les <strong>API GraphQL</strong>, plus récentes, qui permettent au client de préciser exactement les champs qu’il souhaite récupérer en une seule requête, réduisant ainsi le volume de données transférées inutilement.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>reponse <span class="op">=</span> requests.get(<span class="st">"https://api.exemple.org/ventes?annee=2025"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>reponse.raise_for_status()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.json_normalize(reponse.json()[<span class="st">"resultats"</span>])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>pd.json_normalize</code> est particulièrement utile lorsque la réponse JSON contient des objets imbriqués : elle « aplatit » automatiquement cette structure hiérarchique en un tableau exploitable.</p>
+</section>
+<section id="le-web-scraping" class="level3">
+<h3 class="anchored" data-anchor-id="le-web-scraping">1.4. Le <em>web scraping</em></h3>
+<p>Lorsque les données ne sont disponibles que sur des pages web, sans base de données ni API accessibles, on a recours au <strong>web scraping</strong> : l’extraction automatisée d’informations à partir du code HTML de sites web. Les bibliothèques Python de référence sont :</p>
+<ul>
+<li><strong><code>BeautifulSoup</code></strong> : idéale pour analyser (<em>parser</em>) le HTML d’une page unique et en extraire des éléments ciblés (balises, attributs) ;</li>
+<li><strong><code>Scrapy</code></strong> : un <em>framework</em> complet, conçu pour des collectes à grande échelle sur de nombreuses pages, avec gestion native de la pagination, des files d’attente de requêtes et de l’exportation des résultats.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled" title="Éthique et légalité du web scraping">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Éthique et légalité du web scraping
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le <em>web scraping</em> n’est pas toujours autorisé. Avant de collecter des données sur un site, il convient de vérifier :</p>
+<ul>
+<li>le fichier <code>robots.txt</code> du site, qui précise les zones autorisées ou interdites aux robots ;</li>
+<li>les conditions générales d’utilisation (CGU) du site, qui peuvent explicitement interdire la collecte automatisée ;</li>
+<li>le cadre réglementaire applicable à la protection des données personnelles (ex. loi marocaine 09-08, ou RGPD pour les données concernant des ressortissants européens), en particulier si des données à caractère personnel sont collectées.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="données-ouvertes-et-capteurs-connectés" class="level3">
+<h3 class="anchored" data-anchor-id="données-ouvertes-et-capteurs-connectés">1.5. Données ouvertes et capteurs connectés</h3>
+<p>Deux autres sources méritent d’être mentionnées :</p>
+<ul>
+<li>les <strong>portails d’<em>open data</em></strong> (données publiques mises à disposition par des institutions : données démographiques, économiques ou climatiques) ;</li>
+<li>les <strong>capteurs et objets connectés (IoT)</strong>, qui génèrent des flux de données en continu (température, géolocalisation, fréquentation), souvent collectés via des files de messages (ex. MQTT, Kafka) avant d’être stockés pour l’analyse ou la modélisation.</li>
+</ul>
+<div id="tbl-sources-donnees" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sources-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Sources de données courantes
+</figcaption>
+<div aria-describedby="tbl-sources-donnees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Exemple d’outil ou de technologie</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bases de données</td>
+<td>SQL (PostgreSQL, MySQL), NoSQL (MongoDB)</td>
+</tr>
+<tr class="even">
+<td>Fichiers plats</td>
+<td>CSV, JSON, Excel, Parquet</td>
+</tr>
+<tr class="odd">
+<td>API</td>
+<td>REST, GraphQL</td>
+</tr>
+<tr class="even">
+<td>Web Scraping</td>
+<td><code>BeautifulSoup</code>, <code>Scrapy</code></td>
+</tr>
+<tr class="odd">
+<td>Données ouvertes / IoT</td>
+<td>Portails <em>open data</em>, MQTT, Kafka</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+</section>
+<section id="représentativité-et-biais-déchantillonnage" class="level2">
+<h2 class="anchored" data-anchor-id="représentativité-et-biais-déchantillonnage">2. Représentativité et biais d’échantillonnage</h2>
+<p>Collecter des données ne suffit pas : encore faut-il qu’elles soient <strong>représentatives</strong> de la population sur laquelle les conclusions de l’analyse - ou les prédictions du modèle - seront ensuite utilisées. Un échantillon est représentatif lorsque sa distribution reflète fidèlement celle de la population cible.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="À retenir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>À retenir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un échantillon non représentatif introduit un <strong>biais</strong> qui se propage à toutes les étapes suivantes, aussi rigoureuses soient-elles. Aucune technique d’analyse ou de modélisation, aussi avancée soit-elle, ne peut corriger un biais présent dès la collecte des données.</p>
+</div>
+</div>
+<p>On distingue notamment trois types de biais fréquents en pratique :</p>
+<ul>
+<li><strong>Biais de sélection</strong> : l’échantillon collecté ne couvre pas correctement certains sous-groupes de la population (ex. un sondage de satisfaction réalisé uniquement auprès des clients ayant un compte en ligne exclut de fait les clients moins digitalisés).</li>
+<li><strong>Biais de couverture temporelle</strong> : les données ne couvrent qu’une période particulière, non représentative du comportement général (ex. collecter des données de vente uniquement pendant une période de soldes).</li>
+<li><strong>Biais de mesure</strong> : l’instrument ou le protocole de collecte lui-même déforme la donnée (ex. un capteur mal calibré, un formulaire dont la formulation oriente la réponse).</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Exemple historique classique">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Exemple historique classique
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Lors de l’élection présidentielle américaine de 1936, le magazine <em>Literary Digest</em> prédit, sur la base de plus de 2 millions de réponses à un sondage, la victoire du candidat Alf Landon. Le sondage fut envoyé par la poste à partir de listes d’abonnés au téléphone et de propriétaires de voitures - une population nettement plus aisée que la moyenne en pleine Grande Dépression. Malgré une taille d’échantillon considérable, le sondage souffrait d’un <strong>biais de sélection</strong> majeur, et la prédiction se révéla fausse : Franklin D. Roosevelt fut réélu avec une large majorité. Cet exemple illustre qu’un grand échantillon <strong>non représentatif</strong> reste moins fiable qu’un échantillon plus petit mais correctement constitué - un principe qui vaut aussi bien pour une étude statistique classique que pour l’entraînement d’un modèle de Machine Learning.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="nettoyage-des-données" class="level2">
+<h2 class="anchored" data-anchor-id="nettoyage-des-données">3. Nettoyage des données</h2>
+<p>Une fois collectées, les données contiennent presque toujours des imperfections : valeurs manquantes, doublons, incohérences et valeurs aberrantes sont la norme plutôt que l’exception. Le nettoyage est souvent l’une des étapes les plus chronophages d’un projet. Il consiste notamment à vérifier cinq dimensions de qualité :</p>
+<ol type="1">
+<li><strong>complétude</strong> : les informations importantes sont-elles présentes ?</li>
+<li><strong>validité</strong> : les valeurs respectent-elles les règles attendues (un prix positif, une date valide) ?</li>
+<li><strong>unicité</strong> : une même observation n’est-elle pas enregistrée deux fois ?</li>
+<li><strong>cohérence</strong> : les colonnes et les unités sont-elles compatibles entre elles ?</li>
+<li><strong>actualité</strong> : les dates couvrent-elles la période utile à la question posée ?</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="Documenter chaque correction">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Documenter chaque correction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il faut garder une trace de chaque correction apportée : colonne concernée, règle appliquée, nombre de lignes modifiées et justification. Cette documentation permet de revenir en arrière si nécessaire, et d’expliquer honnêtement les résultats obtenus en aval - qu’il s’agisse d’un graphique ou d’une prédiction.</p>
+</div>
+</div>
+<section id="les-valeurs-manquantes" class="level3">
+<h3 class="anchored" data-anchor-id="les-valeurs-manquantes">3.1. Les valeurs manquantes</h3>
+<p>Une valeur manquante peut avoir des origines très différentes, ce qui conditionne directement la stratégie à adopter pour la traiter :</p>
+<div id="tbl-typologie-manquantes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-typologie-manquantes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Typologie des valeurs manquantes
+</figcaption>
+<div aria-describedby="tbl-typologie-manquantes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Signification</th>
+<th style="text-align: left;">Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>MCAR</strong> (<em>Missing Completely At Random</em>)</td>
+<td style="text-align: left;">L’absence ne dépend d’aucune variable, ni observée ni cachée</td>
+<td style="text-align: left;">Un capteur ou un bug technique tombe en panne aléatoirement</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>MAR</strong> (<em>Missing At Random</em>)</td>
+<td style="text-align: left;">L’absence dépend d’une autre variable <strong>observée</strong></td>
+<td style="text-align: left;">Les hommes répondent moins souvent à une question sur le revenu, indépendamment du revenu lui-même</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>MNAR</strong> (<em>Missing Not At Random</em>)</td>
+<td style="text-align: left;">L’absence dépend de la valeur manquante <strong>elle-même</strong></td>
+<td style="text-align: left;">Les personnes aux revenus les plus élevés refusent plus souvent de déclarer leur revenu</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Le cas MNAR est le plus délicat">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Le cas MNAR est le plus délicat
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le cas <strong>MNAR</strong> est le plus problématique : ignorer ou imputer naïvement ces valeurs manquantes peut introduire un biais systématique difficile à corriger, précisément parce que l’absence de la donnée est elle-même porteuse d’information. Ces trois étiquettes servent surtout à <strong>réfléchir à la cause probable d’une absence</strong> - il n’est pas nécessaire de réaliser un test statistique formel pour les distinguer dans ce cours, mais il faut absolument éviter d’imputer automatiquement une valeur manquante sans s’être interrogé sur ce qu’elle signifie.</p>
+</div>
+</div>
+<p>Avec <code>pandas</code>, on détecte et on traite les valeurs manquantes ainsi :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Détection</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()                      <span class="co"># nombre de valeurs manquantes par colonne</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df.isna().mean().<span class="bu">round</span>(<span class="dv">2</span>) <span class="op">*</span> <span class="dv">100</span>      <span class="co"># pourcentage de valeurs manquantes</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppression</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df.dropna(subset<span class="op">=</span>[<span class="st">"prix"</span>])           <span class="co"># supprime les lignes sans prix</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Imputation simple</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"surface"</span>] <span class="op">=</span> df[<span class="st">"surface"</span>].fillna(df[<span class="st">"surface"</span>].median())</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"quartier"</span>] <span class="op">=</span> df[<span class="st">"quartier"</span>].fillna(<span class="st">"Non renseigné"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Stratégies de traitement des valeurs manquantes :</strong></p>
+<div id="tbl-imputation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-imputation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Stratégies d’imputation des valeurs manquantes
+</figcaption>
+<div aria-describedby="tbl-imputation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Stratégie</th>
+<th>Principe</th>
+<th>Limite</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Suppression des lignes</td>
+<td>Retirer toute observation comportant une valeur manquante</td>
+<td>Perte d’information ; biaise l’échantillon si l’absence n’est pas MCAR</td>
+</tr>
+<tr class="even">
+<td>Imputation simple</td>
+<td>Remplacer par la moyenne, la médiane (numérique) ou le mode (catégoriel)</td>
+<td>Réduit artificiellement la variance de la variable</td>
+</tr>
+<tr class="odd">
+<td>Valeur explicite</td>
+<td>Remplacer par une catégorie dédiée, ex. « Non renseigné »</td>
+<td>Adaptée aux variables catégorielles avec une proportion élevée de valeurs manquantes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Comment choisir entre suppression et imputation ?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Comment choisir entre suppression et imputation ?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Si la proportion de valeurs manquantes est <strong>faible</strong> (quelques pourcents) et que le mécanisme semble MCAR, la <strong>suppression</strong> des lignes concernées est souvent acceptable.</li>
+<li>Si la proportion est <strong>élevée</strong>, ou si l’absence porte sur une variable centrale de l’analyse, on préfère une <strong>imputation</strong>, en gardant à l’esprit qu’elle introduit un biais qu’il faut documenter.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Règle d'or (ML)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Règle d’or (ML)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En Machine Learning, dès lors que les données seront séparées en jeux d’entraînement et de test (notion détaillée dans le chapitre suivant de votre cours), la stratégie d’imputation (moyenne, médiane…) doit être <strong>calculée uniquement sur le jeu d’entraînement</strong>, puis appliquée telle quelle aux jeux de validation et de test. Calculer cette statistique sur l’ensemble des données avant de les séparer constitue une <strong>fuite de données</strong> (<em>data leakage</em>) : le modèle bénéficierait indirectement d’une information provenant du jeu de test, ce qui fausserait l’évaluation finale de sa performance. Cette contrainte, propre à un contexte de modélisation prédictive, n’a pas d’équivalent en analyse de données exploratoire, où l’on travaille généralement sur l’ensemble du jeu de données disponible.</p>
+</div>
+</div>
+</section>
+<section id="les-valeurs-aberrantes-outliers" class="level3">
+<h3 class="anchored" data-anchor-id="les-valeurs-aberrantes-outliers">3.2. Les valeurs aberrantes (<em>outliers</em>)</h3>
+<p>Une valeur aberrante est une observation qui s’écarte fortement du comportement général des données - parfois une erreur de saisie, parfois un phénomène réel mais rare. Deux méthodes de détection sont couramment enseignées :</p>
+<ul>
+<li><strong>La méthode de l’écart interquartile (IQR)</strong>, robuste aux distributions asymétriques : on considère comme aberrante toute valeur en dehors de l’intervalle <span class="math display">\[
+\left[\, Q_1 - 1{,}5 \times IQR,\ \ Q_3 + 1{,}5 \times IQR \,\right], \qquad \text{avec } IQR = Q_3 - Q_1 .
+\]</span></li>
+<li><strong>Le score-z</strong>, qui suppose implicitement une distribution proche de la loi normale : toute valeur dont le score <span class="math display">\[
+z = \frac{x - \mu}{\sigma}
+\]</span> dépasse un seuil en valeur absolue (souvent <span class="math inline">\(|z| &gt; 3\)</span>) est considérée comme aberrante.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>q1, q3 <span class="op">=</span> df[<span class="st">"prix"</span>].quantile([<span class="fl">0.25</span>, <span class="fl">0.75</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>iqr <span class="op">=</span> q3 <span class="op">-</span> q1</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>borne_basse, borne_haute <span class="op">=</span> q1 <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> iqr, q3 <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> iqr</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>aberrants <span class="op">=</span> df[(df[<span class="st">"prix"</span>] <span class="op">&lt;</span> borne_basse) <span class="op">|</span> (df[<span class="st">"prix"</span>] <span class="op">&gt;</span> borne_haute)]</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-caution callout-titled" title="Une valeur aberrante n'est pas toujours une erreur">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Mise en garde</span>Une valeur aberrante n’est pas toujours une erreur
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avant de supprimer systématiquement les valeurs aberrantes détectées, il faut se demander si elles reflètent une <strong>erreur de mesure</strong> (à corriger ou supprimer) ou un <strong>phénomène réel mais rare</strong> (par exemple, un très gros client dans une base de transactions commerciales) - auquel cas leur suppression ferait perdre une information potentiellement précieuse, aussi bien pour une analyse exploratoire que pour un modèle.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Repérer visuellement les valeurs aberrantes (DA)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Repérer visuellement les valeurs aberrantes (DA)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La <strong>boîte à moustaches</strong> (<em>boxplot</em>), présentée en détail dans le chapitre de votre cours consacré à la visualisation des données, reste l’outil graphique privilégié pour repérer d’un coup d’œil les valeurs aberrantes d’une variable numérique, sans avoir à calculer explicitement les bornes de l’IQR.</p>
+</div>
+</div>
+</section>
+<section id="les-doublons-et-les-incohérences" class="level3">
+<h3 class="anchored" data-anchor-id="les-doublons-et-les-incohérences">3.3. Les doublons et les incohérences</h3>
+<p>Un doublon (deux lignes strictement identiques, ou identiques sur les variables clés) doit généralement être supprimé, car il donne artificiellement plus de poids à une observation - un risque parfois qualifié de « double comptage », qu’il s’agisse de fausser une moyenne calculée pour un tableau de bord ou de biaiser les paramètres appris par un algorithme.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df.duplicated().<span class="bu">sum</span>()                     <span class="co"># nombre de lignes strictement dupliquées</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop_duplicates()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"ville"</span>] <span class="op">=</span> df[<span class="st">"ville"</span>].<span class="bu">str</span>.strip().<span class="bu">str</span>.title()          <span class="co"># espaces superflus, casse</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"date"</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">"date"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>)    <span class="co"># type de données cohérent</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les incohérences les plus fréquentes concernent la <strong>casse</strong> et les <strong>espaces superflus</strong> dans les chaînes de caractères (« casablanca » vs « Casablanca »), les <strong>types de données</strong> mal interprétés (une date lue comme du texte), et les <strong>unités hétérogènes</strong> (des prix exprimés tantôt en MAD, tantôt en euros ; des distances tantôt en mètres, tantôt en kilomètres).</p>
+</section>
+<section id="vers-une-démarche-de-qualité-systématique" class="level3">
+<h3 class="anchored" data-anchor-id="vers-une-démarche-de-qualité-systématique">3.4. Vers une démarche de qualité systématique</h3>
+<p>Sur des projets récurrents - un tableau de bord alimenté quotidiennement, ou un modèle réentraîné chaque semaine sur de nouvelles données - il devient risqué de vérifier la qualité des données « à l’œil » à chaque exécution. Des bibliothèques comme <strong><a href="https://greatexpectations.io"><code>Great Expectations</code></a></strong> permettent de définir des règles de validation explicites (« la colonne <code>prix</code> doit toujours être positive », « la colonne <code>date</code> ne doit jamais être manquante ») et de les exécuter automatiquement à chaque nouvelle collecte, afin de détecter une dérive de qualité avant qu’elle n’affecte l’analyse en aval ou, en Machine Learning, avant qu’elle ne dégrade silencieusement la performance d’un modèle en production.</p>
+</section>
+</section>
+<section id="encodage-des-variables-catégorielles" class="level2">
+<h2 class="anchored" data-anchor-id="encodage-des-variables-catégorielles">4. Encodage des variables catégorielles</h2>
+<p>De nombreux outils, qu’ils soient statistiques, graphiques ou algorithmiques, manipulent plus facilement des valeurs <strong>numériques</strong> que du texte. C’est particulièrement vrai en Machine Learning, où la quasi-totalité des algorithmes reposent sur des opérations mathématiques - distances, produits scalaires, sommes pondérées - qui ne peuvent s’appliquer qu’à des nombres. L’<strong>encodage</strong> désigne l’ensemble des techniques permettant de transformer une variable catégorielle en une représentation numérique exploitable, <strong>sans dénaturer l’information</strong> qu’elle porte.</p>
+<p>On distingue deux grandes stratégies, quelle que soit la bibliothèque utilisée pour les mettre en œuvre :</p>
+<ul>
+<li>l’<strong>encodage ordinal</strong>, adapté aux catégories qui possèdent un <strong>ordre naturel</strong> (ex. <code>Faible</code> &lt; <code>Moyen</code> &lt; <code>Élevé</code>) : chaque catégorie est simplement remplacée par un entier reflétant cet ordre ;</li>
+<li>l’<strong>encodage One-Hot</strong> (variables indicatrices), adapté aux catégories <strong>sans ordre</strong> (ex. les quartiers d’une ville) : chaque catégorie devient une nouvelle colonne binaire (0 ou 1).</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled" title="Piège fréquent">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Piège fréquent
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Appliquer un encodage ordinal à une variable <strong>nominale</strong> (sans ordre naturel, ex. <code>quartier</code> : Centre, Nord, Sud) introduit un ordre artificiel que l’outil en aval interprétera à tort comme porteur de sens - un algorithme pourrait, par exemple, en déduire que <code>Sud</code> (codé 2) est « plus grand » que <code>Centre</code> (codé 0), ce qui n’a aucune signification réelle.</p>
+</div>
+</div>
+<section id="encodage-rapide-avec-pandas-da" class="level3">
+<h3 class="anchored" data-anchor-id="encodage-rapide-avec-pandas-da">4.1. Encodage rapide avec <code>pandas</code> (DA)</h3>
+<p>Pour faciliter certains graphiques ou calculs de corrélation, un encodage simple, réalisé directement avec <code>pandas</code>, est généralement suffisant en Analyse de Données :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Encodage ordinal</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ordre <span class="op">=</span> {<span class="st">"Faible"</span>: <span class="dv">0</span>, <span class="st">"Moyen"</span>: <span class="dv">1</span>, <span class="st">"Élevé"</span>: <span class="dv">2</span>}</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"niveau_encode"</span>] <span class="op">=</span> df[<span class="st">"niveau"</span>].<span class="bu">map</span>(ordre)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Encodage One-Hot</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>df_encode <span class="op">=</span> pd.get_dummies(df, columns<span class="op">=</span>[<span class="st">"quartier"</span>])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cet encodage simple suffit pour préparer un graphique ou une matrice de corrélation. Un encodage plus robuste, fondé sur <code>scikit-learn</code> et pensé pour alimenter un algorithme d’apprentissage - avec gestion des catégories rares, des catégories inconnues au moment du déploiement, et intégration dans un pipeline reproductible - est approfondi dans le module de Machine Learning (§4.2 ci-dessous).</p>
+</div>
+</div>
+</section>
+<section id="encodage-robuste-avec-scikit-learn-ml" class="level3">
+<h3 class="anchored" data-anchor-id="encodage-robuste-avec-scikit-learn-ml">4.2. Encodage robuste avec <code>scikit-learn</code> (ML)</h3>
+<p>En Machine Learning, l’encodage doit être <strong>réutilisable à l’identique</strong> sur de nouvelles données (le jeu de test, puis les données rencontrées en production) : on ne se contente donc pas d’une transformation ponctuelle d’un <code>DataFrame</code>, mais d’un objet <strong>ajusté</strong> (<code>fit</code>) puis <strong>appliqué</strong> (<code>transform</code>), exactement comme les autres outils de prétraitement de ce chapitre.</p>
+<p><strong>Encodage ordinal</strong>, avec <code>OrdinalEncoder</code> : dans Scikit-Learn, on réserve <code>OrdinalEncoder</code> aux <strong>variables explicatives</strong> ordinales (dans <span class="math inline">\(X\)</span>) ; <code>LabelEncoder</code>, plus rarement utile ici, est en réalité conçu pour encoder la <strong>variable cible</strong> <span class="math inline">\(y\)</span> en classification, et non les colonnes de <span class="math inline">\(X\)</span> - une confusion fréquente à éviter.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OrdinalEncoder</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>encodeur_ordinal <span class="op">=</span> OrdinalEncoder(categories<span class="op">=</span>[[<span class="st">"Faible"</span>, <span class="st">"Moyen"</span>, <span class="st">"Élevé"</span>]])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>X[<span class="st">"niveau_encode"</span>] <span class="op">=</span> encodeur_ordinal.fit_transform(X[[<span class="st">"niveau"</span>]])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Encodage One-Hot</strong>, avec <code>OneHotEncoder</code> : chaque catégorie devient une colonne binaire indépendante.</p>
+<p>Par exemple, la variable <code>quartier</code> (Centre, Nord, Sud) devient :</p>
+<div id="tbl-one-hot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-one-hot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Encodage One-Hot de la variable <code>quartier</code>
+</figcaption>
+<div aria-describedby="tbl-one-hot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">quartier_Centre</th>
+<th style="text-align: center;">quartier_Nord</th>
+<th style="text-align: center;">quartier_Sud</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>encodeur_onehot <span class="op">=</span> OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>, handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>quartier_encode <span class="op">=</span> encodeur_onehot.fit_transform(X[[<span class="st">"quartier"</span>]])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled" title="Le piège de la variable factice (*Dummy Variable Trap*)">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Le piège de la variable factice (<em>Dummy Variable Trap</em>)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Lorsqu’une variable comporte <span class="math inline">\(k\)</span> catégories, il suffit en réalité de <span class="math inline">\(k-1\)</span> colonnes binaires pour représenter toute l’information : la dernière catégorie est déductible des autres (si <code>quartier_Centre = 0</code> et <code>quartier_Nord = 0</code>, alors nécessairement <code>quartier_Sud = 1</code>). Conserver les <span class="math inline">\(k\)</span> colonnes introduit une redondance parfaite entre variables (colinéarité), problématique pour certains algorithmes comme la régression linéaire. L’argument <code>drop='first'</code> de <code>OneHotEncoder</code> supprime automatiquement cette colonne redondante - une précaution utile pour un modèle linéaire avec constante (<em>intercept</em>), mais pas une règle universelle : pour un modèle fondé sur des arbres de décision, par exemple, supprimer une catégorie n’est généralement pas nécessaire, et conserver toutes les colonnes peut même faciliter l’interprétation. Le choix de la catégorie de référence supprimée doit donc rester <strong>conscient</strong>, et non automatique par réflexe.</p>
+</div>
+</div>
+</div>
+<p><code>handle_unknown="ignore"</code> mérite une attention particulière : il indique à l’encodeur comment se comporter s’il rencontre, lors du déploiement, une catégorie <strong>jamais vue</strong> pendant l’entraînement (par exemple, un nouveau quartier apparu après la mise en production du modèle) - plutôt que de provoquer une erreur, il encode alors cette observation comme un vecteur de zéros.</p>
+</section>
+<section id="comparatif-des-méthodes-dencodage" class="level3">
+<h3 class="anchored" data-anchor-id="comparatif-des-méthodes-dencodage">4.3. Comparatif des méthodes d’encodage</h3>
+<div id="tbl-encodage" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-encodage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Comparaison des principales méthodes d’encodage
+</figcaption>
+<div aria-describedby="tbl-encodage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Méthode</th>
+<th>Adaptée à</th>
+<th>Nombre de colonnes créées</th>
+<th>Outil <code>pandas</code></th>
+<th>Outil <code>scikit-learn</code> (ML)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Encodage ordinal</td>
+<td>Variables <strong>ordinales</strong></td>
+<td>1 (inchangé)</td>
+<td><code>.map()</code></td>
+<td><code>OrdinalEncoder</code></td>
+</tr>
+<tr class="even">
+<td>Encodage One-Hot</td>
+<td>Variables <strong>nominales</strong>, peu de catégories</td>
+<td><span class="math inline">\(k\)</span> (ou <span class="math inline">\(k-1\)</span>)</td>
+<td><code>pd.get_dummies()</code></td>
+<td><code>OneHotEncoder</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Au-delà de ce chapitre (ML)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Au-delà de ce chapitre (ML)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Lorsqu’une variable catégorielle comporte des centaines, voire des milliers de catégories (ex. un identifiant de ville, un code produit), l’encodage One-Hot devient impraticable (explosion du nombre de colonnes). Des techniques plus avancées, comme le <strong>Target Encoding</strong> (remplacer chaque catégorie par la moyenne de la cible <span class="math inline">\(y\)</span> associée) ou le <strong>Frequency Encoding</strong> (remplacer chaque catégorie par sa fréquence d’apparition), permettent de contourner ce problème - au prix d’une vigilance accrue vis-à-vis de la fuite de données, le Target Encoding utilisant directement la cible <span class="math inline">\(y\)</span> pour construire l’encodage. Ces techniques dépassent le cadre de ce chapitre et seront abordées dans un cours de Machine Learning plus avancé.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="mise-à-léchelle-standardisation-et-normalisation" class="level2">
+<h2 class="anchored" data-anchor-id="mise-à-léchelle-standardisation-et-normalisation">5. Mise à l’échelle : standardisation et normalisation</h2>
+<p>Lorsque plusieurs variables numériques ont des échelles très différentes (ex. une surface en <span class="math inline">\(m^2\)</span> et un prix en millions de MAD), il est souvent utile de les ramener à une échelle comparable - que ce soit pour faciliter certaines visualisations combinées, ou parce qu’un algorithme y est directement sensible.</p>
+<section id="les-deux-transformations-de-référence" class="level3">
+<h3 class="anchored" data-anchor-id="les-deux-transformations-de-référence">5.1. Les deux transformations de référence</h3>
+<p>La <strong>standardisation</strong> (<em>Z-score scaling</em>) centre chaque variable autour d’une moyenne de 0, avec un écart-type de 1 :</p>
+<p><span id="eq-standardisation"><span class="math display">\[
+x' = \frac{x - \mu}{\sigma}
+\tag{1}\]</span></span></p>
+<p>où <span class="math inline">\(\mu\)</span> est la moyenne et <span class="math inline">\(\sigma\)</span> l’écart-type de la variable.</p>
+<p>La <strong>normalisation</strong> (<em>Min-Max scaling</em>) ramène chaque variable dans un intervalle fixe, généralement <span class="math inline">\([0, 1]\)</span> :</p>
+<p><span id="eq-normalisation"><span class="math display">\[
+x' = \frac{x - x_{min}}{x_{max} - x_{min}}
+\tag{2}\]</span></span></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"prix_standard"</span>] <span class="op">=</span> (df[<span class="st">"prix"</span>] <span class="op">-</span> df[<span class="st">"prix"</span>].mean()) <span class="op">/</span> df[<span class="st">"prix"</span>].std()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"prix_norm"</span>] <span class="op">=</span> (df[<span class="st">"prix"</span>] <span class="op">-</span> df[<span class="st">"prix"</span>].<span class="bu">min</span>()) <span class="op">/</span> (df[<span class="st">"prix"</span>].<span class="bu">max</span>() <span class="op">-</span> df[<span class="st">"prix"</span>].<span class="bu">min</span>())</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lire un résultat de normalisation min-max">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Lire un résultat de normalisation min-max
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Une valeur normalisée de 0,5 ne signifie pas que l’observation correspond à la moyenne de la variable : elle signifie que l’observation se situe <strong>exactement à mi-chemin</strong> entre le minimum et le maximum observés. Ne confondez pas position relative dans l’intervalle et position relative à la moyenne.</p>
+</div>
+</div>
+</section>
+<section id="quand-utiliser-lune-ou-lautre" class="level3">
+<h3 class="anchored" data-anchor-id="quand-utiliser-lune-ou-lautre">5.2. Quand utiliser l’une ou l’autre ?</h3>
+<div id="tbl-scaling" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-scaling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: Choix entre standardisation et normalisation
+</figcaption>
+<div aria-describedby="tbl-scaling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Critère</th>
+<th>Standardisation (<a href="#eq-standardisation" class="quarto-xref">Équation&nbsp;<span>1</span></a>)</th>
+<th>Normalisation (<a href="#eq-normalisation" class="quarto-xref">Équation&nbsp;<span>2</span></a>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sensibilité aux valeurs aberrantes</td>
+<td>Modérée</td>
+<td>Élevée (les valeurs extrêmes déterminent <span class="math inline">\(x_{min}\)</span>/<span class="math inline">\(x_{max}\)</span>)</td>
+</tr>
+<tr class="even">
+<td>Hypothèse sur la distribution</td>
+<td>Aucune (mais adaptée aux distributions proches de la normale)</td>
+<td>Aucune</td>
+</tr>
+<tr class="odd">
+<td>Intervalle de sortie</td>
+<td>Non borné (généralement <span class="math inline">\([-3, 3]\)</span> environ)</td>
+<td>Borné, <span class="math inline">\([0, 1]\)</span></td>
+</tr>
+<tr class="even">
+<td>Cas d’usage typique</td>
+<td>Algorithmes basés sur le gradient, PCA, régression, comparaisons statistiques</td>
+<td>Réseaux de neurones (fonctions d’activation bornées), traitement d’image (pixels)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="La normalisation est très sensible aux valeurs extrêmes">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>La normalisation est très sensible aux valeurs extrêmes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si une variable comporte quelques valeurs extrêmes mais légitimes (ex. <code>revenu_annuel</code>, avec l’essentiel des observations entre 30 000 et 200 000 MAD, mais quelques grandes fortunes dépassant 5 000 000 MAD), une normalisation min-max écrasera la quasi-totalité des observations « normales » dans un intervalle minuscule proche de 0, car <span class="math inline">\(x_{max}\)</span> sera fixé par ces quelques valeurs extrêmes. Le <code>RobustScaler</code> de <code>scikit-learn</code>, fondé sur la <strong>médiane</strong> et l’<strong>écart interquartile</strong> plutôt que sur le minimum/maximum ou la moyenne/écart-type, est nettement plus robuste dans ce cas de figure.</p>
+</div>
+</div>
+</section>
+<section id="pourquoi-certains-algorithmes-y-sont-ils-sensibles-ml" class="level3">
+<h3 class="anchored" data-anchor-id="pourquoi-certains-algorithmes-y-sont-ils-sensibles-ml">5.3. Pourquoi certains algorithmes y sont-ils sensibles ? (ML)</h3>
+<p>De nombreux algorithmes de Machine Learning - en particulier ceux fondés sur une notion de <strong>distance</strong> entre observations (les k plus proches voisins, le clustering K-means) ou sur une <strong>descente de gradient</strong> (régression linéaire, réseaux de neurones) - sont directement sensibles à l’échelle des variables. Une variable exprimée en milliers de dirhams (ex. un prix) dominera artificiellement une variable exprimée en unités (ex. un nombre de pièces) dans le calcul d’une distance ou d’un gradient, même si cette dernière est tout aussi pertinente pour la tâche à résoudre. Mettre les variables à une échelle comparable neutralise cet artefact purement numérique.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Règle d'or (ML)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Règle d’or (ML)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Comme pour l’imputation (§3.1), les paramètres de mise à l’échelle (<span class="math inline">\(\mu\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(x_{min}\)</span>, <span class="math inline">\(x_{max}\)</span>) doivent être <strong>estimés uniquement sur le jeu d’entraînement</strong> (méthode <code>.fit()</code>), puis appliqués tels quels aux jeux de validation et de test (méthode <code>.transform()</code>, sans nouveau <code>.fit()</code>) - toute autre pratique constitue une fuite de données. Ce n’est là qu’un cas particulier de la règle déjà énoncée pour l’imputation : toute statistique calculée à partir des données (moyenne, écart-type, minimum, maximum…) et réutilisée pour transformer de nouvelles observations doit être apprise <strong>exclusivement</strong> sur le jeu d’entraînement.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="transformations-complémentaires-pour-lexploration-da" class="level2">
+<h2 class="anchored" data-anchor-id="transformations-complémentaires-pour-lexploration-da">6. Transformations complémentaires pour l’exploration (DA)</h2>
+<p>Au-delà de l’encodage et de la mise à l’échelle, certaines transformations, bien que moins critiques pour un algorithme, facilitent considérablement l’exploration et la visualisation d’un jeu de données.</p>
+<section id="discrétisation-binning" class="level3">
+<h3 class="anchored" data-anchor-id="discrétisation-binning">6.1. Discrétisation (<em>binning</em>)</h3>
+<p>La discrétisation consiste à transformer une variable numérique continue en catégories, souvent utile pour simplifier une visualisation (par exemple des tranches d’âge plutôt qu’un âge exact) :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"tranche_age"</span>] <span class="op">=</span> pd.cut(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"age"</span>],</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">18</span>, <span class="dv">35</span>, <span class="dv">60</span>, <span class="dv">120</span>],</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"Mineur"</span>, <span class="st">"Jeune adulte"</span>, <span class="st">"Adulte"</span>, <span class="st">"Senior"</span>],</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cette transformation simplifie la lecture d’un graphique et permet de comparer des groupes, mais elle fait perdre de la précision : deux personnes de 18 et 34 ans se retrouvent dans le même groupe malgré un écart d’âge important. Les bornes retenues doivent donc toujours être documentées et justifiées.</p>
+</section>
+<section id="quelques-transformations-usuelles-supplémentaires" class="level3">
+<h3 class="anchored" data-anchor-id="quelques-transformations-usuelles-supplémentaires">6.2. Quelques transformations usuelles supplémentaires</h3>
+<ul>
+<li><strong>Extraction de composantes temporelles</strong> : à partir d’une colonne <code>date</code>, on extrait fréquemment l’année, le mois ou le jour de la semaine (<code>df["date"].dt.month</code>), particulièrement utiles pour explorer des séries temporelles.</li>
+<li><strong>Agrégats dérivés</strong> : création de nouvelles colonnes résumant une information (ex. le prix au mètre carré, <code>prix / surface</code>), qui facilitent grandement l’exploration et la comparaison entre observations.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Le pendant en Machine Learning">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Le pendant en Machine Learning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ces mêmes techniques - créer une nouvelle colonne à partir de colonnes existantes - portent, en Machine Learning, le nom de <strong><em>feature engineering</em></strong>. Le principe est identique ; seul l’objectif final diffère : ici, faciliter la lecture d’un graphique ; en Machine Learning, fournir à un algorithme une variable plus informative que les variables brutes dont elle est dérivée.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Ne pas transformer sans objectif">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Avertissement</span>Ne pas transformer sans objectif
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Une transformation n’est pas automatiquement une amélioration. Par exemple, remplacer toutes les valeurs manquantes par zéro change la signification de la variable : « absence d’information » devient « valeur nulle ». Avant chaque transformation, demandez-vous quelle question elle facilite et si son effet sera documenté.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="construire-un-pipeline-de-prétraitement-automatisé-ml" class="level2">
+<h2 class="anchored" data-anchor-id="construire-un-pipeline-de-prétraitement-automatisé-ml">7. Construire un pipeline de prétraitement automatisé (ML)</h2>
+<p>En pratique, un même jeu de données combine généralement des variables numériques et catégorielles, chacune nécessitant un traitement distinct. En Machine Learning, où ce prétraitement devra être <strong>appliqué à l’identique</strong> sur des données jamais vues (le jeu de test, puis les données rencontrées en production), il ne suffit plus d’appliquer des transformations ponctuelles à un <code>DataFrame</code> : il faut les <strong>enchaîner et les automatiser</strong> dans un objet réutilisable.</p>
+<section id="columntransformer-et-pipeline-de-scikit-learn" class="level3">
+<h3 class="anchored" data-anchor-id="columntransformer-et-pipeline-de-scikit-learn">7.1. <code>ColumnTransformer</code> et <code>Pipeline</code> de <code>scikit-learn</code></h3>
+<p>Scikit-Learn propose deux briques complémentaires pour construire un prétraitement reproductible et sans fuite de données :</p>
+<ul>
+<li><strong><code>Pipeline</code></strong> : enchaîne plusieurs transformations (par ex. imputation puis mise à l’échelle) appliquées <strong>à toutes</strong> les colonnes d’un même sous-ensemble ;</li>
+<li><strong><code>ColumnTransformer</code></strong> : applique des <code>Pipeline</code> <strong>différents</strong> selon le type de colonne (numérique ou catégorielle), puis <strong>fusionne</strong> les résultats en une seule matrice.</li>
+</ul>
+<div id="fig-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../images/pipeline-column-transformer.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Architecture d’un pipeline de prétraitement combinant colonnes numériques et catégorielles
+</figcaption>
+</figure>
+</div>
+<p>La <a href="#fig-pipeline" class="quarto-xref">Figure&nbsp;<span>1</span></a> illustre cette architecture : les colonnes numériques suivent une chaîne <code>SimpleImputer</code> → <code>StandardScaler</code>, tandis que les colonnes catégorielles suivent une chaîne <code>SimpleImputer</code> → <code>OneHotEncoder</code>, avant que les deux résultats ne soient recombinés en une seule matrice, transmise au modèle.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler, OneHotEncoder</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>colonnes_numeriques <span class="op">=</span> [<span class="st">"surface"</span>, <span class="st">"nb_pieces"</span>]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>colonnes_categorielles <span class="op">=</span> [<span class="st">"quartier"</span>]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>pipeline_numerique <span class="op">=</span> Pipeline([</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"imputation"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>)),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"mise_a_l_echelle"</span>, StandardScaler()),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>pipeline_categorielle <span class="op">=</span> Pipeline([</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"imputation"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"encodage"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>, handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)),</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>pretraitement <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"num"</span>, pipeline_numerique, colonnes_numeriques),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, pipeline_categorielle, colonnes_categorielles),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit UNIQUEMENT sur les données d'entraînement (voir §3.1 et §5.3 de ce chapitre)</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>X_train_pret <span class="op">=</span> pretraitement.fit_transform(X_train)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Le même prétraitement, déjà appris, est simplement réappliqué :</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>X_test_pret <span class="op">=</span> pretraitement.transform(X_test)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Fonctionnalité récente : sortie en `DataFrame`">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Astuce</span>Fonctionnalité récente : sortie en <code>DataFrame</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Depuis les versions récentes de Scikit-Learn, l’appel <code>pretraitement.set_output(transform="pandas")</code> permet d’obtenir directement un <code>DataFrame</code> <code>pandas</code> en sortie du pipeline (avec des noms de colonnes explicites comme <code>num__surface</code> ou <code>cat__quartier_Nord</code>), plutôt qu’un simple tableau <code>numpy</code> sans noms - un gain de lisibilité appréciable lors du diagnostic d’un pipeline. Cette fonctionnalité suppose une version suffisamment récente de <code>scikit-learn</code> et la présence de <code>pandas</code> ; elle ne garantit pas que <strong>chaque</strong> étape d’un pipeline retournera systématiquement un <code>DataFrame</code> sans condition, en particulier avec des transformateurs tiers.</p>
+</div>
+</div>
+</section>
+<section id="mettre-à-jour-lenvironnement-du-projet" class="level3">
+<h3 class="anchored" data-anchor-id="mettre-à-jour-lenvironnement-du-projet">7.2. Mettre à jour l’environnement du projet</h3>
+<p>En cohérence avec la gestion de projet de votre cours (gestionnaire d’environnement <code>uv</code>), les nouvelles dépendances nécessaires à ce chapitre sont ajoutées explicitement au projet :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> add scikit-learn</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> lock   <span class="co"># fige les versions exactes dans uv.lock, pour la reproductibilité</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="exercices" class="level2">
+<h2 class="anchored" data-anchor-id="exercices">Exercices</h2>
+<div id="exr-collecte-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 1</strong></span> Pour chacun des besoins suivants, indiquez la stratégie de collecte la plus appropriée (base de données, fichier plat, <em>web scraping</em>, ou API) et justifiez en une phrase.</p>
+<ol type="a">
+<li>Récupérer en temps réel le cours de change EUR/MAD.</li>
+<li>Constituer un historique des prix de l’immobilier à partir d’annonces publiées sur un site sans API publique.</li>
+<li>Extraire l’historique des commandes déjà stockées dans le système d’information interne de l’entreprise.</li>
+</ol>
+</div>
+<div id="exr-collecte-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 2</strong></span> Une application mobile de course à pied souhaite tirer des conclusions sur le temps moyen que mettent ses utilisateurs sur un semi-marathon. Les données proviennent exclusivement des utilisateurs ayant activé le partage de leurs statistiques sur les réseaux sociaux.</p>
+<ol type="a">
+<li>Quel type de biais cette collecte introduit-elle probablement ?</li>
+<li>Les conclusions tirées de cet échantillon seront-elles fiables pour un coureur occasionnel qui ne partage jamais ses performances ?</li>
+</ol>
+</div>
+<div id="exr-manquantes-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 3</strong></span> Un jeu de données de candidatures à un emploi comporte une colonne <code>salaire_souhaite</code> manquante pour 40 % des lignes. Une analyse rapide montre que les candidats les plus expérimentés (souvent plus exigeants sur le salaire) sont surreprésentés parmi les valeurs manquantes.</p>
+<ol type="a">
+<li>À quel type de valeur manquante (<a href="#tbl-typologie-manquantes" class="quarto-xref">Table&nbsp;<span>3</span></a>) correspond cette situation ?</li>
+<li>Recommanderiez-vous une suppression ou une imputation ? Justifiez.</li>
+</ol>
+</div>
+<div id="exr-manquantes-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 4</strong></span> Dans une enquête de satisfaction, on observe que les clients ayant donné une note très basse au service client laissent beaucoup plus souvent la question « Recommanderiez-vous ce service ? » sans réponse que les autres clients.</p>
+<ol type="a">
+<li>À quelle catégorie (MCAR, MAR, MNAR) ce type d’absence appartient-il le plus probablement ?</li>
+<li>Pourquoi une imputation simple par le mode (la réponse la plus fréquente) serait-elle risquée dans ce cas précis ?</li>
+</ol>
+</div>
+<div id="exr-manquantes-3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 5</strong></span> Associez chaque situation à une stratégie raisonnable : supprimer quelques lignes, utiliser la médiane, créer la catégorie « Non renseigné », ou ne pas imputer sans investigation.</p>
+<ol type="a">
+<li>1 % des lignes n’ont pas de surface, et la surface est numérique.</li>
+<li>35 % des lignes n’ont pas de quartier.</li>
+<li>Une date manquante empêche de savoir à quelle période appartient une vente.</li>
+<li>Une variable <code>remise</code> a 2 % de valeurs manquantes dans une distribution très asymétrique.</li>
+</ol>
+</div>
+<div id="exr-aberrantes-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 6</strong></span> Pour une variable <code>prix</code> avec <span class="math inline">\(Q_1 = 200\,000\)</span> et <span class="math inline">\(Q_3 = 450\,000\)</span> (en MAD), calculez les bornes de détection des valeurs aberrantes selon la méthode de l’IQR.</p>
+</div>
+<div id="exr-aberrantes-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 7</strong></span> Un fichier de ventes contient 1 000 lignes. La colonne <code>date</code> comporte 20 valeurs manquantes, <code>prix</code> contient 5 valeurs négatives et 12 lignes sont des doublons exacts.</p>
+<ol type="a">
+<li>Quel pourcentage de dates est manquant ?</li>
+<li>Quel problème doit être vérifié en priorité avant de calculer le chiffre d’affaires ?</li>
+<li>Les doublons doivent-ils être supprimés automatiquement ? Justifiez.</li>
+</ol>
+</div>
+<div id="exr-aberrantes-3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 8</strong></span> Une colonne <code>distance</code> contient les valeurs 5, 12 et 8 pour trois trajets, mais le dictionnaire de données indique que certaines lignes sont en kilomètres et d’autres en mètres.</p>
+<ol type="a">
+<li>Pourquoi est-il dangereux de calculer une moyenne directement ?</li>
+<li>Quelle action doit être réalisée avant l’analyse ?</li>
+<li>Est-ce un problème de valeur manquante, de validité ou de cohérence ?</li>
+</ol>
+</div>
+<div id="exr-encodage-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 9</strong></span> Pour chacune des variables suivantes, indiquez si un encodage <strong>ordinal</strong> ou <strong>One-Hot</strong> est le plus adapté, et justifiez.</p>
+<ol type="a">
+<li>Le niveau d’étude (« Bac », « Bac+2 », « Bac+3 », « Bac+5 »).</li>
+<li>La couleur préférée d’un client (« Rouge », « Bleu », « Vert »).</li>
+</ol>
+</div>
+<div id="exr-encodage-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 10</strong></span> Pour chacune des variables suivantes, indiquez si un encodage ordinal ou un One-Hot Encoding est le plus adapté, et justifiez.</p>
+<ol type="a">
+<li>Le niveau de scolarité d’un client : <code>Primaire</code>, <code>Secondaire</code>, <code>Supérieur</code>.</li>
+<li>La couleur préférée d’un client : <code>Rouge</code>, <code>Bleu</code>, <code>Vert</code>, <code>Jaune</code>.</li>
+<li>Le mois de la transaction (<code>Janvier</code>, …, <code>Décembre</code>).</li>
+</ol>
+</div>
+<div id="exr-echelle-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 11</strong></span> Une variable <code>score</code> varie de 20 à 80. Calculez la valeur normalisée d’un score égal à 50 avec la formule de l’<a href="#eq-normalisation" class="quarto-xref">Équation&nbsp;<span>2</span></a>. Que signifie le résultat obtenu ?</p>
+</div>
+<div id="exr-echelle-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 12</strong></span> Un jeu de données contient une variable <code>revenu_annuel</code> dont la quasi-totalité des valeurs se situent entre 30 000 et 200 000 MAD, à l’exception de trois valeurs extrêmes dépassant 5 000 000 MAD (probablement des grandes fortunes, mais authentiques).</p>
+<ol type="a">
+<li>Que se passerait-il si l’on appliquait une normalisation (<em>Min-Max scaling</em>) à cette variable en l’état ?</li>
+<li>Quelle alternative, parmi celles évoquées dans ce chapitre, serait plus robuste face à ces valeurs extrêmes ?</li>
+</ol>
+</div>
+<div id="exr-ml-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 13</strong></span> Un étudiant applique la démarche suivante :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> scaler.fit_transform(X)          <span class="co"># sur l'ensemble des données</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>X_train, X_test <span class="op">=</span> train_test_split(X_scaled, test_size<span class="op">=</span><span class="fl">0.2</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Ce code contient-il une fuite de données ? Justifiez.</li>
+<li>Proposez, en français (sans code), la démarche correcte à suivre.</li>
+</ol>
+</div>
+<div id="exr-ml-2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 14</strong></span> Un jeu de données comporte à la fois des variables numériques (<code>surface</code>, <code>age_bien</code>) et catégorielles (<code>quartier</code>, <code>type_bien</code>).</p>
+<ol type="a">
+<li>Pourquoi ne peut-on pas appliquer un unique <code>Pipeline</code> (imputation puis <code>StandardScaler</code>) à l’ensemble des colonnes sans distinction ?</li>
+<li>Quel est le rôle précis du <code>ColumnTransformer</code> dans ce contexte ?</li>
+</ol>
+</div>
+<div id="exr-ml-3" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 15</strong></span> Une équipe fusionne deux exports de données provenant de deux systèmes différents de l’entreprise, contenant chacun une partie commune de clients. Après fusion, certains clients apparaissent deux fois avec des valeurs identiques.</p>
+<ol type="a">
+<li>Quel est le risque si ces doublons ne sont pas détectés avant l’entraînement d’un modèle ?</li>
+<li>Ce risque affecte-t-il spécifiquement un algorithme de classification, ou tout algorithme entraîné sur ces données ?</li>
+</ol>
+</div>
+<div id="exr-da-1" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercice 16</strong></span> On regroupe les âges selon les intervalles <code>[0,18[</code>, <code>[18,35[</code>, <code>[35,60[</code> et <code>[60,120]</code>.</p>
+<ol type="a">
+<li>Dans quelle classe place-t-on les âges 18, 34, 35 et 60 ?</li>
+<li>Quel avantage apporte cette transformation pour un tableau de bord ?</li>
+<li>Quel risque faut-il signaler ?</li>
+</ol>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapitres/01_ecosysteme_ml.html" class="pagination-link" aria-label="Fondements Théoriques du Machine Learning">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Fondements Théoriques du Machine Learning</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapitres/03_regression_lineaire.html" class="pagination-link" aria-label="Régression">
+        <span class="nav-page-text"><span class="chapter-title">Régression</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

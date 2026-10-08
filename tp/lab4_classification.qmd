@@ -1,4 +1,4 @@
-# Lab 4 — Classification : prédire une catégorie
+# Lab 4 - Classification : prédire une catégorie
 
 ::: {.callout-tip title="Objectifs du Lab"}
 À la fin de ce Lab, l'étudiant sera capable de :
@@ -11,8 +11,11 @@
 - **Réutiliser** `GridSearchCV` pour régler l'hyperparamètre d'un modèle de classification.
 :::
 
-::: {.callout-note title="Lien avec le cours"}
-Ce Lab correspond au chapitre 5 (*Modèles de classification*). Il réutilise directement les acquis des Labs précédents : matrice de confusion (Lab 1, chapitre 2), pipeline de prétraitement (Lab 2, chapitre 3) et `GridSearchCV` (Lab 3, chapitre 4). Le fil conducteur est l'exemple de la **résiliation d'abonnement (*churn*)** introduit au chapitre 1 (§1.2) comme second exemple du triplet (T, P, E).
+::: {.callout-note title="Téléchargement de la Lab Sheet"}
+Téléchargez un seul format avant de travailler :
+
+- **Notebook `.ipynb`** pour Google Colab, JupyterLab, Jupyter Notebook ou VS Code : ouvrez le dossier GitHub [`labsheets/`](https://github.com/iaousse/ml-course/tree/main/labsheets) et téléchargez le [fichier source du Lab 4](https://github.com/iaousse/ml-course/blob/main/labsheets/lab4_classification.ipynb).
+- **Fichier `.qmd`** pour travailler avec Quarto : ouvrez le dossier GitHub [`tp/`](https://github.com/iaousse/ml-course/tree/main/tp) et téléchargez le [fichier source du Lab 4](https://github.com/iaousse/ml-course/blob/main/tp/lab4_classification.qmd).
 :::
 
 ## 1. Construire un jeu de données de *churn*
@@ -20,6 +23,9 @@ Ce Lab correspond au chapitre 5 (*Modèles de classification*). Il réutilise di
 ```python
 import numpy as np
 import pandas as pd
+from pathlib import Path
+
+Path("outputs").mkdir(parents=True, exist_ok=True)
 
 rng = np.random.default_rng(3)
 n = 500
@@ -30,7 +36,7 @@ facture_mensuelle = rng.uniform(80, 600, size=n)
 type_contrat = rng.choice(["Mensuel", "Annuel", "Deux ans"], size=n, p=[0.5, 0.3, 0.2])
 
 # Probabilité de résiliation : augmente avec les appels au service client et
-# les contrats mensuels, diminue avec l'ancienneté — une structure réaliste.
+# les contrats mensuels, diminue avec l'ancienneté - une structure réaliste.
 logit = (
     -2.0
     + 0.35 * appels_service_client
@@ -65,9 +71,16 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 X = clients.drop(columns="churn")
 y = clients["churn"]
 
-X_train, X_test, y_train, y_test = train_test_split(
+X_dev, X_test, y_dev, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42, stratify=y,
 )
+X_train, X_val, y_train, y_val = train_test_split(
+    X_dev, y_dev, test_size=0.2, random_state=42, stratify=y_dev,
+)
+
+print(f"Entraînement : {len(X_train)} observations")
+print(f"Validation   : {len(X_val)} observations")
+print(f"Test final   : {len(X_test)} observations (réservé jusqu'à la fin)")
 
 colonnes_numeriques = ["anciennete_mois", "appels_service_client", "facture_mensuelle"]
 colonnes_categorielles = ["type_contrat"]
@@ -83,22 +96,22 @@ pipeline_logit = Pipeline([
 ])
 
 pipeline_logit.fit(X_train, y_train)
-print("Accuracy test :", round(pipeline_logit.score(X_test, y_test), 3))
+print("Accuracy validation :", round(pipeline_logit.score(X_val, y_val), 3))
 ```
 
-## 3. Au-delà de l'accuracy : précision, rappel, F1, ROC-AUC
+## 3. Évaluer sur le jeu de validation
 
 ```python
 from sklearn.metrics import (
-    ConfusionMatrixDisplay, RocCurveDisplay, classification_report,
+    ConfusionMatrixDisplay, RocCurveDisplay, classification_report, f1_score,
     confusion_matrix, roc_auc_score,
 )
 
-y_pred = pipeline_logit.predict(X_test)
-y_proba = pipeline_logit.predict_proba(X_test)[:, 1]   # probabilité de la classe "churn"
+y_pred_val = pipeline_logit.predict(X_val)
+y_proba_val = pipeline_logit.predict_proba(X_val)[:, 1]   # probabilité de la classe "churn"
 
-print(classification_report(y_test, y_pred, target_names=["reste", "churn"]))
-print("ROC-AUC :", round(roc_auc_score(y_test, y_proba), 3))
+print(classification_report(y_val, y_pred_val, target_names=["reste", "churn"]))
+print("ROC-AUC validation :", round(roc_auc_score(y_val, y_proba_val), 3))
 ```
 
 ```python
@@ -107,20 +120,20 @@ import matplotlib.pyplot as plt
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
 
 ConfusionMatrixDisplay(
-    confusion_matrix(y_test, y_pred), display_labels=["reste", "churn"],
+    confusion_matrix(y_val, y_pred_val), display_labels=["reste", "churn"],
 ).plot(ax=axes[0], cmap="Blues")
 axes[0].set_title("Matrice de confusion")
 
-RocCurveDisplay.from_predictions(y_test, y_proba, ax=axes[1])
+RocCurveDisplay.from_predictions(y_val, y_proba_val, ax=axes[1])
 axes[1].set_title("Courbe ROC")
 
 fig.tight_layout()
-fig.savefig("outputs/evaluation_churn.png", dpi=150)
+fig.savefig("outputs/evaluation_validation_churn.png", dpi=150)
 plt.show()
 ```
 
 ::: {.callout-note title="Lire la courbe ROC"}
-La courbe ROC (*Receiver Operating Characteristic*) trace le taux de vrais positifs contre le taux de faux positifs, pour **tous les seuils de décision possibles**. Un modèle inutile (équivalent à un tirage au hasard) suit la diagonale ; plus la courbe s'en écarte vers le coin supérieur gauche, meilleur est le modèle. L'aire sous la courbe (**AUC**) résume cette qualité en un seul nombre entre 0,5 (hasard) et 1 (parfait).
+La courbe ROC (*Receiver Operating Characteristic*) trace le taux de vrais positifs contre le taux de faux positifs, pour **tous les seuils de décision possibles**. Un modèle sans pouvoir discriminant suit en moyenne la diagonale ; plus sa courbe s'en écarte vers le coin supérieur gauche, meilleur est son pouvoir de classement. L'aire sous la courbe (**AUC**) résume cette capacité dans un nombre compris entre 0 et 1 ; une valeur de 0,5 correspond au hasard et une valeur de 1 à un classement parfait.
 :::
 
 ## 4. Le seuil de décision n'est pas obligatoirement 0,5
@@ -131,9 +144,9 @@ Par défaut, `.predict()` classe en « churn » toute observation dont la probab
 from sklearn.metrics import precision_score, recall_score
 
 for seuil in [0.3, 0.5, 0.7]:
-    y_pred_seuil = (y_proba >= seuil).astype(int)
-    precision = precision_score(y_test, y_pred_seuil)
-    rappel = recall_score(y_test, y_pred_seuil)
+    y_pred_seuil = (y_proba_val >= seuil).astype(int)
+    precision = precision_score(y_val, y_pred_seuil, zero_division=0)
+    rappel = recall_score(y_val, y_pred_seuil, zero_division=0)
     print(f"Seuil = {seuil} → précision = {precision:.3f}, rappel = {rappel:.3f}")
 ```
 
@@ -148,11 +161,11 @@ pipeline_pondere = Pipeline([
 ])
 pipeline_pondere.fit(X_train, y_train)
 
-y_pred_pondere = pipeline_pondere.predict(X_test)
-print(classification_report(y_test, y_pred_pondere, target_names=["reste", "churn"]))
+y_pred_pondere = pipeline_pondere.predict(X_val)
+print(classification_report(y_val, y_pred_pondere, target_names=["reste", "churn"]))
 ```
 
-`class_weight="balanced"` donne automatiquement plus de poids à la classe minoritaire pendant l'entraînement, sans avoir à dupliquer ou supprimer des observations. Comparez le rappel de la classe « churn » avec et sans cette option : c'est généralement là que l'écart est le plus visible.
+`class_weight="balanced"` donne automatiquement plus de poids à la classe minoritaire pendant l'entraînement, sans avoir à dupliquer ou supprimer des observations. Comparez le rappel de la classe « churn » sur la validation avec et sans cette option : c'est généralement là que l'écart est le plus visible.
 
 ## 6. Comparer plusieurs algorithmes, avec réglage d'hyperparamètres
 
@@ -178,32 +191,78 @@ modeles_a_comparer = {
     ),
 }
 
+resultats = []
 for nom, (estimateur, grille) in modeles_a_comparer.items():
     pipeline_candidat = Pipeline([("pretraitement", pretraitement), ("modele", estimateur)])
-    recherche = GridSearchCV(pipeline_candidat, param_grid=grille, cv=5, scoring="f1")
+    recherche = GridSearchCV(
+        pipeline_candidat,
+        param_grid=grille,
+        cv=5,
+        scoring="f1",
+        n_jobs=-1,
+    )
     recherche.fit(X_train, y_train)
-    score_test = recherche.score(X_test, y_test)
-    print(f"{nom:25s} → meilleurs paramètres = {recherche.best_params_}, F1 (test) = {score_test:.3f}")
+    score_validation = f1_score(
+        y_val,
+        recherche.best_estimator_.predict(X_val),
+        zero_division=0,
+    )
+    resultats.append({
+        "nom": nom,
+        "recherche": recherche,
+        "score_cv": recherche.best_score_,
+        "score_validation": score_validation,
+    })
+    print(
+        f"{nom:25s} → paramètres = {recherche.best_params_}, "
+        f"F1 CV = {recherche.best_score_:.3f}, "
+        f"F1 validation = {score_validation:.3f}"
+    )
+
+meilleur_resultat = max(resultats, key=lambda resultat: resultat["score_validation"])
+print(f"\nModèle retenu : {meilleur_resultat['nom']}")
 ```
 
 ::: {.callout-tip title="Pourquoi `scoring=\"f1\"` plutôt que l'accuracy ?"}
 Sur un jeu déséquilibré, optimiser l'accuracy par validation croisée pousserait naturellement `GridSearchCV` vers des modèles qui prédisent presque toujours la classe majoritaire (chapitre 2, §6). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.
 :::
 
-## 7. Synthèse
+## 7. Évaluation finale sur le jeu de test
 
-::: {.callout-note title="Auto-évaluation" collapse="true"}
-- [ ] Je sais construire un pipeline de classification complet, prétraitement inclus.
-- [ ] Je sais calculer et interpréter précision, rappel, F1-score et ROC-AUC.
-- [ ] Je sais expliquer ce que montre une courbe ROC et à quoi correspond l'AUC.
-- [ ] Je sais faire varier le seuil de décision et en expliquer l'effet sur précision et rappel.
-- [ ] Je sais utiliser `class_weight="balanced"` et justifier son intérêt sur des classes déséquilibrées.
-- [ ] Je sais utiliser `GridSearchCV` avec `scoring="f1"` pour comparer plusieurs familles de modèles.
+Le jeu de test n'a pas servi à choisir le modèle ni ses hyperparamètres. Une fois le modèle retenu sur la validation, on le réentraîne sur l'ensemble des données de développement, puis on évalue **une seule fois** ses performances sur le test.
+
+```python
+from sklearn.base import clone
+
+modele_final = clone(meilleur_resultat["recherche"].best_estimator_)
+modele_final.fit(X_dev, y_dev)
+
+y_pred_test = modele_final.predict(X_test)
+y_proba_test = modele_final.predict_proba(X_test)[:, 1]
+
+print(classification_report(y_test, y_pred_test, target_names=["reste", "churn"]))
+print("ROC-AUC test :", round(roc_auc_score(y_test, y_proba_test), 3))
+
+matrice_test = confusion_matrix(y_test, y_pred_test)
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+ConfusionMatrixDisplay(
+    matrice_test, display_labels=["reste", "churn"],
+).plot(ax=axes[0], cmap="Blues")
+axes[0].set_title("Matrice de confusion - test final")
+RocCurveDisplay.from_predictions(y_test, y_proba_test, ax=axes[1])
+axes[1].set_title("Courbe ROC - test final")
+fig.tight_layout()
+fig.savefig("outputs/evaluation_finale_churn.png", dpi=150)
+plt.show()
+```
+
+::: {.callout-warning title="Ne pas réutiliser le test"}
+Après cette évaluation, ne modifiez pas le modèle, ses hyperparamètres ou son seuil en fonction du score obtenu sur le test. Si vous le faites, ce jeu ne constitue plus une évaluation finale indépendante.
 :::
 
-## 8. Lab Sheet — Projet guidé {#sec-lab4-projet}
+## 8. Travail {#sec-lab4-projet}
 
-::: {.callout-important title="Jeu de données du projet : le Titanic, à nouveau"}
+**Jeu de données du projet : le Titanic, à nouveau**
 Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l'objectif n'est plus seulement de le nettoyer, mais de réellement **prédire** la survie (`survived`) d'un passager.
 
 ```python
@@ -211,40 +270,31 @@ titanic = pd.read_csv(
     "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"
 )
 ```
-:::
 
-### Partie A — Reprendre le pipeline du Lab 2
+### Partie A - Préparer les jeux de données
 
-1. Réappliquez (ou reconstruisez) le pipeline de prétraitement du Lab 2 sur les variables `pclass`, `sex`, `age`, `fare`, `embarked`, `sibsp`, `parch`, avec `survived` comme cible. Séparez Train (75 %) / Test (25 %), stratifiés.
+1. Réappliquez (ou reconstruisez) le pipeline de prétraitement du Lab 2 sur les variables `pclass`, `sex`, `age`, `fare`, `embarked`, `sibsp`, `parch`, avec `survived` comme cible. Réservez d'abord 25 % des données au test final, puis séparez les données de développement en entraînement (80 %) et validation (20 %). Utilisez `stratify` à chaque séparation.
 2. Le jeu est-il déséquilibré ? Donnez la proportion de survivants.
 
-### Partie B — Premier modèle et métriques
+### Partie B - Premier modèle et métriques
 
-3. Entraînez une `LogisticRegression` (pipeline complet). Calculez accuracy, précision, rappel, F1-score et ROC-AUC sur le test.
-4. Tracez la matrice de confusion et la courbe ROC.
-5. Une `DummyClassifier` (baseline) obtiendrait quelle accuracy sur ce jeu ? Votre modèle fait-il significativement mieux ?
+3. Entraînez une `LogisticRegression` (pipeline complet). Calculez accuracy, précision, rappel, F1-score et ROC-AUC sur la validation.
+4. Tracez la matrice de confusion et la courbe ROC pour la validation.
+5. Une `DummyClassifier` (baseline) obtiendrait quelle accuracy sur la validation ? Votre modèle fait-il significativement mieux ?
 
-### Partie C — Seuil et déséquilibre
+### Partie C - Seuil et déséquilibre
 
-6. Testez trois seuils de décision différents (par exemple 0.3, 0.5, 0.7). Lequel choisiriez-vous si l'objectif prioritaire était de **ne rater aucun survivant potentiel** (maximiser le rappel), quitte à avoir plus de fausses alertes ?
+6. Testez trois seuils de décision différents (par exemple 0.3, 0.5, 0.7) avec les probabilités prédites sur la validation. Lequel choisiriez-vous si l'objectif prioritaire était de **ne rater aucun survivant potentiel** (maximiser le rappel), quitte à avoir plus de fausses alertes ?
 7. Comparez, avec et sans `class_weight="balanced"`, le rappel obtenu pour la classe minoritaire.
 
-### Partie D — Comparaison de modèles et hyperparamètres
+### Partie D - Comparaison de modèles et hyperparamètres
 
-8. Comparez, par `GridSearchCV` avec `scoring="f1"`, une régression logistique (hyperparamètre `C`), un KNN (hyperparamètre `n_neighbors`) et un arbre de décision (hyperparamètre `max_depth`).
-9. Quel modèle obtient le meilleur F1-score sur le jeu de test ? Ce résultat était-il celui que vous attendiez, compte tenu des données (variables catégorielles nombreuses, taille du jeu, etc.) ?
+8. Comparez, par `GridSearchCV` avec `scoring="f1"`, une régression logistique (hyperparamètre `C`), un KNN (hyperparamètre `n_neighbors`) et un arbre de décision (hyperparamètre `max_depth`). Ajustez les modèles uniquement sur l'entraînement ; utilisez la validation pour retenir la famille de modèle.
+9. Réentraînez le modèle retenu sur toutes les données de développement et évaluez-le une seule fois sur le test final. Quel F1-score obtient-il ? Ce résultat était-il celui que vous attendiez, compte tenu des données (variables catégorielles nombreuses, taille du jeu, etc.) ?
 10. *(Bonus)* Affichez l'importance des variables pour votre meilleur modèle (`.coef_` pour la régression logistique, ou `.feature_importances_` pour l'arbre). Quelle variable semble la plus déterminante pour la survie ? Ce résultat correspond-il à ce que vous savez de l'histoire du naufrage ?
 
 ### Livrables
 
 - un notebook ou script contenant le code des parties A à D ;
-- au moins deux graphiques (matrice de confusion, courbe ROC) dans `outputs/` ;
+- les graphiques d'évaluation sur la validation et une évaluation finale du test dans `outputs/` ;
 - un court paragraphe de conclusion, comparant les modèles testés et justifiant votre choix final.
-
-::: {.callout-tip title="Checklist finale"}
-- [ ] Le déséquilibre des classes est mesuré avant toute modélisation.
-- [ ] Au moins trois métriques de classification (au-delà de l'accuracy) sont calculées.
-- [ ] L'effet du seuil de décision est illustré avec au moins deux valeurs différentes.
-- [ ] Tous les hyperparamètres sont réglés par validation croisée sur le train, jamais sur le test.
-- [ ] Le jeu de test n'est utilisé qu'une seule fois, pour l'évaluation finale.
-:::

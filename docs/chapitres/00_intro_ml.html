@@ -98,10 +98,14 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-0f843ebf765c3981fb4f092a976228be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0d9d9a46e068c065468cb3eda7b4f719.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -132,9 +136,172 @@ div.csl-indent {
 <style>html{ scroll-behavior: smooth; }</style>
 
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -179,8 +346,27 @@ div.csl-indent {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Machine Learning</a> 
-        <div class="sidebar-tools-main">
-    <a href="../Machine-Learning.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/iaousse/" title="" class="quarto-navigation-tool px-1" aria-label="GitHub" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://www.linkedin.com/in/mbarekiaousse" title="" class="quarto-navigation-tool px-1" aria-label="LinkedIn" target="_blank"><i class="bi bi-linkedin"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Machine-Learning.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -193,12 +379,14 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">index.html</span></a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">index.html</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../preface.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Préface</span></a>
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Préface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -213,7 +401,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapitres/02_pretraitement_donnees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte et Prétraitement des Données</span></a>
+  <a href="../chapitres/module_collecte_pretraitement_commun.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Collecte, Nettoyage et Préparation des Données</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -233,33 +421,33 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 - Environnement Python et premiers pas avec les données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 - Généralisation et évaluation avec <code>scikit-learn</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 - Collecte et prétraitement des données</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 - Régression : prédire une valeur numérique</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 - Classification : prédire une catégorie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab0_environnement_python.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 0 — Environnement Python et premiers pas avec les données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab1_fondements_sklearn.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 1 — Généralisation et évaluation avec <code>scikit-learn</code></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab2_collecte_pretraitement.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 2 — Collecte et prétraitement des données</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab3_regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 3 — Régression : prédire une valeur numérique</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tp/lab4_classification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 4 — Classification : prédire une catégorie</span></a>
   </div>
 </li>
     </ul>
@@ -289,12 +477,14 @@ div.csl-indent {
   <li><a href="#sec-outils" id="toc-sec-outils" class="nav-link" data-scroll-target="#sec-outils">4.2. Environnements de développement : exploration et production</a></li>
   <li><a href="#sec-uv" id="toc-sec-uv" class="nav-link" data-scroll-target="#sec-uv">4.3. Gestion de projet avec <code>uv</code></a></li>
   </ul></li>
+  <li><a href="#références-pour-approfondir" id="toc-références-pour-approfondir" class="nav-link" data-scroll-target="#références-pour-approfondir">Références pour approfondir</a></li>
   <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">Exercices</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -323,7 +513,7 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="machine-learning">1. Machine Learning</h2>
 <section id="de-lintelligence-artificielle-au-machine-learning" class="level3">
 <h3 class="anchored" data-anchor-id="de-lintelligence-artificielle-au-machine-learning">1.1. De l’Intelligence Artificielle au Machine Learning</h3>
-<p>L’<strong>Intelligence Artificielle (IA)</strong> est le champ scientifique le plus large : il regroupe l’ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l’intelligence humaine — raisonner, percevoir, planifier, comprendre le langage, ou encore apprendre.</p>
+<p>L’<strong>Intelligence Artificielle (IA)</strong> est le champ scientifique le plus large : il regroupe l’ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l’intelligence humaine - raisonner, percevoir, planifier, comprendre le langage, ou encore apprendre.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Repère historique">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -364,13 +554,13 @@ Figure&nbsp;1: Intelligence Artificielle, Machine Learning et Deep Learning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l’IA — mais la réciproque est fausse (ex : un algorithme de recherche aux échecs, comme Minimax, est de l’IA sans être du ML, car il n’apprend rien à partir de données).</p>
+<p>Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l’IA - mais la réciproque est fausse (ex : un algorithme de recherche aux échecs, comme Minimax, est de l’IA sans être du ML, car il n’apprend rien à partir de données).</p>
 </div>
 </div>
 </section>
 <section id="définition-formelle-du-machine-learning" class="level3">
 <h3 class="anchored" data-anchor-id="définition-formelle-du-machine-learning">1.2. Définition formelle du Machine Learning</h3>
-<p>La définition de référence est celle de <span class="citation" data-cites="mitchell1997machine">(<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">Mitchell et Mitchell 1997</a>)</span> :</p>
+<p>La définition de référence est celle de <span class="citation" data-cites="mitchell1997machine">(<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">Mitchell 1997</a>)</span> :</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -390,7 +580,7 @@ Figure&nbsp;1: Intelligence Artificielle, Machine Learning et Deep Learning
 <div id="tbl-mitchell" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mitchell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Le cadre TPE de <span class="citation" data-cites="mitchell1997machine">Mitchell et Mitchell (<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">1997</a>)</span> appliqué au filtre anti-spam
+Table&nbsp;1: Le cadre TPE de <span class="citation" data-cites="mitchell1997machine">Mitchell (<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">1997</a>)</span> appliqué au filtre anti-spam
 </figcaption>
 <div aria-describedby="tbl-mitchell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -469,7 +659,7 @@ Table&nbsp;1: Le cadre TPE de <span class="citation" data-cites="mitchell1997mac
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    mots_suspects <span class="op">=</span> [<span class="st">"gratuit"</span>, <span class="st">"gagner"</span>, <span class="st">"urgent"</span>, <span class="st">"viagra"</span>]</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    email_minuscule <span class="op">=</span> email.lower()</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">any</span>(mot <span class="kw">in</span> email_minuscule <span class="cf">for</span> mot <span class="kw">in</span> mots_suspects)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ce type d’approche est idéal lorsque les règles métier sont <strong>stables, peu nombreuses et bien comprises</strong> (ex. calcul d’un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être <strong>réécrite manuellement</strong> — le programme n’apprend rien de lui-même.</p>
+<p>Ce type d’approche est idéal lorsque les règles métier sont <strong>stables, peu nombreuses et bien comprises</strong> (ex. calcul d’un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être <strong>réécrite manuellement</strong> - le programme n’apprend rien de lui-même.</p>
 </section>
 <section id="le-paradigme-data-driven" class="level3">
 <h3 class="anchored" data-anchor-id="le-paradigme-data-driven">2.2. Le paradigme Data-Driven</h3>
@@ -565,6 +755,15 @@ Table&nbsp;2: Comparaison synthétique des deux paradigmes
 <section id="le-cycle-de-vie-dun-projet-de-machine-learning" class="level2">
 <h2 class="anchored" data-anchor-id="le-cycle-de-vie-dun-projet-de-machine-learning">3. Le cycle de vie d’un projet de Machine Learning</h2>
 <p>Entraîner un modèle ne représente qu’une fraction du travail réel. Un projet ML se décompose en sept étapes itératives <span class="citation" data-cites="geron2022">(<a href="../references.html#ref-geron2022" role="doc-biblioref">Géron 2022</a>)</span> :</p>
+<ol type="1">
+<li><strong>Cadrage du problème métier</strong> : traduire un besoin en problème ML via la grille (T, P, E) - voir <a href="#def-ml" class="quarto-xref">Définition&nbsp;<span>1</span></a>.</li>
+<li><strong>Collecte des données</strong> : rassembler un jeu de données représentatif du phénomène à modéliser.</li>
+<li><strong>Préparation et nettoyage</strong> : étape souvent très chronophage, dont la durée varie selon le projet. Elle comprend notamment le traitement des valeurs manquantes, l’encodage des variables catégorielles et la création de nouvelles variables (<em>feature engineering</em>).</li>
+<li><strong>Modélisation</strong> : choix des algorithmes et entraînement sur les données pour minimiser une erreur.</li>
+<li><strong>Évaluation</strong> : mesurer objectivement la performance sur des données jamais vues (jeu de test).</li>
+<li><strong>Déploiement</strong> : intégrer le modèle dans un système opérationnel (application, API, tableau de bord).</li>
+<li><strong>Monitoring</strong> : surveiller les performances en production pour détecter la <strong>dérive des données</strong> (<em>data drift</em>) et déclencher un réentraînement si nécessaire.</li>
+</ol>
 <div id="fig-cycle-vie-ml" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cycle-vie-ml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -575,16 +774,7 @@ Figure&nbsp;3: Le cycle de vie d’un projet de Machine Learning
 </figcaption>
 </figure>
 </div>
-<ol type="1">
-<li><strong>Cadrage du problème métier</strong> : traduire un besoin en problème ML via la grille (T, P, E) — voir <a href="#def-ml" class="quarto-xref">Définition&nbsp;<span>1</span></a>.</li>
-<li><strong>Collecte des données</strong> : rassembler un jeu de données représentatif du phénomène à modéliser.</li>
-<li><strong>Préparation et nettoyage</strong> : étape la plus chronophage (souvent 60-80 % du temps réel du projet). Traitement des valeurs manquantes, encodage des variables catégorielles, création de nouvelles variables (<em><code>feature engineering</code></em>).</li>
-<li><strong>Modélisation</strong> : choix des algorithmes et entraînement sur les données pour minimiser une erreur.</li>
-<li><strong>Évaluation</strong> : mesurer objectivement la performance sur des données jamais vues (jeu de test).</li>
-<li><strong>Déploiement</strong> : intégrer le modèle dans un système opérationnel (application, API, tableau de bord).</li>
-<li><strong>Monitoring</strong> : surveiller les performances en production pour détecter la <strong>dérive des données</strong> (<em>data drift</em>) et déclencher un réentraînement si nécessaire.</li>
-</ol>
-<p>Nous allons appliquer ces sept étapes à un exemple concret : <code>prédire les prix immobiliers à Casablanca</code>.</p>
+<p>Nous allons appliquer ces sept étapes à un exemple concret : prédire les prix immobiliers à Casablanca.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Étude de cas">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -602,7 +792,7 @@ Figure&nbsp;3: Le cycle de vie d’un projet de Machine Learning
 <li><strong>Modélisation</strong> : entraînement d’une régression linéaire (chapitre 3) sur 80 % des données.</li>
 <li><strong>Évaluation</strong> : mesure de l’erreur sur les 20 % restants, jamais vus pendant l’entraînement.</li>
 <li><strong>Déploiement</strong> : intégration du modèle dans le simulateur de prix du site web de l’agence.</li>
-<li><strong>Monitoring</strong> : si le marché immobilier casablancais évolue fortement (nouvelle infrastructure, crise économique), les prix prédits deviendront obsolètes — d’où la nécessité d’un suivi continu.</li>
+<li><strong>Monitoring</strong> : si le marché immobilier casablancais évolue fortement (nouvelle infrastructure, crise économique), les prix prédits deviendront obsolètes - d’où la nécessité d’un suivi continu.</li>
 </ol>
 </div>
 </div>
@@ -614,8 +804,7 @@ Figure&nbsp;3: Le cycle de vie d’un projet de Machine Learning
 <p>Dans le cadre de ce cycle, nous retenons <a href="https://python.org"><strong>Python</strong></a> comme langage principal. Ce choix s’explique notamment par la lisibilité de sa syntaxe, la richesse de son écosystème scientifique et sa large utilisation dans les domaines de l’analyse de données, de l’intelligence artificielle et du <em>Machine Learning</em>. Python permet ainsi de couvrir différentes étapes d’un projet, depuis la préparation et l’exploration des données jusqu’à l’entraînement, l’évaluation et la mise en œuvre de modèles.</p>
 <section id="quelques-bibliothèques-scientifiques-de-lécosystème-python" class="level3">
 <h3 class="anchored" data-anchor-id="quelques-bibliothèques-scientifiques-de-lécosystème-python">4.1. Quelques bibliothèques scientifiques de l’écosystème Python</h3>
-<p>L’écosystème pythoncomprend notamment <a href="https://numpy.org"><strong>NumPy</strong></a> pour le calcul numérique, <a href="https://pandas.pydata.org"><strong>pandas</strong></a> pour la manipulation et l’analyse des données, <a href="https://scikit-learn.org"><strong>scikit-learn</strong></a> pour les principales méthodes d’apprentissage automatique, ainsi que <a href="https://tensorflow.org"><strong>TensorFlow</strong></a> et <a href="https://pytorch.org"><strong>PyTorch</strong></a> pour le développement de modèles d’apprentissage profond.</p>
-<p>Le choix de Python présente également un intérêt pédagogique : il permet de mettre l’accent sur les concepts, les méthodes et le raisonnement propres au <em>Machine Learning</em>, tout en s’appuyant sur des bibliothèques largement utilisées dans la pratique. Au cours de ce cycle, nous utiliserons donc Python et cet écosystème d’outils pour illustrer progressivement les différentes étapes de la construction et de l’exploitation d’un modèle de <em>Machine Learning</em>.</p>
+<p>L’écosystème Python comprend notamment <a href="https://numpy.org"><strong>NumPy</strong></a> pour le calcul numérique, <a href="https://pandas.pydata.org"><strong>pandas</strong></a> pour la manipulation et l’analyse des données, <a href="https://scikit-learn.org"><strong>scikit-learn</strong></a> pour les principales méthodes d’apprentissage automatique, ainsi que <a href="https://tensorflow.org"><strong>TensorFlow</strong></a> et <a href="https://pytorch.org"><strong>PyTorch</strong></a> pour le développement de modèles d’apprentissage profond.</p>
 <div id="tbl-ecosysteme" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ecosysteme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -663,7 +852,7 @@ Table&nbsp;3: Quelques bibliothèques principales de l’écosystème Python uti
 <p>Dans ce cours, nous adoptons une organisation simple et progressive : les <strong>notebooks Jupyter</strong>, notamment à travers <strong>JupyterLab</strong> et <strong>Google Colab</strong>, seront privilégiés pour l’exploration et le prototypage, tandis que <strong>Visual Studio Code (VS Code)</strong> sera utilisé pour structurer et finaliser le code destiné à la production.</p>
 <p>Ce choix constitue une convention pédagogique propre à ce cours. Il existe naturellement d’autres environnements et plateformes, tels que <strong>DataSpell</strong>, <strong>PyCharm</strong>, <strong>Databricks</strong> et d’autres solutions, qui peuvent être pertinents selon les contextes, les projets et les habitudes de développement.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">🔎 Exploration et prototypage</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">🏗️ Développement et production</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">🔎 Exploration et prototypage</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">🏗️ Développement et production</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <dl>
@@ -768,8 +957,8 @@ scikit-learn</code></pre>
 </blockquote>
 <p>La synchronisation entre ces éléments est prise en charge par <code>uv</code>. La documentation officielle explique notamment que les opérations telles que <a href="https://docs.astral.sh/uv/concepts/projects/sync/"><code>uv sync</code> et <code>uv run</code></a> peuvent mettre à jour l’environnement à partir du fichier de verrouillage.</p>
 </section>
-<section id="pourquoi-uv-plutôt-quanaconda-ou-conda" class="level4">
-<h4 class="anchored" data-anchor-id="pourquoi-uv-plutôt-quanaconda-ou-conda">Pourquoi <code>uv</code> plutôt qu’Anaconda ou Conda ?</h4>
+<section id="uv-anaconda-ou-conda" class="level4">
+<h4 class="anchored" data-anchor-id="uv-anaconda-ou-conda"><code>uv</code>, ’Anaconda ou Conda ?</h4>
 <p>Il existe d’autres solutions parfaitement valables pour gérer les environnements Python. L’une des plus connues est l’écosystème <a href="https://docs.conda.io/">Conda</a>, qui permet notamment de créer, gérer, partager et supprimer des environnements contenant différentes versions de Python et de paquets.</p>
 <p>Notre choix de <code>uv</code> dans ce cours ne signifie donc pas que Conda ou <a href="https://www.anaconda.com/">Anaconda</a> sont inadaptés. Il s’agit d’un <strong>choix pédagogique et technique</strong> correspondant à l’organisation que nous souhaitons adopter.</p>
 <p>Nous retenons <code>uv</code> principalement pour les raisons suivantes :</p>
@@ -784,23 +973,44 @@ scikit-learn</code></pre>
 </section>
 </section>
 </section>
+<section id="références-pour-approfondir" class="level2">
+<h2 class="anchored" data-anchor-id="références-pour-approfondir">Références pour approfondir</h2>
+<p>Les références suivantes permettent d’approfondir le Machine Learning selon plusieurs perspectives : programmation Python, mathématiques, statistique, théorie de l’apprentissage et mise en pratique.</p>
+<p><strong>Pour Python et la Data Science</strong></p>
+<p>La documentation officielle de <strong>Python</strong> <span class="citation" data-cites="python_docs">(<a href="../references.html#ref-python_docs" role="doc-biblioref">Python Software Foundation 2026</a>)</span> constitue la référence pour le langage et sa bibliothèque standard. Pour la manipulation et l’analyse des données, <em>Python for Data Analysis</em> de McKinney <span class="citation" data-cites="mckinney2022">(<a href="../references.html#ref-mckinney2022" role="doc-biblioref">McKinney 2022</a>)</span> et <em>Python Data Science Handbook</em> de VanderPlas <span class="citation" data-cites="vanderplas2022">(<a href="../references.html#ref-vanderplas2022" role="doc-biblioref">VanderPlas 2022</a>)</span> présentent les principaux outils de l’écosystème Python, notamment <strong>NumPy</strong>, <strong>pandas</strong>, <strong>Matplotlib</strong> et <strong>Jupyter</strong>.</p>
+<p>Les documentations officielles de <strong>NumPy</strong> <span class="citation" data-cites="numpy_docs">(<a href="../references.html#ref-numpy_docs" role="doc-biblioref">NumPy Developers 2026</a>)</span>, <strong>pandas</strong> <span class="citation" data-cites="pandas_docs">(<a href="../references.html#ref-pandas_docs" role="doc-biblioref"><span class="nocase">pandas Development Team</span> 2026</a>)</span>, <strong>SciPy</strong> <span class="citation" data-cites="scipy_docs">(<a href="../references.html#ref-scipy_docs" role="doc-biblioref">SciPy Developers 2026</a>)</span> et <strong>Matplotlib</strong> <span class="citation" data-cites="matplotlib_docs">(<a href="../references.html#ref-matplotlib_docs" role="doc-biblioref">Matplotlib Development Team 2026</a>)</span> constituent des références techniques utiles pour les travaux pratiques.</p>
+<p><strong>Pour les mathématiques et la statistique</strong></p>
+<p><em>Mathematics for Machine Learning</em> de Deisenroth, Faisal et Ong <span class="citation" data-cites="deisenroth2020">(<a href="../references.html#ref-deisenroth2020" role="doc-biblioref">Deisenroth et al. 2020</a>)</span> présente les principaux outils mathématiques nécessaires au Machine Learning : algèbre linéaire, calcul différentiel, optimisation et probabilités.</p>
+<p><em>All of Statistics</em> de Wasserman <span class="citation" data-cites="wasserman2004">(<a href="../references.html#ref-wasserman2004" role="doc-biblioref">Wasserman 2004</a>)</span> constitue une référence pour les probabilités, l’estimation et l’inférence statistique. <em>The Elements of Statistical Learning</em> de Hastie, Tibshirani et Friedman <span class="citation" data-cites="hastie2009elements">(<a href="../references.html#ref-hastie2009elements" role="doc-biblioref">Hastie et al. 2009</a>)</span> propose un traitement plus approfondi des méthodes statistiques d’apprentissage.</p>
+<p><strong>Pour la théorie du Machine Learning</strong></p>
+<p><em>Understanding Machine Learning: From Theory to Algorithms</em> de Shalev-Shwartz et Ben-David <span class="citation" data-cites="shalev2014">(<a href="../references.html#ref-shalev2014" role="doc-biblioref">Shalev-Shwartz et Ben-David 2014</a>)</span> présente les fondements théoriques de l’apprentissage, notamment la généralisation, le risque empirique et la complexité des modèles.</p>
+<p><em>Statistical Learning Theory</em> de Vapnik <span class="citation" data-cites="vapnik1998">(<a href="../references.html#ref-vapnik1998" role="doc-biblioref">Vapnik 1998</a>)</span> constitue une référence avancée sur la théorie statistique de l’apprentissage. <em>Pattern Recognition and Machine Learning</em> de Bishop <span class="citation" data-cites="bishop2006">(<a href="../references.html#ref-bishop2006" role="doc-biblioref">Bishop 2006</a>)</span> approfondit quant à lui les approches probabilistes et leurs fondements mathématiques.</p>
+<p><strong>Pour apprendre par la pratique</strong></p>
+<p><em>An Introduction to Statistical Learning: with Applications in Python</em> de James et ses coauteurs <span class="citation" data-cites="james2023islp">(<a href="../references.html#ref-james2023islp" role="doc-biblioref">James et al. 2023</a>)</span> propose une introduction progressive aux principales méthodes de Machine Learning, accompagnée d’exemples en Python.</p>
+<p><em>Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow</em> de Géron <span class="citation" data-cites="geron2022">(<a href="../references.html#ref-geron2022" role="doc-biblioref">Géron 2022</a>)</span> est particulièrement orienté vers la mise en œuvre : préparation des données, entraînement, validation, évaluation et réglage des modèles.</p>
+<p><em>Machine Learning Refined</em> de Watt, Borhani et Katsaggelos <span class="citation" data-cites="watt2020">(<a href="../references.html#ref-watt2020" role="doc-biblioref">Watt et al. 2020</a>)</span> propose une approche combinant intuition, mathématiques et algorithmes.</p>
+<p><strong>Pour le Deep Learning</strong></p>
+<p><em>Deep Learning</em> de Goodfellow, Bengio et Courville <span class="citation" data-cites="goodfellow2016">(<a href="../references.html#ref-goodfellow2016" role="doc-biblioref">Goodfellow et al. 2016</a>)</span> constitue une référence majeure pour les fondements mathématiques et théoriques du Deep Learning.</p>
+<p><em>Deep Learning with Python</em> de Chollet <span class="citation" data-cites="chollet2021">(<a href="../references.html#ref-chollet2021" role="doc-biblioref">Chollet 2021</a>)</span> propose une approche plus pratique, basée notamment sur <strong>Keras</strong>, et constitue un complément naturel à l’ouvrage de Goodfellow et al.</p>
+<p>La documentation officielle de <strong>TensorFlow</strong> <span class="citation" data-cites="tensorflow_docs">(<a href="../references.html#ref-tensorflow_docs" role="doc-biblioref">TensorFlow Developers 2026</a>)</span> présente les outils et concepts de la plateforme, tandis que la documentation de <strong>Keras</strong> <span class="citation" data-cites="keras_docs">(<a href="../references.html#ref-keras_docs" role="doc-biblioref">Keras Developers 2026</a>)</span> constitue une référence pratique pour la construction et l’entraînement des réseaux de neurones. L’article de Abadi et ses coauteurs <span class="citation" data-cites="abadi2016tensorflow">(<a href="../references.html#ref-abadi2016tensorflow" role="doc-biblioref">Abadi et al. 2016</a>)</span> présente les fondements de TensorFlow.</p>
+<p><strong>Pour scikit-learn</strong></p>
+<p>La documentation officielle de <strong>scikit-learn</strong> <span class="citation" data-cites="sklearn_docs">(<a href="../references.html#ref-sklearn_docs" role="doc-biblioref">Scikit-learn Developers 2026</a>)</span> constitue la référence principale pour les algorithmes, la préparation des données, les pipelines, la validation croisée et l’évaluation des modèles. L’article de Pedregosa et ses coauteurs <span class="citation" data-cites="pedregosa2011">(<a href="../references.html#ref-pedregosa2011" role="doc-biblioref">Pedregosa et al. 2011</a>)</span> présente la bibliothèque et ses principes de conception.</p>
+<p><strong>Pour une progression recommandée</strong></p>
+<p>Une progression possible est la suivante :</p>
+<ol type="1">
+<li><strong>Python et outils scientifiques</strong> : Python, NumPy, pandas et Matplotlib <span class="citation" data-cites="python_docs numpy_docs pandas_docs matplotlib_docs">(<a href="../references.html#ref-python_docs" role="doc-biblioref">Python Software Foundation 2026</a>; <a href="../references.html#ref-numpy_docs" role="doc-biblioref">NumPy Developers 2026</a>; <a href="../references.html#ref-pandas_docs" role="doc-biblioref"><span class="nocase">pandas Development Team</span> 2026</a>; <a href="../references.html#ref-matplotlib_docs" role="doc-biblioref">Matplotlib Development Team 2026</a>)</span> ;</li>
+<li><strong>Mathématiques et statistique</strong> : Deisenroth et al. <span class="citation" data-cites="deisenroth2020">(<a href="../references.html#ref-deisenroth2020" role="doc-biblioref">Deisenroth et al. 2020</a>)</span> et Wasserman <span class="citation" data-cites="wasserman2004">(<a href="../references.html#ref-wasserman2004" role="doc-biblioref">Wasserman 2004</a>)</span> ;</li>
+<li><strong>Machine Learning</strong> : James et al. <span class="citation" data-cites="james2023islp">(<a href="../references.html#ref-james2023islp" role="doc-biblioref">James et al. 2023</a>)</span> et Géron <span class="citation" data-cites="geron2022">(<a href="../references.html#ref-geron2022" role="doc-biblioref">Géron 2022</a>)</span> ;</li>
+<li><strong>Théorie</strong> : Shalev-Shwartz et Ben-David <span class="citation" data-cites="shalev2014">(<a href="../references.html#ref-shalev2014" role="doc-biblioref">Shalev-Shwartz et Ben-David 2014</a>)</span>, Hastie et al. <span class="citation" data-cites="hastie2009elements">(<a href="../references.html#ref-hastie2009elements" role="doc-biblioref">Hastie et al. 2009</a>)</span> et Bishop <span class="citation" data-cites="bishop2006">(<a href="../references.html#ref-bishop2006" role="doc-biblioref">Bishop 2006</a>)</span> ;</li>
+<li><strong>Deep Learning</strong> : Goodfellow et al. <span class="citation" data-cites="goodfellow2016">(<a href="../references.html#ref-goodfellow2016" role="doc-biblioref">Goodfellow et al. 2016</a>)</span> et Chollet <span class="citation" data-cites="chollet2021">(<a href="../references.html#ref-chollet2021" role="doc-biblioref">Chollet 2021</a>)</span> ;</li>
+<li><strong>Documentation technique</strong> : scikit-learn <span class="citation" data-cites="sklearn_docs">(<a href="../references.html#ref-sklearn_docs" role="doc-biblioref">Scikit-learn Developers 2026</a>)</span>, TensorFlow <span class="citation" data-cites="tensorflow_docs">(<a href="../references.html#ref-tensorflow_docs" role="doc-biblioref">TensorFlow Developers 2026</a>)</span> et Keras <span class="citation" data-cites="keras_docs">(<a href="../references.html#ref-keras_docs" role="doc-biblioref">Keras Developers 2026</a>)</span>.</li>
+</ol>
+<p>Ces ressources sont complémentaires : les références théoriques permettent de comprendre les fondements et les propriétés des méthodes, tandis que les ouvrages pratiques et les documentations accompagnent leur mise en œuvre en Python.</p>
+</section>
 <section id="exercices" class="level2">
 <h2 class="anchored" data-anchor-id="exercices">Exercices</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Consigne">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Consigne
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit <strong>avant</strong> de les consulter.</p>
-</div>
-</div>
 <div id="exr-intro-1" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 1 (Vrai ou Faux)</strong></span> Indiquez si chaque affirmation est vraie ou fausse, en justifiant brièvement.</p>
+<p><span class="theorem-title"><strong>Exercice 1</strong></span> Indiquez si chaque affirmation est vraie ou fausse, en justifiant brièvement.</p>
 <ol type="a">
 <li>Tout système d’Intelligence Artificielle est un système de Machine Learning.</li>
 <li>Tout algorithme de Deep Learning est un algorithme de Machine Learning.</li>
@@ -809,7 +1019,7 @@ scikit-learn</code></pre>
 </ol>
 </div>
 <div id="exr-intro-2" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 2 (QCM)</strong></span> Dans la définition de <span class="citation" data-cites="mitchell1997machine">(<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">Mitchell et Mitchell 1997</a>)</span> (<a href="#def-ml" class="quarto-xref">Définition&nbsp;<span>1</span></a>), que représente la lettre <strong>E</strong> ?</p>
+<p><span class="theorem-title"><strong>Exercice 2</strong></span> Dans la définition de <span class="citation" data-cites="mitchell1997machine">(<a href="../references.html#ref-mitchell1997machine" role="doc-biblioref">Mitchell 1997</a>)</span> (<a href="#def-ml" class="quarto-xref">Définition&nbsp;<span>1</span></a>), que représente la lettre <strong>E</strong> ?</p>
 <ol type="1">
 <li>L’erreur (<em>Error</em>) commise par le modèle</li>
 <li>L’expérience (<em>Experience</em>), c’est-à-dire les données utilisées pour apprendre</li>
@@ -818,11 +1028,11 @@ scikit-learn</code></pre>
 </ol>
 </div>
 <div id="exr-intro-3" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 3 (Formuler le triplet (T, P, E))</strong></span> Une chaîne de supermarchés marocaine souhaite développer un système capable de <strong>prédire, pour chaque client fidèle, le montant qu’il dépensera lors de sa prochaine visite</strong>, à partir de son historique d’achats des deux dernières années.</p>
+<p><span class="theorem-title"><strong>Exercice 3</strong></span> Une chaîne de supermarchés marocaine souhaite développer un système capable de <strong>prédire, pour chaque client fidèle, le montant qu’il dépensera lors de sa prochaine visite</strong>, à partir de son historique d’achats des deux dernières années.</p>
 <p>Formulez le triplet (T, P, E) pour ce projet.</p>
 </div>
 <div id="exr-intro-4" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 4 (Programmation classique ou Machine Learning ?)</strong></span> Pour chaque situation, indiquez l’approche la plus appropriée et justifiez en une phrase.</p>
+<p><span class="theorem-title"><strong>Exercice 4</strong></span> Pour chaque situation, indiquez l’approche la plus appropriée et justifiez en une phrase.</p>
 <ol type="a">
 <li>Convertir un montant de dirhams marocains (MAD) en euros à un taux de change fixé.</li>
 <li>Détecter automatiquement si un commentaire posté sur un réseau social est injurieux.</li>
@@ -831,10 +1041,10 @@ scikit-learn</code></pre>
 </ol>
 </div>
 <div id="exr-intro-5" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 5 (Reconstituer le schéma Data-Driven)</strong></span> En vous appuyant sur la <a href="#fig-paradigme-programmation" class="quarto-xref">Figure&nbsp;<span>2</span></a>, reconstituez sous la forme <code>A → B</code> l’enchaînement correct des quatre éléments suivants du paradigme Machine Learning : <strong>Modèle</strong>, <strong>Données</strong>, <strong>Algorithme d’apprentissage</strong>, <strong>Résultats attendus</strong>.</p>
+<p><span class="theorem-title"><strong>Exercice 5</strong></span> En vous appuyant sur la <a href="#fig-paradigme-programmation" class="quarto-xref">Figure&nbsp;<span>2</span></a>, reconstituez sous la forme <code>A → B</code> l’enchaînement correct des quatre éléments suivants du paradigme Machine Learning : <strong>Modèle</strong>, <strong>Données</strong>, <strong>Algorithme d’apprentissage</strong>, <strong>Résultats attendus</strong>.</p>
 </div>
 <div id="exr-intro-6" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 6 (Remettre les étapes dans l’ordre)</strong></span> Voici, dans le désordre, les sept étapes du cycle de vie d’un projet de Machine Learning :</p>
+<p><span class="theorem-title"><strong>Exercice 6</strong></span> Voici, dans le désordre, les sept étapes du cycle de vie d’un projet de Machine Learning :</p>
 <p>Évaluation du modèle · Cadrage du problème métier · Monitoring · Modélisation · Préparation et nettoyage · Déploiement · Collecte des données</p>
 <p>Remettez-les dans l’ordre correct.</p>
 </div>
@@ -846,7 +1056,7 @@ scikit-learn</code></pre>
 </ol>
 </div>
 <div id="exr-intro-8" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercice 8 (Outils et bibliothèques)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Exercice 8</strong></span> &nbsp;</p>
 <ol type="a">
 <li>Associez chaque bibliothèque à son rôle principal : <code>pandas</code>, <code>scikit-learn</code>, <code>numpy</code>. Rôles : (i) modélisation classique (régression/classification) ; (ii) manipulation de tableaux de données ; (iii) calcul numérique et matriciel.</li>
 <li>Un étudiant veut explorer rapidement un nouveau jeu de données et visualiser quelques graphiques avant de structurer un vrai projet. Quel outil de la section <a href="#sec-outils" class="quarto-xref"><span>4.2. Environnements de développement : exploration et production</span></a> lui conseillez-vous, et pourquoi ?</li>
@@ -855,11 +1065,77 @@ scikit-learn</code></pre>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-abadi2016tensorflow" class="csl-entry" role="listitem">
+Abadi, Martín, Ashish Agarwal, Paul Barham, et al. 2016. <em>TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems</em>. <a href="https://arxiv.org/abs/1603.04467">https://arxiv.org/abs/1603.04467</a>.
+</div>
+<div id="ref-bishop2006" class="csl-entry" role="listitem">
+Bishop, Christopher M. 2006. <em>Pattern Recognition and Machine Learning</em>. Information Science et Statistics. Springer. <a href="https://doi.org/10.1007/978-0-387-45528-0">https://doi.org/10.1007/978-0-387-45528-0</a>.
+</div>
+<div id="ref-chollet2021" class="csl-entry" role="listitem">
+Chollet, François. 2021. <em>Deep Learning with Python</em>. 2ᵉ éd. Manning.
+</div>
+<div id="ref-deisenroth2020" class="csl-entry" role="listitem">
+Deisenroth, Marc Peter, A. Aldo Faisal, et Cheng Soon Ong. 2020. <em>Mathematics for Machine Learning</em>. Cambridge University Press.
+</div>
 <div id="ref-geron2022" class="csl-entry" role="listitem">
-Géron, Aurélien. 2022. <em>Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow</em>. O’Reilly Media.
+Géron, Aurélien. 2022. <em>Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems</em>. 3ᵉ éd. O’Reilly Media.
+</div>
+<div id="ref-goodfellow2016" class="csl-entry" role="listitem">
+Goodfellow, Ian, Yoshua Bengio, et Aaron Courville. 2016. <em>Deep Learning</em>. MIT Press. <a href="https://www.deeplearningbook.org/">https://www.deeplearningbook.org/</a>.
+</div>
+<div id="ref-hastie2009elements" class="csl-entry" role="listitem">
+Hastie, Trevor, Robert Tibshirani, et Jerome Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>. 2ᵉ éd. Springer Series in Statistics. Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a>.
+</div>
+<div id="ref-james2023islp" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, Robert Tibshirani, et Jonathan Taylor. 2023. <em>An Introduction to Statistical Learning: With Applications in Python</em>. Springer Texts in Statistics. Springer. <a href="https://doi.org/10.1007/978-3-031-38747-0">https://doi.org/10.1007/978-3-031-38747-0</a>.
+</div>
+<div id="ref-keras_docs" class="csl-entry" role="listitem">
+Keras Developers. 2026. <em>Keras Developer Guides</em>. <a href="https://keras.io/guides/">https://keras.io/guides/</a>.
+</div>
+<div id="ref-matplotlib_docs" class="csl-entry" role="listitem">
+Matplotlib Development Team. 2026. <em>Matplotlib Documentation</em>. <a href="https://matplotlib.org/stable/">https://matplotlib.org/stable/</a>.
+</div>
+<div id="ref-mckinney2022" class="csl-entry" role="listitem">
+McKinney, Wes. 2022. <em>Python for Data Analysis: Data Wrangling with pandas, NumPy, and Jupyter</em>. 3ᵉ éd. O’Reilly Media.
 </div>
 <div id="ref-mitchell1997machine" class="csl-entry" role="listitem">
-Mitchell, Tom M, et Tom M Mitchell. 1997. <em>Machine learning</em>. Vol. 1. McGraw-hill New York.
+Mitchell, Tom M. 1997. <em>Machine Learning</em>. McGraw-Hill.
+</div>
+<div id="ref-numpy_docs" class="csl-entry" role="listitem">
+NumPy Developers. 2026. <em>NumPy Documentation</em>. <a href="https://numpy.org/doc/stable/">https://numpy.org/doc/stable/</a>.
+</div>
+<div id="ref-pandas_docs" class="csl-entry" role="listitem">
+<span class="nocase">pandas Development Team</span>. 2026. <em>pandas Documentation</em>. <a href="https://pandas.pydata.org/docs/">https://pandas.pydata.org/docs/</a>.
+</div>
+<div id="ref-pedregosa2011" class="csl-entry" role="listitem">
+Pedregosa, Fabian, Gaël Varoquaux, Alexandre Gramfort, et al. 2011. <span>«&nbsp;Scikit-learn: Machine Learning in Python&nbsp;»</span>. <em>Journal of Machine Learning Research</em> 12 (85): 2825‑30. <a href="https://www.jmlr.org/papers/v12/pedregosa11a.html">https://www.jmlr.org/papers/v12/pedregosa11a.html</a>.
+</div>
+<div id="ref-python_docs" class="csl-entry" role="listitem">
+Python Software Foundation. 2026. <em>Python 3 Documentation</em>. <a href="https://docs.python.org/3/">https://docs.python.org/3/</a>.
+</div>
+<div id="ref-sklearn_docs" class="csl-entry" role="listitem">
+Scikit-learn Developers. 2026. <em>Scikit-learn User Guide</em>. <a href="https://scikit-learn.org/stable/user_guide.html">https://scikit-learn.org/stable/user_guide.html</a>.
+</div>
+<div id="ref-scipy_docs" class="csl-entry" role="listitem">
+SciPy Developers. 2026. <em>SciPy Documentation</em>. <a href="https://docs.scipy.org/doc/scipy/">https://docs.scipy.org/doc/scipy/</a>.
+</div>
+<div id="ref-shalev2014" class="csl-entry" role="listitem">
+Shalev-Shwartz, Shai, et Shai Ben-David. 2014. <em>Understanding Machine Learning: From Theory to Algorithms</em>. Cambridge University Press. <a href="https://doi.org/10.1017/CBO9781107298019">https://doi.org/10.1017/CBO9781107298019</a>.
+</div>
+<div id="ref-tensorflow_docs" class="csl-entry" role="listitem">
+TensorFlow Developers. 2026. <em>TensorFlow Documentation</em>. <a href="https://www.tensorflow.org/guide">https://www.tensorflow.org/guide</a>.
+</div>
+<div id="ref-vanderplas2022" class="csl-entry" role="listitem">
+VanderPlas, Jake. 2022. <em>Python Data Science Handbook: Essential Tools for Working with Data</em>. 2ᵉ éd. O’Reilly Media.
+</div>
+<div id="ref-vapnik1998" class="csl-entry" role="listitem">
+Vapnik, Vladimir N. 1998. <em>Statistical Learning Theory</em>. Wiley.
+</div>
+<div id="ref-wasserman2004" class="csl-entry" role="listitem">
+Wasserman, Larry. 2004. <em>All of Statistics: A Concise Course in Statistical Inference</em>. Springer Texts in Statistics. Springer. <a href="https://doi.org/10.1007/978-0-387-21736-9">https://doi.org/10.1007/978-0-387-21736-9</a>.
+</div>
+<div id="ref-watt2020" class="csl-entry" role="listitem">
+Watt, Jeremy, Reza Borhani, et Aggelos K. Katsaggelos. 2020. <em>Machine Learning Refined: Foundations, Algorithms, and Applications</em>. 2ᵉ éd. Cambridge University Press.
 </div>
 </div>
 </section>
@@ -873,6 +1149,19 @@ Mitchell, Tom M, et Tom M Mitchell. 1997. <em>Machine learning</em>. Vol. 1. McG
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -1274,7 +1563,7 @@ Mitchell, Tom M, et Tom M Mitchell. 1997. <em>Machine learning</em>. Vol. 1. McG
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../preface.html" class="pagination-link" aria-label="Préface">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Préface</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Préface</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

@@ -13,7 +13,7 @@
 
 ### 1.1. De l'Intelligence Artificielle au Machine Learning
 
-L'**Intelligence Artificielle (IA)** est le champ scientifique le plus large : il regroupe l'ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l'intelligence humaine — raisonner, percevoir, planifier, comprendre le langage, ou encore apprendre.
+L'**Intelligence Artificielle (IA)** est le champ scientifique le plus large : il regroupe l'ensemble des théories et techniques mises en œuvre pour concevoir des machines capables de simuler des comportements associés à l'intelligence humaine - raisonner, percevoir, planifier, comprendre le langage, ou encore apprendre.
 
 ::: {.callout-note title="Repère historique" collapse="true"}
 Le terme *Artificial Intelligence* est proposé en 1956 lors de la conférence de Dartmouth. Pendant plusieurs décennies, l'IA « symbolique » domine : on cherche à reproduire l'intelligence en manipulant des symboles et des règles logiques explicites. Ce n'est qu'à partir des années 1990-2010, avec l'explosion des données disponibles et de la puissance de calcul, que le **Machine Learning statistique** devient l'approche dominante de l'IA.
@@ -30,7 +30,7 @@ Le **Deep Learning (Apprentissage Profond, DL)** est un **sous-domaine du ML** q
 Comme le montre la @fig-venn-ia-ml-dl, ces trois notions s'emboîtent comme des poupées russes : chaque cercle est un cas particulier du cercle qui l'englobe.
 
 ::: {.callout-tip title="À retenir"}
-Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l'IA — mais la réciproque est fausse (ex : un algorithme de recherche aux échecs, comme Minimax, est de l'IA sans être du ML, car il n'apprend rien à partir de données).
+Tout algorithme de Deep Learning est un algorithme de Machine Learning, et tout algorithme de Machine Learning appartient au champ de l'IA - mais la réciproque est fausse (ex : un algorithme de recherche aux échecs, comme Minimax, est de l'IA sans être du ML, car il n'apprend rien à partir de données).
 :::
 
 ### 1.2. Définition formelle du Machine Learning
@@ -92,7 +92,7 @@ def est_spam(email: str) -> bool:
     return any(mot in email_minuscule for mot in mots_suspects)
 ```
 
-Ce type d'approche est idéal lorsque les règles métier sont **stables, peu nombreuses et bien comprises** (ex. calcul d'un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être **réécrite manuellement** — le programme n'apprend rien de lui-même.
+Ce type d'approche est idéal lorsque les règles métier sont **stables, peu nombreuses et bien comprises** (ex. calcul d'un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être **réécrite manuellement** - le programme n'apprend rien de lui-même.
 
 ### 2.2. Le paradigme Data-Driven
 
@@ -137,17 +137,19 @@ Le Machine Learning **n'est pas une solution universelle**. Si un problème adme
 
 Entraîner un modèle ne représente qu'une fraction du travail réel. Un projet ML se décompose en sept étapes itératives [@geron2022] :
 
-![Le cycle de vie d'un projet de Machine Learning](../images/cycle-vie-ml.svg){#fig-cycle-vie-ml}
-
-1. **Cadrage du problème métier** : traduire un besoin en problème ML via la grille (T, P, E) — voir @def-ml.
+1. **Cadrage du problème métier** : traduire un besoin en problème ML via la grille (T, P, E) - voir @def-ml.
 2. **Collecte des données** : rassembler un jeu de données représentatif du phénomène à modéliser.
-3. **Préparation et nettoyage** : étape la plus chronophage (souvent 60-80 % du temps réel du projet). Traitement des valeurs manquantes, encodage des variables catégorielles, création de nouvelles variables (*`feature engineering`*).
+3. **Préparation et nettoyage** : étape souvent très chronophage, dont la durée varie selon le projet. Elle comprend notamment le traitement des valeurs manquantes, l'encodage des variables catégorielles et la création de nouvelles variables (*feature engineering*).
 4. **Modélisation** : choix des algorithmes et entraînement sur les données pour minimiser une erreur.
 5. **Évaluation** : mesurer objectivement la performance sur des données jamais vues (jeu de test).
 6. **Déploiement** : intégrer le modèle dans un système opérationnel (application, API, tableau de bord).
 7. **Monitoring** : surveiller les performances en production pour détecter la **dérive des données** (*data drift*) et déclencher un réentraînement si nécessaire.
 
-Nous allons appliquer ces sept étapes à  un exemple concret : `prédire les prix immobiliers à Casablanca`.
+
+![Le cycle de vie d'un projet de Machine Learning](../images/cycle-vie-ml.svg){#fig-cycle-vie-ml}
+
+
+Nous allons appliquer ces sept étapes à un exemple concret : prédire les prix immobiliers à Casablanca.
 
 ::: {.callout-tip title="Étude de cas"}
 
@@ -157,7 +159,7 @@ Nous allons appliquer ces sept étapes à  un exemple concret : `prédire les pr
 4. **Modélisation** : entraînement d'une régression linéaire (chapitre 3) sur 80 % des données.
 5. **Évaluation** : mesure de l'erreur sur les 20 % restants, jamais vus pendant l'entraînement.
 6. **Déploiement** : intégration du modèle dans le simulateur de prix du site web de l'agence.
-7. **Monitoring** : si le marché immobilier casablancais évolue fortement (nouvelle infrastructure, crise économique), les prix prédits deviendront obsolètes — d'où la nécessité d'un suivi continu.
+7. **Monitoring** : si le marché immobilier casablancais évolue fortement (nouvelle infrastructure, crise économique), les prix prédits deviendront obsolètes - d'où la nécessité d'un suivi continu.
 :::
 
 Il est essentiel de comprendre que ce cycle **n'est presque jamais parcouru une seule fois de façon linéaire**. Une évaluation décevante à l'étape 5 renvoie très souvent vers l'étape 3 (améliorer les variables) ou l'étape 4 (changer d'algorithme), plus rarement vers l'étape 1.
@@ -171,10 +173,7 @@ Dans le cadre de ce cycle, nous retenons [**Python**](<https://python.org>) comm
 
 ### 4.1. Quelques bibliothèques scientifiques de l'écosystème Python
 
-L'écosystème pythoncomprend notamment [**NumPy**](https://numpy.org) pour le calcul numérique, [**pandas**](https://pandas.pydata.org) pour la manipulation et l'analyse des données, [**scikit-learn**](https://scikit-learn.org) pour les principales méthodes d'apprentissage automatique, ainsi que [**TensorFlow**](https://tensorflow.org) et [**PyTorch**](https://pytorch.org) pour le développement de modèles d'apprentissage profond.
-
-Le choix de Python présente également un intérêt pédagogique : il permet de mettre l'accent sur les concepts, les méthodes et le raisonnement propres au *Machine Learning*, tout en s'appuyant sur des bibliothèques largement utilisées dans la pratique. Au cours de ce cycle, nous utiliserons donc Python et cet écosystème d'outils pour illustrer progressivement les différentes étapes de la construction et de l'exploitation d'un modèle de *Machine Learning*.
-
+L'écosystème Python comprend notamment [**NumPy**](https://numpy.org) pour le calcul numérique, [**pandas**](https://pandas.pydata.org) pour la manipulation et l'analyse des données, [**scikit-learn**](https://scikit-learn.org) pour les principales méthodes d'apprentissage automatique, ainsi que [**TensorFlow**](https://tensorflow.org) et [**PyTorch**](https://pytorch.org) pour le développement de modèles d'apprentissage profond.
 
 | Bibliothèque | Rôle dans le cycle de vie du projet |
 |:---|:---|
@@ -318,7 +317,7 @@ Le principe peut être résumé ainsi :
 
 La synchronisation entre ces éléments est prise en charge par `uv`. La documentation officielle explique notamment que les opérations telles que [`uv sync` et `uv run`](https://docs.astral.sh/uv/concepts/projects/sync/) peuvent mettre à jour l'environnement à partir du fichier de verrouillage.
 
-#### Pourquoi `uv` plutôt qu'Anaconda ou Conda ?
+#### `uv`, 'Anaconda ou Conda ?
 
 Il existe d'autres solutions parfaitement valables pour gérer les environnements Python. L'une des plus connues est l'écosystème [Conda](https://docs.conda.io/), qui permet notamment de créer, gérer, partager et supprimer des environnements contenant différentes versions de Python et de paquets.
 
@@ -343,9 +342,60 @@ Nous retenons `uv` principalement pour les raisons suivantes :
 
 Le choix de `uv` répond donc avant tout aux besoins de ce cours : disposer d'un environnement Python **isolé, explicite, reproductible et facile à partager**, tout en introduisant progressivement les pratiques modernes de gestion de projet.
 
+## Références pour approfondir
 
+Les références suivantes permettent d'approfondir le Machine Learning selon plusieurs perspectives : programmation Python, mathématiques, statistique, théorie de l'apprentissage et mise en pratique.
 
+**Pour Python et la Data Science**
 
+La documentation officielle de **Python** [@python_docs] constitue la référence pour le langage et sa bibliothèque standard. Pour la manipulation et l'analyse des données, *Python for Data Analysis* de McKinney [@mckinney2022] et *Python Data Science Handbook* de VanderPlas [@vanderplas2022] présentent les principaux outils de l'écosystème Python, notamment **NumPy**, **pandas**, **Matplotlib** et **Jupyter**.
+
+Les documentations officielles de **NumPy** [@numpy_docs], **pandas** [@pandas_docs], **SciPy** [@scipy_docs] et **Matplotlib** [@matplotlib_docs] constituent des références techniques utiles pour les travaux pratiques.
+
+**Pour les mathématiques et la statistique**
+
+*Mathematics for Machine Learning* de Deisenroth, Faisal et Ong [@deisenroth2020] présente les principaux outils mathématiques nécessaires au Machine Learning : algèbre linéaire, calcul différentiel, optimisation et probabilités.
+
+*All of Statistics* de Wasserman [@wasserman2004] constitue une référence pour les probabilités, l'estimation et l'inférence statistique. *The Elements of Statistical Learning* de Hastie, Tibshirani et Friedman [@hastie2009elements] propose un traitement plus approfondi des méthodes statistiques d'apprentissage.
+
+**Pour la théorie du Machine Learning**
+
+*Understanding Machine Learning: From Theory to Algorithms* de Shalev-Shwartz et Ben-David [@shalev2014] présente les fondements théoriques de l'apprentissage, notamment la généralisation, le risque empirique et la complexité des modèles.
+
+*Statistical Learning Theory* de Vapnik [@vapnik1998] constitue une référence avancée sur la théorie statistique de l'apprentissage. *Pattern Recognition and Machine Learning* de Bishop [@bishop2006] approfondit quant à lui les approches probabilistes et leurs fondements mathématiques.
+
+**Pour apprendre par la pratique**
+
+*An Introduction to Statistical Learning: with Applications in Python* de James et ses coauteurs [@james2023islp] propose une introduction progressive aux principales méthodes de Machine Learning, accompagnée d'exemples en Python.
+
+*Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow* de Géron [@geron2022] est particulièrement orienté vers la mise en œuvre : préparation des données, entraînement, validation, évaluation et réglage des modèles.
+
+*Machine Learning Refined* de Watt, Borhani et Katsaggelos [@watt2020] propose une approche combinant intuition, mathématiques et algorithmes.
+
+**Pour le Deep Learning**
+
+*Deep Learning* de Goodfellow, Bengio et Courville [@goodfellow2016] constitue une référence majeure pour les fondements mathématiques et théoriques du Deep Learning.
+
+*Deep Learning with Python* de Chollet [@chollet2021] propose une approche plus pratique, basée notamment sur **Keras**, et constitue un complément naturel à l'ouvrage de Goodfellow et al.
+
+La documentation officielle de **TensorFlow** [@tensorflow_docs] présente les outils et concepts de la plateforme, tandis que la documentation de **Keras** [@keras_docs] constitue une référence pratique pour la construction et l'entraînement des réseaux de neurones. L'article de Abadi et ses coauteurs [@abadi2016tensorflow] présente les fondements de TensorFlow.
+
+**Pour scikit-learn**
+
+La documentation officielle de **scikit-learn** [@sklearn_docs] constitue la référence principale pour les algorithmes, la préparation des données, les pipelines, la validation croisée et l'évaluation des modèles. L'article de Pedregosa et ses coauteurs [@pedregosa2011] présente la bibliothèque et ses principes de conception.
+
+**Pour une progression recommandée**
+
+Une progression possible est la suivante :
+
+1. **Python et outils scientifiques** : Python, NumPy, pandas et Matplotlib [@python_docs; @numpy_docs; @pandas_docs; @matplotlib_docs] ;
+2. **Mathématiques et statistique** : Deisenroth et al. [@deisenroth2020] et Wasserman [@wasserman2004] ;
+3. **Machine Learning** : James et al. [@james2023islp] et Géron [@geron2022] ;
+4. **Théorie** : Shalev-Shwartz et Ben-David [@shalev2014], Hastie et al. [@hastie2009elements] et Bishop [@bishop2006] ;
+5. **Deep Learning** : Goodfellow et al. [@goodfellow2016] et Chollet [@chollet2021] ;
+6. **Documentation technique** : scikit-learn [@sklearn_docs], TensorFlow [@tensorflow_docs] et Keras [@keras_docs].
+
+Ces ressources sont complémentaires : les références théoriques permettent de comprendre les fondements et les propriétés des méthodes, tandis que les ouvrages pratiques et les documentations accompagnent leur mise en œuvre en Python.
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-note title="Auto-évaluation" collapse="true"}
@@ -361,12 +411,8 @@ Avant de passer au chapitre suivant, assurez-vous de pouvoir répondre « oui »
 
 ## Exercices
 
-::: {.callout-note title="Consigne"}
-Les corrigés sont fournis juste après chaque énoncé, dans un bloc repliable. Essayez de répondre par écrit **avant** de les consulter.
-:::
-
 ::: {#exr-intro-1}
-### Vrai ou Faux
+
 
 Indiquez si chaque affirmation est vraie ou fausse, en justifiant brièvement.
 
@@ -386,7 +432,7 @@ d. **Vrai.** C'est exactement la définition du paradigme Data-Driven en §2.2 :
 :::
 
 ::: {#exr-intro-2}
-### QCM
+
 
 Dans la définition de [@mitchell1997machine] (@def-ml), que représente la lettre **E** ?
 
@@ -403,7 +449,6 @@ Dans la définition de [@mitchell1997machine] (@def-ml), que représente la lett
 :::
 
 ::: {#exr-intro-3}
-### Formuler le triplet (T, P, E)
 
 Une chaîne de supermarchés marocaine souhaite développer un système capable de **prédire, pour chaque client fidèle, le montant qu'il dépensera lors de sa prochaine visite**, à partir de son historique d'achats des deux dernières années.
 
@@ -412,14 +457,14 @@ Formulez le triplet (T, P, E) pour ce projet.
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-3"}
-- **T** : prédire le montant de la prochaine dépense d'un client donné — une tâche de **régression** (sortie numérique continue).
+- **T** : prédire le montant de la prochaine dépense d'un client donné - une tâche de **régression** (sortie numérique continue).
 - **P** : une métrique de régression telle que la RMSE ou la MAE, calculée entre le montant prédit et le montant réellement dépensé sur des clients dont on connaît déjà la dépense réelle.
 - **E** : l'historique des transactions des deux dernières années (montants, fréquence des visites, produits achetés).
 :::
 :::
 
 ::: {#exr-intro-4}
-### Programmation classique ou Machine Learning ?
+
 
 Pour chaque situation, indiquez l'approche la plus appropriée et justifiez en une phrase.
 
@@ -434,12 +479,12 @@ d. Estimer, à partir d'une radiographie, si un patient présente une fracture o
 a. **Programmation classique** : la règle de conversion est fixe et purement arithmétique.
 b. **Machine Learning** : il n'existe pas de règle exhaustive couvrant toute la diversité linguistique et contextuelle des insultes.
 c. **Programmation classique** : le calcul obéit à des règles calendaires fixes et entièrement déterministes.
-d. **Machine Learning** : la reconnaissance de motifs visuels complexes est très difficile à coder sous forme de règles explicites — un cas typique du Deep Learning appliqué à l'imagerie médicale.
+d. **Machine Learning** : la reconnaissance de motifs visuels complexes est très difficile à coder sous forme de règles explicites - un cas typique du Deep Learning appliqué à l'imagerie médicale.
 :::
 :::
 
 ::: {#exr-intro-5}
-### Reconstituer le schéma Data-Driven
+
 
 En vous appuyant sur la @fig-paradigme-programmation, reconstituez sous la forme `A → B` l'enchaînement correct des quatre éléments suivants du paradigme Machine Learning : **Modèle**, **Données**, **Algorithme d'apprentissage**, **Résultats attendus**.
 :::
@@ -454,7 +499,7 @@ Les données et les résultats attendus (étiquettes) sont fournis conjointement
 :::
 
 ::: {#exr-intro-6}
-### Remettre les étapes dans l'ordre
+
 
 Voici, dans le désordre, les sept étapes du cycle de vie d'un projet de Machine Learning :
 
@@ -492,7 +537,7 @@ b. Ce constat relève de l'étape **7 (Monitoring)**, qui doit précisément dé
 :::
 
 ::: {#exr-intro-8}
-### Outils et bibliothèques
+
 
 a. Associez chaque bibliothèque à son rôle principal : `pandas`, `scikit-learn`, `numpy`.
    Rôles : (i) modélisation classique (régression/classification) ; (ii) manipulation de tableaux de données ; (iii) calcul numérique et matriciel.
@@ -502,6 +547,6 @@ b. Un étudiant veut explorer rapidement un nouveau jeu de données et visualise
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-intro-8"}
 a. `pandas` → (ii) ; `scikit-learn` → (i) ; `numpy` → (iii).
-b. **JupyterLab** (ou Google Colab pour éviter toute installation) : ces outils sont conçus pour l'exploration rapide et itérative, avec affichage immédiat des graphiques cellule par cellule — contrairement à VS Code, davantage orienté vers la structuration d'un projet en production.
+b. **JupyterLab** (ou Google Colab pour éviter toute installation) : ces outils sont conçus pour l'exploration rapide et itérative, avec affichage immédiat des graphiques cellule par cellule - contrairement à VS Code, davantage orienté vers la structuration d'un projet en production.
 :::
 :::

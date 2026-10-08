@@ -1,0 +1,18 @@
+[project]
+name = "ml-course"
+version = "0.1.0"
+description = "Environnement Python des Labs du cours de Machine Learning"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "beautifulsoup4",
+    "ipykernel",
+    "jupyter",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "requests",
+    "scikit-learn",
+]
+
+[tool.uv]
+package = false

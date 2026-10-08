@@ -23,6 +23,8 @@ datasets/
 *.npy
 *.npz
 old_chapitres/
+/tp/old/
+/chapitres/06_series_temporelles.qmd
 # Operating System files
 .DS_Store
 .AppleDouble
@@ -42,4 +44,3 @@ Thumbs.db
 **/*.quarto_ipynb
 _book/
 .quarto/
-

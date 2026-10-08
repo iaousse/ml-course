@@ -45,6 +45,6 @@
   <text x="720" y="230" text-anchor="middle" font-size="10" fill="#3730a3">→ modèle</text>
 
   <text x="410" y="390" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">
-    .fit() est appelé uniquement sur X_train — .transform() est ensuite réappliqué tel quel à X_val / X_test
+    .fit() est appelé uniquement sur X_train - .transform() est ensuite réappliqué tel quel à X_val / X_test
   </text>
 </svg>

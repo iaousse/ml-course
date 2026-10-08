@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2400" viewBox="0 0 1600 2400">
+  <rect width="1600" height="2400" fill="#ffffff"/>
+  <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <image href="logo_estc.png" x="550" y="360" width="500" height="327" preserveAspectRatio="xMidYMid meet"/>
+    <text x="800" y="970" fill="#164e82" font-size="58" font-weight="600">Ouvrage pédagogique</text>
+    <text x="800" y="1110" fill="#17324d" font-size="94" font-weight="700">Machine Learning</text>
+    <text x="800" y="1405" fill="#17324d" font-size="48">IAOUSSE M'barek</text>
+    <text x="800" y="1495" fill="#425466" font-size="36">École Supérieure de Technologie de Casablanca</text>
+    <text x="800" y="1555" fill="#425466" font-size="36">Université Hassan II de Casablanca</text>
+    <text x="800" y="1670" fill="#425466" font-size="36">Édition 2026</text>
+  </g>
+</svg>
