@@ -71,7 +71,7 @@ Le chapitre suivant détaillera en profondeur les paradigmes d'apprentissage. Re
 - **L'apprentissage supervisé**, où le système dispose des « bonnes réponses » pendant l'entraînement (ex. régression, classification) ;
 - **L'apprentissage non-supervisé**, où le système ne dispose que des données brutes, sans réponse attendue (ex. clustering).
 
-## 2. Programmation classique vs. approche Data-Driven
+## 2. Programmation classique vs. approche Data-Driven {#sec-paradigme-programmation}
 
 ### 2.1. Le paradigme classique
 
@@ -94,7 +94,7 @@ def est_spam(email: str) -> bool:
 
 Ce type d'approche est idéal lorsque les règles métier sont **stables, peu nombreuses et bien comprises** (ex. calcul d'un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être **réécrite manuellement** - le programme n'apprend rien de lui-même.
 
-### 2.2. Le paradigme Data-Driven
+### 2.2. Le paradigme Data-Driven {#sec-paradigme-data-driven}
 
 Le Machine Learning **inverse la logique** : on fournit au système des **données** et, dans le cas supervisé, les **résultats attendus** correspondants. Un **algorithme d'apprentissage** analyse les régularités entre ces deux éléments pour produire un **modèle**. Ce modèle est une fonction apprise automatiquement, capable de généraliser à de nouvelles données jamais vues.
 
@@ -133,7 +133,7 @@ La @fig-paradigme-programmation résume visuellement cette inversion : ce qui é
 Le Machine Learning **n'est pas une solution universelle**. Si un problème admet une règle simple, déterministe et bien comprise (ex. conversion d'unités), la programmation classique reste souvent plus fiable, plus rapide à développer et plus facile à auditer qu'un modèle statistique.
 :::
 
-## 3. Le cycle de vie d'un projet de Machine Learning
+## 3. Le cycle de vie d'un projet de Machine Learning {#sec-cycle-vie-ml}
 
 Entraîner un modèle ne représente qu'une fraction du travail réel. Un projet ML se décompose en sept étapes itératives [@geron2022] :
 
@@ -427,7 +427,7 @@ d. Un modèle de Machine Learning peut être vu comme un « programme appris aut
 a. **Faux.** C'est l'inverse : tout système de ML est un système d'IA, mais l'IA contient aussi des approches qui ne relèvent pas du ML (systèmes experts, algorithmes de recherche...).
 b. **Vrai.** Le Deep Learning est défini comme un sous-domaine du Machine Learning (@fig-venn-ia-ml-dl).
 c. **Faux.** Un système expert applique des règles écrites par un humain ; il n'apprend rien à partir de données.
-d. **Vrai.** C'est exactement la définition du paradigme Data-Driven en §2.2 : le modèle résulte de l'algorithme d'apprentissage plutôt que d'être écrit à la main.
+d. **Vrai.** C'est exactement la définition du paradigme Data-Driven en @sec-paradigme-data-driven : le modèle résulte de l'algorithme d'apprentissage plutôt que d'être écrit à la main.
 :::
 :::
 

@@ -37,7 +37,7 @@ Tout au long de ce chapitre, une observation est une **ligne** d'un tableau et u
 Avant toute modification, conservez une copie du fichier original et rédigez un petit **dictionnaire de données**. Pour chaque colonne, notez son nom, sa signification, son unité, son type attendu et les valeurs possibles. Par exemple, `prix` peut être un nombre positif en MAD, tandis que `type_bien` peut prendre les valeurs « appartement », « maison » ou « terrain ». Ce dictionnaire évite de corriger à tort une valeur qui était en réalité parfaitement valide, et il documente le sens exact de chaque colonne pour quiconque reprendra votre travail par la suite.
 :::
 
-## 1. Où trouver les données ? Les stratégies de collecte
+## 1. Où trouver les données ? Les stratégies de collecte {#sec-strategies-collecte}
 
 Avant tout projet, il faut identifier la ou les sources permettant de constituer le jeu de données à traiter. Plusieurs grandes familles de sources coexistent dans la pratique professionnelle, qu'il s'agisse d'alimenter un tableau de bord ou d'entraîner un modèle.
 
@@ -93,7 +93,7 @@ df = pd.json_normalize(reponse.json()["resultats"])
 
 `pd.json_normalize` est particulièrement utile lorsque la réponse JSON contient des objets imbriqués : elle « aplatit » automatiquement cette structure hiérarchique en un tableau exploitable.
 
-### 1.4. Le *web scraping*
+### 1.4. Le *web scraping* {#sec-web-scraping}
 
 Lorsque les données ne sont disponibles que sur des pages web, sans base de données ni API accessibles, on a recours au **web scraping** : l'extraction automatisée d'informations à partir du code HTML de sites web. Les bibliothèques Python de référence sont :
 
@@ -125,7 +125,7 @@ Deux autres sources méritent d'être mentionnées :
 
 : Sources de données courantes {#tbl-sources-donnees}
 
-## 2. Représentativité et biais d'échantillonnage
+## 2. Représentativité et biais d'échantillonnage {#sec-representativite}
 
 Collecter des données ne suffit pas : encore faut-il qu'elles soient **représentatives** de la population sur laquelle les conclusions de l'analyse - ou les prédictions du modèle - seront ensuite utilisées. Un échantillon est représentatif lorsque sa distribution reflète fidèlement celle de la population cible.
 
@@ -143,7 +143,7 @@ On distingue notamment trois types de biais fréquents en pratique :
 Lors de l'élection présidentielle américaine de 1936, le magazine *Literary Digest* prédit, sur la base de plus de 2 millions de réponses à un sondage, la victoire du candidat Alf Landon. Le sondage fut envoyé par la poste à partir de listes d'abonnés au téléphone et de propriétaires de voitures - une population nettement plus aisée que la moyenne en pleine Grande Dépression. Malgré une taille d'échantillon considérable, le sondage souffrait d'un **biais de sélection** majeur, et la prédiction se révéla fausse : Franklin D. Roosevelt fut réélu avec une large majorité. Cet exemple illustre qu'un grand échantillon **non représentatif** reste moins fiable qu'un échantillon plus petit mais correctement constitué - un principe qui vaut aussi bien pour une étude statistique classique que pour l'entraînement d'un modèle de Machine Learning.
 :::
 
-## 3. Nettoyage des données
+## 3. Nettoyage des données {#sec-nettoyage-donnees}
 
 Une fois collectées, les données contiennent presque toujours des imperfections : valeurs manquantes, doublons, incohérences et valeurs aberrantes sont la norme plutôt que l'exception. Le nettoyage est souvent l'une des étapes les plus chronophages d'un projet. Il consiste notamment à vérifier cinq dimensions de qualité :
 
@@ -157,7 +157,7 @@ Une fois collectées, les données contiennent presque toujours des imperfection
 Il faut garder une trace de chaque correction apportée : colonne concernée, règle appliquée, nombre de lignes modifiées et justification. Cette documentation permet de revenir en arrière si nécessaire, et d'expliquer honnêtement les résultats obtenus en aval - qu'il s'agisse d'un graphique ou d'une prédiction.
 :::
 
-### 3.1. Les valeurs manquantes
+### 3.1. Les valeurs manquantes {#sec-valeurs-manquantes}
 
 Une valeur manquante peut avoir des origines très différentes, ce qui conditionne directement la stratégie à adopter pour la traiter :
 
@@ -207,7 +207,7 @@ df["quartier"] = df["quartier"].fillna("Non renseigné")
 En Machine Learning, dès lors que les données seront séparées en jeux d'entraînement et de test (notion détaillée dans le chapitre suivant de votre cours), la stratégie d'imputation (moyenne, médiane...) doit être **calculée uniquement sur le jeu d'entraînement**, puis appliquée telle quelle aux jeux de validation et de test. Calculer cette statistique sur l'ensemble des données avant de les séparer constitue une **fuite de données** (*data leakage*) : le modèle bénéficierait indirectement d'une information provenant du jeu de test, ce qui fausserait l'évaluation finale de sa performance. Cette contrainte, propre à un contexte de modélisation prédictive, n'a pas d'équivalent en analyse de données exploratoire, où l'on travaille généralement sur l'ensemble du jeu de données disponible.
 :::
 
-### 3.2. Les valeurs aberrantes (*outliers*)
+### 3.2. Les valeurs aberrantes (*outliers*) {#sec-valeurs-aberrantes}
 
 Une valeur aberrante est une observation qui s'écarte fortement du comportement général des données - parfois une erreur de saisie, parfois un phénomène réel mais rare. Deux méthodes de détection sont couramment enseignées :
 
@@ -237,7 +237,7 @@ Avant de supprimer systématiquement les valeurs aberrantes détectées, il faut
 La **boîte à moustaches** (*boxplot*), présentée en détail dans le chapitre de votre cours consacré à la visualisation des données, reste l'outil graphique privilégié pour repérer d'un coup d'œil les valeurs aberrantes d'une variable numérique, sans avoir à calculer explicitement les bornes de l'IQR.
 :::
 
-### 3.3. Les doublons et les incohérences
+### 3.3. Les doublons et les incohérences {#sec-doublons-incoherences}
 
 Un doublon (deux lignes strictement identiques, ou identiques sur les variables clés) doit généralement être supprimé, car il donne artificiellement plus de poids à une observation - un risque parfois qualifié de « double comptage », qu'il s'agisse de fausser une moyenne calculée pour un tableau de bord ou de biaiser les paramètres appris par un algorithme.
 
@@ -255,7 +255,7 @@ Les incohérences les plus fréquentes concernent la **casse** et les **espaces 
 
 Sur des projets récurrents - un tableau de bord alimenté quotidiennement, ou un modèle réentraîné chaque semaine sur de nouvelles données - il devient risqué de vérifier la qualité des données « à l'œil » à chaque exécution. Des bibliothèques comme **[`Great Expectations`](https://greatexpectations.io)** permettent de définir des règles de validation explicites (« la colonne `prix` doit toujours être positive », « la colonne `date` ne doit jamais être manquante ») et de les exécuter automatiquement à chaque nouvelle collecte, afin de détecter une dérive de qualité avant qu'elle n'affecte l'analyse en aval ou, en Machine Learning, avant qu'elle ne dégrade silencieusement la performance d'un modèle en production.
 
-## 4. Encodage des variables catégorielles
+## 4. Encodage des variables catégorielles {#sec-encodage-categories}
 
 De nombreux outils, qu'ils soient statistiques, graphiques ou algorithmiques, manipulent plus facilement des valeurs **numériques** que du texte. C'est particulièrement vrai en Machine Learning, où la quasi-totalité des algorithmes reposent sur des opérations mathématiques - distances, produits scalaires, sommes pondérées - qui ne peuvent s'appliquer qu'à des nombres. L'**encodage** désigne l'ensemble des techniques permettant de transformer une variable catégorielle en une représentation numérique exploitable, **sans dénaturer l'information** qu'elle porte.
 
@@ -268,7 +268,7 @@ On distingue deux grandes stratégies, quelle que soit la bibliothèque utilisé
 Appliquer un encodage ordinal à une variable **nominale** (sans ordre naturel, ex. `quartier` : Centre, Nord, Sud) introduit un ordre artificiel que l'outil en aval interprétera à tort comme porteur de sens - un algorithme pourrait, par exemple, en déduire que `Sud` (codé 2) est « plus grand » que `Centre` (codé 0), ce qui n'a aucune signification réelle.
 :::
 
-### 4.1. Encodage rapide avec `pandas` (DA)
+### 4.1. Encodage rapide avec `pandas` (DA) {#sec-encodage-pandas}
 
 Pour faciliter certains graphiques ou calculs de corrélation, un encodage simple, réalisé directement avec `pandas`, est généralement suffisant en Analyse de Données :
 
@@ -282,10 +282,10 @@ df_encode = pd.get_dummies(df, columns=["quartier"])
 ```
 
 ::: {.callout-note}
-Cet encodage simple suffit pour préparer un graphique ou une matrice de corrélation. Un encodage plus robuste, fondé sur `scikit-learn` et pensé pour alimenter un algorithme d'apprentissage - avec gestion des catégories rares, des catégories inconnues au moment du déploiement, et intégration dans un pipeline reproductible - est approfondi dans le module de Machine Learning (§4.2 ci-dessous).
+Cet encodage simple suffit pour préparer un graphique ou une matrice de corrélation. Un encodage plus robuste, fondé sur `scikit-learn` et pensé pour alimenter un algorithme d'apprentissage - avec gestion des catégories rares, des catégories inconnues au moment du déploiement, et intégration dans un pipeline reproductible - est approfondi dans @sec-encodage-ml.
 :::
 
-### 4.2. Encodage robuste avec `scikit-learn` (ML)
+### 4.2. Encodage robuste avec `scikit-learn` (ML) {#sec-encodage-ml}
 
 En Machine Learning, l'encodage doit être **réutilisable à l'identique** sur de nouvelles données (le jeu de test, puis les données rencontrées en production) : on ne se contente donc pas d'une transformation ponctuelle d'un `DataFrame`, mais d'un objet **ajusté** (`fit`) puis **appliqué** (`transform`), exactement comme les autres outils de prétraitement de ce chapitre.
 
@@ -336,7 +336,7 @@ Lorsqu'une variable comporte $k$ catégories, il suffit en réalité de $k-1$ co
 Lorsqu'une variable catégorielle comporte des centaines, voire des milliers de catégories (ex. un identifiant de ville, un code produit), l'encodage One-Hot devient impraticable (explosion du nombre de colonnes). Des techniques plus avancées, comme le **Target Encoding** (remplacer chaque catégorie par la moyenne de la cible $y$ associée) ou le **Frequency Encoding** (remplacer chaque catégorie par sa fréquence d'apparition), permettent de contourner ce problème - au prix d'une vigilance accrue vis-à-vis de la fuite de données, le Target Encoding utilisant directement la cible $y$ pour construire l'encodage. Ces techniques dépassent le cadre de ce chapitre et seront abordées dans un cours de Machine Learning plus avancé.
 :::
 
-## 5. Mise à l'échelle : standardisation et normalisation
+## 5. Mise à l'échelle : standardisation et normalisation {#sec-mise-echelle}
 
 Lorsque plusieurs variables numériques ont des échelles très différentes (ex. une surface en $m^2$ et un prix en millions de MAD), il est souvent utile de les ramener à une échelle comparable - que ce soit pour faciliter certaines visualisations combinées, ou parce qu'un algorithme y est directement sensible.
 
@@ -365,7 +365,7 @@ df["prix_norm"] = (df["prix"] - df["prix"].min()) / (df["prix"].max() - df["prix
 Une valeur normalisée de 0,5 ne signifie pas que l'observation correspond à la moyenne de la variable : elle signifie que l'observation se situe **exactement à mi-chemin** entre le minimum et le maximum observés. Ne confondez pas position relative dans l'intervalle et position relative à la moyenne.
 :::
 
-### 5.2. Quand utiliser l'une ou l'autre ?
+### 5.2. Quand utiliser l'une ou l'autre ? {#sec-choix-echelle}
 
 | Critère | Standardisation (@eq-standardisation) | Normalisation (@eq-normalisation) |
 |---|---|---|
@@ -380,12 +380,12 @@ Une valeur normalisée de 0,5 ne signifie pas que l'observation correspond à la
 Si une variable comporte quelques valeurs extrêmes mais légitimes (ex. `revenu_annuel`, avec l'essentiel des observations entre 30 000 et 200 000 MAD, mais quelques grandes fortunes dépassant 5 000 000 MAD), une normalisation min-max écrasera la quasi-totalité des observations « normales » dans un intervalle minuscule proche de 0, car $x_{max}$ sera fixé par ces quelques valeurs extrêmes. Le `RobustScaler` de `scikit-learn`, fondé sur la **médiane** et l'**écart interquartile** plutôt que sur le minimum/maximum ou la moyenne/écart-type, est nettement plus robuste dans ce cas de figure.
 :::
 
-### 5.3. Pourquoi certains algorithmes y sont-ils sensibles ? (ML)
+### 5.3. Pourquoi certains algorithmes y sont-ils sensibles ? (ML) {#sec-sensibilite-echelle}
 
 De nombreux algorithmes de Machine Learning - en particulier ceux fondés sur une notion de **distance** entre observations (les k plus proches voisins, le clustering K-means) ou sur une **descente de gradient** (régression linéaire, réseaux de neurones) - sont directement sensibles à l'échelle des variables. Une variable exprimée en milliers de dirhams (ex. un prix) dominera artificiellement une variable exprimée en unités (ex. un nombre de pièces) dans le calcul d'une distance ou d'un gradient, même si cette dernière est tout aussi pertinente pour la tâche à résoudre. Mettre les variables à une échelle comparable neutralise cet artefact purement numérique.
 
 ::: {.callout-warning title="Règle d'or (ML)"}
-Comme pour l'imputation (§3.1), les paramètres de mise à l'échelle ($\mu$, $\sigma$, $x_{min}$, $x_{max}$) doivent être **estimés uniquement sur le jeu d'entraînement** (méthode `.fit()`), puis appliqués tels quels aux jeux de validation et de test (méthode `.transform()`, sans nouveau `.fit()`) - toute autre pratique constitue une fuite de données. Ce n'est là qu'un cas particulier de la règle déjà énoncée pour l'imputation : toute statistique calculée à partir des données (moyenne, écart-type, minimum, maximum...) et réutilisée pour transformer de nouvelles observations doit être apprise **exclusivement** sur le jeu d'entraînement.
+Comme pour l'imputation (@sec-valeurs-manquantes), les paramètres de mise à l'échelle ($\mu$, $\sigma$, $x_{min}$, $x_{max}$) doivent être **estimés uniquement sur le jeu d'entraînement** (méthode `.fit()`), puis appliqués tels quels aux jeux de validation et de test (méthode `.transform()`, sans nouveau `.fit()`) - toute autre pratique constitue une fuite de données. Ce n'est là qu'un cas particulier de la règle déjà énoncée pour l'imputation : toute statistique calculée à partir des données (moyenne, écart-type, minimum, maximum...) et réutilisée pour transformer de nouvelles observations doit être apprise **exclusivement** sur le jeu d'entraînement.
 :::
 
 ## 6. Transformations complémentaires pour l'exploration (DA)
@@ -419,11 +419,11 @@ Ces mêmes techniques - créer une nouvelle colonne à partir de colonnes exista
 Une transformation n'est pas automatiquement une amélioration. Par exemple, remplacer toutes les valeurs manquantes par zéro change la signification de la variable : « absence d'information » devient « valeur nulle ». Avant chaque transformation, demandez-vous quelle question elle facilite et si son effet sera documenté.
 :::
 
-## 7. Construire un pipeline de prétraitement automatisé (ML)
+## 7. Construire un pipeline de prétraitement automatisé (ML) {#sec-pipeline-pretraitement}
 
 En pratique, un même jeu de données combine généralement des variables numériques et catégorielles, chacune nécessitant un traitement distinct. En Machine Learning, où ce prétraitement devra être **appliqué à l'identique** sur des données jamais vues (le jeu de test, puis les données rencontrées en production), il ne suffit plus d'appliquer des transformations ponctuelles à un `DataFrame` : il faut les **enchaîner et les automatiser** dans un objet réutilisable.
 
-### 7.1. `ColumnTransformer` et `Pipeline` de `scikit-learn`
+### 7.1. `ColumnTransformer` et `Pipeline` de `scikit-learn` {#sec-columntransformer-pipeline}
 
 Scikit-Learn propose deux briques complémentaires pour construire un prétraitement reproductible et sans fuite de données :
 
@@ -458,7 +458,7 @@ pretraitement = ColumnTransformer([
     ("cat", pipeline_categorielle, colonnes_categorielles),
 ])
 
-# Fit UNIQUEMENT sur les données d'entraînement (voir §3.1 et §5.3 de ce chapitre)
+# Ajuster le prétraitement uniquement sur les données d'entraînement
 X_train_pret = pretraitement.fit_transform(X_train)
 # Le même prétraitement, déjà appris, est simplement réappliqué :
 X_test_pret = pretraitement.transform(X_test)
@@ -510,7 +510,7 @@ c. Extraire l'historique des commandes déjà stockées dans le système d'infor
 ::: {.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice 1"}
 a. **API** (généralement REST) : les cours de change sont typiquement mis à disposition par des services financiers via une API dédiée, offrant des données structurées et à jour.
-b. **Web scraping** : en l'absence d'API publique, l'extraction du HTML des pages d'annonces (avec `BeautifulSoup` ou `Scrapy`) reste la seule option, sous réserve de vérifier le `robots.txt` et les CGU du site (§1.4).
+b. **Web scraping** : en l'absence d'API publique, l'extraction du HTML des pages d'annonces (avec `BeautifulSoup` ou `Scrapy`) reste la seule option, sous réserve de vérifier le `robots.txt` et les CGU du site (@sec-web-scraping).
 c. **Base de données** : ces données existent déjà, structurées, dans le système d'information de l'entreprise (probablement une base SQL) ; il s'agit alors d'une simple requête, sans collecte externe.
 :::
 :::
@@ -526,7 +526,7 @@ b. Les conclusions tirées de cet échantillon seront-elles fiables pour un cour
 
 ::: {.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice 2"}
-a. Un **biais de sélection** (§2) : les coureurs qui partagent volontairement leurs performances sur les réseaux sociaux sont probablement plus performants, plus réguliers ou plus motivés que la population générale des coureurs.
+a. Un **biais de sélection** (@sec-representativite) : les coureurs qui partagent volontairement leurs performances sur les réseaux sociaux sont probablement plus performants, plus réguliers ou plus motivés que la population générale des coureurs.
 b. Non, probablement pas de façon fiable : l'échantillon disponible n'est pas représentatif de l'ensemble des utilisateurs ; toute conclusion - qu'elle nourrisse un tableau de bord ou un modèle prédictif - risque d'être systématiquement trop optimiste pour un coureur occasionnel.
 :::
 :::
@@ -691,7 +691,7 @@ b. Quelle alternative, parmi celles évoquées dans ce chapitre, serait plus rob
 ::: {.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice 12"}
 a. D'après la @tbl-scaling, la normalisation est très sensible aux valeurs aberrantes, car $x_{max}$ serait fixé par ces trois valeurs extrêmes (> 5 000 000). La quasi-totalité des observations « normales » (30 000 à 200 000) se retrouverait alors écrasée dans un intervalle minuscule proche de 0, perdant presque toute variabilité utile.
-b. Le **`RobustScaler`** (§5.2), fondé sur la médiane et l'écart interquartile plutôt que sur le minimum/maximum ou la moyenne/écart-type, serait nettement moins sensible à ces quelques valeurs extrêmes.
+b. Le **`RobustScaler`** (@sec-choix-echelle), fondé sur la médiane et l'écart interquartile plutôt que sur le minimum/maximum ou la moyenne/écart-type, serait nettement moins sensible à ces quelques valeurs extrêmes.
 :::
 :::
 
@@ -712,7 +712,7 @@ b. Proposez, en français (sans code), la démarche correcte à suivre.
 
 ::: {.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice 13"}
-a. **Oui.** Le `StandardScaler` est ajusté (`fit`) sur l'intégralité des données, **avant** la séparation en Train/Test. La moyenne et l'écart-type utilisés pour standardiser `X_train` intègrent donc déjà des informations issues de `X_test` - exactement le cas décrit en §3.1 et §5.3 de ce chapitre.
+a. **Oui.** Le `StandardScaler` est ajusté (`fit`) sur l'intégralité des données, **avant** la séparation en Train/Test. La moyenne et l'écart-type utilisés pour standardiser `X_train` intègrent donc déjà des informations issues de `X_test` - exactement le cas décrit en @sec-valeurs-manquantes et @sec-sensibilite-echelle.
 b. Il faut d'abord **séparer** les données en `X_train` / `X_test`, puis **ajuster** le `StandardScaler` uniquement sur `X_train` (`fit_transform`), et enfin **appliquer** ce même scaler déjà ajusté à `X_test` (`transform` seul, sans nouveau `fit`).
 :::
 :::
@@ -728,7 +728,7 @@ b. Quel est le rôle précis du `ColumnTransformer` dans ce contexte ?
 ::: {.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice 14"}
 a. Le `StandardScaler` suppose des variables **numériques** (il calcule une moyenne et un écart-type) ; l'appliquer directement à des colonnes catégorielles (`quartier`, `type_bien`) n'a pas de sens mathématique. De même, l'imputation par la médiane n'est pas adaptée à une variable catégorielle (qui nécessite plutôt une imputation par le mode, @tbl-imputation).
-b. Le `ColumnTransformer` (§7.1, @fig-pipeline) permet d'appliquer des transformations **différentes et adaptées** selon le type de chaque colonne - une chaîne `imputation → StandardScaler` pour les colonnes numériques, une chaîne `imputation → OneHotEncoder` pour les colonnes catégorielles - puis de **fusionner** automatiquement les résultats en une seule matrice.
+b. Le `ColumnTransformer` (@sec-columntransformer-pipeline, @fig-pipeline) permet d'appliquer des transformations **différentes et adaptées** selon le type de chaque colonne - une chaîne `imputation → StandardScaler` pour les colonnes numériques, une chaîne `imputation → OneHotEncoder` pour les colonnes catégorielles - puis de **fusionner** automatiquement les résultats en une seule matrice.
 :::
 :::
 
@@ -742,7 +742,7 @@ b. Ce risque affecte-t-il spécifiquement un algorithme de classification, ou to
 
 ::: {.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice 15"}
-a. Comme indiqué en §3.3, un doublon donne artificiellement **plus de poids** à l'observation concernée lors de l'apprentissage : le modèle « voit » deux fois le même client, ce qui biaise l'estimation de ses paramètres en faveur du profil de ce client dupliqué.
+a. Comme indiqué en @sec-doublons-incoherences, un doublon donne artificiellement **plus de poids** à l'observation concernée lors de l'apprentissage : le modèle « voit » deux fois le même client, ce qui biaise l'estimation de ses paramètres en faveur du profil de ce client dupliqué.
 b. Cela affecte potentiellement **tout** algorithme entraîné par minimisation d'une fonction de coût sur l'ensemble des observations (donc la plupart des algorithmes vus dans ce cours), et non uniquement la classification : plus une observation est dupliquée, plus son influence sur le modèle final est disproportionnée par rapport à son poids réel dans la population.
 :::
 :::

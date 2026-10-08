@@ -631,7 +631,6 @@ L'apprentissage non supervisé cherche des structures dans les variables observ�
 
 
 ::: {#exr-unsup-1}
-### Supervisé ou non supervisé ?
 
 Pour chaque situation, indiquez s'il s'agit d'un problème supervisé ou non supervisé, puis précisez la tâche principale :
 
@@ -652,7 +651,6 @@ Pour chaque situation, indiquez s'il s'agit d'un problème supervisé ou non sup
 :::
 
 ::: {#exr-unsup-2}
-### Centrage d'une matrice
 
 On considère :
 
@@ -702,7 +700,6 @@ $$
 :::
 
 ::: {#exr-unsup-3}
-### Matrice de covariance
 
 On considère les données centrées :
 
@@ -754,7 +751,6 @@ Les deux variables varient donc dans le même sens : leur covariance est positiv
 :::
 
 ::: {#exr-unsup-4}
-### Variance expliquée
 
 Une matrice de covariance possède les valeurs propres suivantes :
 
@@ -792,7 +788,6 @@ $$
 :::
 
 ::: {#exr-unsup-5}
-### Affectation K-Means
 
 On considère un point :
 
@@ -827,7 +822,6 @@ Le point est à égale distance des deux centroïdes. Il y a donc une égalité.
 :::
 
 ::: {#exr-unsup-6}
-### Recalculer un centroïde
 
 Un cluster contient les observations :
 
@@ -849,7 +843,6 @@ $$
 :::
 
 ::: {#exr-unsup-7}
-### Calculer l'inertie d'un cluster
 
 Un cluster contient :
 
@@ -891,7 +884,6 @@ $$
 :::
 
 ::: {#exr-unsup-8}
-### Effet de l'échelle
 
 Une équipe applique K-Means à deux variables :
 
@@ -912,7 +904,6 @@ Une équipe applique K-Means à deux variables :
 :::
 
 ::: {#exr-unsup-9}
-### Interpréter un résultat de clustering
 
 K-Means produit trois groupes de clients. Le groupe 2 a en moyenne une dépense plus élevée que les autres.
 

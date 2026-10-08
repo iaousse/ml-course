@@ -1,6 +1,7 @@
 project:
   type: book
   output-dir: docs
+  post-render: python3 fix-epub-xhtml.py
 lang: fr
 
 profile:
@@ -113,6 +114,17 @@ format:
     header-includes:
       - \usepackage{graphicx}
       - \usepackage{ragged2e}
+      - |
+        \makeatletter
+        \AtBeginDocument{%
+          \let\ml@original@label\label
+          \renewcommand{\label}[1]{%
+            \in@{sec-}{#1}%
+            \ifin@\let\@currentlabel\@currentlabelname\fi
+            \ml@original@label{#1}%
+          }%
+        }
+        \makeatother
       - \setcounter{tocdepth}{1}
       - |
         \makeatletter

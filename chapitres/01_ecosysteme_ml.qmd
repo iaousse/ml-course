@@ -48,7 +48,7 @@ $$X = \begin{pmatrix} 65 & 2 \\ 42 & 1 \end{pmatrix} \quad \text{et} \quad y = \
 
 
 
-## 2. Les grandes familles d'apprentissage
+## 2. Les grandes familles d'apprentissage {#sec-familles-apprentissage}
 
 Il existe plusieurs façons de classer les méthodes de Machine Learning. Pour ce cours, la distinction fondamentale repose sur la **nature du signal disponible pour l'apprentissage**.
 
@@ -110,7 +110,7 @@ La question à se poser pour choisir un paradigme est toujours la même : **de q
 Le présent cours se concentrera sur une sélection d'algorithmes fondamentaux issus de l'**apprentissage supervisé** et de l'**apprentissage non supervisé**. L'apprentissage par renforcement et les approches semi-supervisées seront seulement mentionnés, car ils dépassent l'objectif de cette introduction.
 :::
 
-## 3. Apprendre et généraliser
+## 3. Apprendre et généraliser {#sec-generalisation}
 
 > Le meilleur modèle n'est pas celui qui mémorise le mieux les données d'entraînement,
 > mais celui qui **généralise** le mieux à des données inédites.
@@ -131,7 +131,7 @@ La @fig-overfitting illustre le compromis entre un modèle trop simple et un mod
 Le signal le plus caractéristique est un **grand écart entre la performance sur le jeu d'entraînement et sur le jeu de validation** : une accuracy de 99 % en entraînement contre 65 % en validation est une signature typique de sur-apprentissage. À l'inverse, une accuracy médiocre et similaire sur les deux jeux (par exemple 55 % partout) évoque plutôt un sous-apprentissage.
 :::
 
-## 4. Jeux d'évaluation et Fuite de données
+## 4. Jeux d'évaluation et Fuite de données {#sec-jeux-evaluation}
 
 Pour diagnostiquer la généralisation, on divise l'échantillon initial en **trois sous-ensembles disjoints** :
 
@@ -153,7 +153,7 @@ Le jeu de **Test** ne doit être utilisé **qu'une seule fois**, tout à la fin 
 
 Lorsque les observations sont **datées** (ex. transactions bancaires, ventes mensuelles), un découpage **aléatoire** de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d'informations « futures » par rapport à certaines observations de test, ce qui **surestime artificiellement** sa performance réelle. Dans ce cas, on applique plutôt un **découpage chronologique** : les données les plus anciennes forment le jeu d'entraînement, les plus récentes le jeu de test - reproduisant ainsi la situation réelle où le modèle doit prédire l'avenir à partir du passé.
 
-### 4.2. La fuite de données (*Data Leakage*)
+### 4.2. La fuite de données (*Data Leakage*) {#sec-fuite-donnees}
 
 Il y a **fuite de données** lorsqu'une information qui ne devrait pas être disponible au moment de la prédiction influence malgré tout l'entraînement. Cela génère des performances artificiellement excellentes, qui s'effondrent en production.
 
@@ -164,7 +164,7 @@ Il y a **fuite de données** lorsqu'une information qui ne devrait pas être dis
 
 Pour éviter ce type d'erreur, on utilise des **Pipelines** : des enchaînements d'étapes (normalisation, encodage, modélisation) que l'on ajuste **uniquement** sur le jeu d'entraînement, puis que l'on applique tel quel aux jeux de validation et de test.
 
-## 5. Paramètres et Hyperparamètres
+## 5. Paramètres et Hyperparamètres {#sec-parametres-hyperparametres}
 
 | Élément | Qui le fixe ? | Exemple |
 |---|---|---|
@@ -174,10 +174,10 @@ Pour éviter ce type d'erreur, on utilise des **Pipelines** : des enchaînements
 : Paramètres et hyperparamètres {#tbl-parametres}
 
 ::: {.callout-tip title="Comment choisir un hyperparamètre sans tricher ?"}
-On ne règle **jamais** un hyperparamètre en observant sa performance sur le jeu de **test** - cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d'hyperparamètres uniquement sur le jeu de **validation** (@tbl-jeux-evaluation), et à ne consulter le jeu de test qu'une fois le meilleur réglage définitivement choisi.
+On ne règle **jamais** un hyperparamètre en observant sa performance sur le jeu de **test** - cela reviendrait à une fuite de données (voir @sec-fuite-donnees). La bonne pratique consiste à comparer plusieurs valeurs d'hyperparamètres uniquement sur le jeu de **validation** (@tbl-jeux-evaluation), et à ne consulter le jeu de test qu'une fois le meilleur réglage définitivement choisi.
 :::
 
-## 6. La Baseline et les limites de l'Accuracy
+## 6. La Baseline et les limites de l'Accuracy {#sec-baseline-accuracy}
 
 Une **baseline** est une règle de décision extrêmement simple (ex. « toujours prédire la classe majoritaire »). Elle répond à la question : *le modèle ML complexe fait-il réellement mieux que l'approche la plus basique possible ?*
 
@@ -188,7 +188,7 @@ Si 99 % des transactions sont légitimes et 1 % sont des fraudes, une baseline q
 Pour étudier plus finement les erreurs d'un modèle de classification, on utilise notamment la **matrice de confusion**, qui sera définie et étudiée dans le chapitre consacré à la classification.
 
 
-## 7. Prédiction, Corrélation et Causalité
+## 7. Prédiction, Corrélation et Causalité {#sec-correlation-causalite}
 
 Un modèle ML excelle à trouver des **corrélations** (ex. les ventes de glaces et les coups de soleil augmentent ensemble l'été). Cependant :
 
@@ -296,7 +296,7 @@ Pour prédire si un patient sera réadmis dans les 30 jours suivant sa sortie, u
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-3"}
 1. La **date de la prochaine consultation** est potentiellement une fuite.
-2. Cette information n'est généralement connue **qu'après** la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) - elle n'est donc pas disponible au moment réel où l'on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en §4.2.
+2. Cette information n'est généralement connue **qu'après** la sortie du patient (voire seulement si une réadmission ou un suivi a déjà été planifié) - elle n'est donc pas disponible au moment réel où l'on voudrait faire la prédiction, ce qui correspond exactement à la définition de la fuite de données donnée en @sec-fuite-donnees.
 :::
 :::
 
@@ -333,7 +333,7 @@ Dans un jeu de classification de 1 000 observations, la classe A représente 900
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-5"}
 1. La baseline obtient **90 % d'accuracy** (900 bonnes prédictions sur 1 000), sans avoir rien appris.
-2. Elle est utile car elle fixe un **seuil minimal** que tout modèle plus sophistiqué doit impérativement dépasser pour être considéré comme réellement utile (voir le « piège des classes déséquilibrées », §6).
+2. Elle est utile car elle fixe un **seuil minimal** que tout modèle plus sophistiqué doit impérativement dépasser pour être considéré comme réellement utile (voir le « piège des classes déséquilibrées », @sec-baseline-accuracy).
 3. L'accuracy globale peut rester élevée même si le modèle détecte très peu de cas de la classe B. Il faut donc utiliser des mesures adaptées aux erreurs sur cette classe ; ces mesures seront définies dans le chapitre consacré à la classification.
 :::
 :::
@@ -368,7 +368,7 @@ Une analyse montre que les personnes qui utilisent davantage une application de 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-fond-7"}
 1. La corrélation observée est entre **le niveau d'utilisation de l'application** et **la réussite à la formation**.
-2. Comme expliqué en §7, une corrélation ne prouve pas une causalité : il est possible qu'une **variable cachée** - par exemple la motivation intrinsèque des étudiants - explique à la fois une utilisation plus fréquente de l'application **et** de meilleurs résultats, sans que l'application elle-même soit la cause de la réussite. Rendre l'application obligatoire pourrait donc n'avoir aucun effet sur les étudiants peu motivés.
+2. Comme expliqué en @sec-correlation-causalite, une corrélation ne prouve pas une causalité : il est possible qu'une **variable cachée** - par exemple la motivation intrinsèque des étudiants - explique à la fois une utilisation plus fréquente de l'application **et** de meilleurs résultats, sans que l'application elle-même soit la cause de la réussite. Rendre l'application obligatoire pourrait donc n'avoir aucun effet sur les étudiants peu motivés.
 :::
 :::
 

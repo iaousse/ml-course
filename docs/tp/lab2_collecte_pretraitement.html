@@ -477,7 +477,7 @@ window.Quarto = {
   <li><a href="#une-base-sqlite" id="toc-une-base-sqlite" class="nav-link" data-scroll-target="#une-base-sqlite">1.3. Une base SQLite</a></li>
   <li><a href="#extraire-une-information-depuis-une-page-html" id="toc-extraire-une-information-depuis-une-page-html" class="nav-link" data-scroll-target="#extraire-une-information-depuis-une-page-html">1.4. Extraire une information depuis une page HTML</a></li>
   </ul></li>
-  <li><a href="#construire-un-jeu-de-données-volontairement-imparfait" id="toc-construire-un-jeu-de-données-volontairement-imparfait" class="nav-link" data-scroll-target="#construire-un-jeu-de-données-volontairement-imparfait">2. Construire un jeu de données volontairement imparfait</a></li>
+  <li><a href="#sec-lab2-jeu-imparfait" id="toc-sec-lab2-jeu-imparfait" class="nav-link" data-scroll-target="#sec-lab2-jeu-imparfait">2. Construire un jeu de données volontairement imparfait</a></li>
   <li><a href="#diagnostiquer-avant-de-nettoyer" id="toc-diagnostiquer-avant-de-nettoyer" class="nav-link" data-scroll-target="#diagnostiquer-avant-de-nettoyer">3. Diagnostiquer avant de nettoyer</a>
   <ul class="collapse">
   <li><a href="#supprimer-les-doublons" id="toc-supprimer-les-doublons" class="nav-link" data-scroll-target="#supprimer-les-doublons">3.1. Supprimer les doublons</a></li>
@@ -497,7 +497,7 @@ window.Quarto = {
   <li><a href="#vérifier-avec-standardscaler" id="toc-vérifier-avec-standardscaler" class="nav-link" data-scroll-target="#vérifier-avec-standardscaler">6.2. Vérifier avec <code>StandardScaler</code></a></li>
   <li><a href="#et-si-une-variable-a-des-valeurs-extrêmes" id="toc-et-si-une-variable-a-des-valeurs-extrêmes" class="nav-link" data-scroll-target="#et-si-une-variable-a-des-valeurs-extrêmes">6.3. Et si une variable a des valeurs extrêmes ?</a></li>
   </ul></li>
-  <li><a href="#construire-le-pipeline-complet-sans-fuite" id="toc-construire-le-pipeline-complet-sans-fuite" class="nav-link" data-scroll-target="#construire-le-pipeline-complet-sans-fuite">7. Construire le pipeline complet, sans fuite</a></li>
+  <li><a href="#sec-lab2-pipeline" id="toc-sec-lab2-pipeline" class="nav-link" data-scroll-target="#sec-lab2-pipeline">7. Construire le pipeline complet, sans fuite</a></li>
   <li><a href="#sec-lab2-projet" id="toc-sec-lab2-projet" class="nav-link" data-scroll-target="#sec-lab2-projet">8. Travail</a>
   <ul class="collapse">
   <li><a href="#partie-b---nettoyage-et-décisions-justifiées" id="toc-partie-b---nettoyage-et-décisions-justifiées" class="nav-link" data-scroll-target="#partie-b---nettoyage-et-décisions-justifiées">Partie B - Nettoyage et décisions justifiées</a></li>
@@ -561,7 +561,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pandas prêt à lire le CSV qui sera créé en section 2."</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>(Nous allons construire ce fichier nous-mêmes en §2.)</p>
+<p>(Nous allons construire ce fichier nous-mêmes dans <a href="#sec-lab2-jeu-imparfait" class="quarto-xref"><span>2. Construire un jeu de données volontairement imparfait</span></a>.)</p>
 </section>
 <section id="une-api-json" class="level3">
 <h3 class="anchored" data-anchor-id="une-api-json">1.2. Une API JSON</h3>
@@ -631,23 +631,23 @@ window.Quarto = {
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    titre <span class="op">=</span> livre.select_one(<span class="st">"h3 a"</span>)[<span class="st">"title"</span>]</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    prix <span class="op">=</span> livre.select_one(<span class="st">".price_color"</span>).get_text(strip<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>titre<span class="sc">}</span><span class="ss"> - </span><span class="sc">{</span>prix<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-warning callout-titled" title="Éthique et robustesse (rappel chapitre 3, §1.2)">
+<div class="callout callout-style-default callout-warning callout-titled" title="Éthique et robustesse">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Avertissement</span>Éthique et robustesse (rappel chapitre 3, §1.2)
+<span class="screen-reader-only">Avertissement</span>Éthique et robustesse
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>books.toscrape.com</code> est un site conçu pour l’entraînement au scraping. Sur un site réel, il faut vérifier <code>robots.txt</code>, les conditions d’utilisation, et ajouter un délai entre les requêtes (<code>time.sleep(1)</code>). Un scraper de ce type reste fragile : il casse dès que la structure HTML change.</p>
+<p>Comme le rappelle <a href="../chapitres/module_collecte_pretraitement_commun.html#sec-web-scraping" class="quarto-xref"><span>1.4. Le web scraping</span></a>, <code>books.toscrape.com</code> est un site conçu pour l’entraînement au scraping. Sur un site réel, il faut vérifier <code>robots.txt</code>, les conditions d’utilisation, et ajouter un délai entre les requêtes (<code>time.sleep(1)</code>). Un scraper de ce type reste fragile : il casse dès que la structure HTML change.</p>
 </div>
 </div>
 </section>
 </section>
-<section id="construire-un-jeu-de-données-volontairement-imparfait" class="level2">
-<h2 class="anchored" data-anchor-id="construire-un-jeu-de-données-volontairement-imparfait">2. Construire un jeu de données volontairement imparfait</h2>
+<section id="sec-lab2-jeu-imparfait" class="level2">
+<h2 class="anchored" data-anchor-id="sec-lab2-jeu-imparfait">2. Construire un jeu de données volontairement imparfait</h2>
 <p>Pour pratiquer le nettoyage, nous avons besoin de vraies imperfections. Créons-les nous-mêmes, en connaissance de cause :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -701,7 +701,7 @@ window.Quarto = {
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Intervalle acceptable : [</span><span class="sc">{</span>borne_basse<span class="sc">:.1f}</span><span class="ss">, </span><span class="sc">{</span>borne_haute<span class="sc">:.1f}</span><span class="ss">]"</span>)</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>aberrantes <span class="op">=</span> clients[(clients[<span class="st">"age"</span>] <span class="op">&lt;</span> borne_basse) <span class="op">|</span> (clients[<span class="st">"age"</span>] <span class="op">&gt;</span> borne_haute)]</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(aberrantes[[<span class="st">"client_id"</span>, <span class="st">"age"</span>]])</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ici, <code>age = 250</code> est manifestement une <strong>erreur de saisie</strong> (un âge humain plausible) plutôt qu’une observation rare et légitime (chapitre 3, §3.2) - on la remplace par une valeur manquante, qui sera traitée comme telle :</p>
+<p>Ici, <code>age = 250</code> est manifestement une <strong>erreur de saisie</strong> (un âge humain plausible) plutôt qu’une observation rare et légitime (voir <a href="../chapitres/module_collecte_pretraitement_commun.html#sec-valeurs-aberrantes" class="quarto-xref"><span>3.2. Les valeurs aberrantes (outliers)</span></a>) - on la remplace par une valeur manquante, qui sera traitée comme telle :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>clients.loc[clients[<span class="st">"age"</span>] <span class="op">&gt;</span> <span class="dv">120</span>, <span class="st">"age"</span>] <span class="op">=</span> <span class="va">None</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="harmoniser-les-catégories-textuelles" class="level3">
@@ -739,7 +739,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Sur une seule colonne, coder l’imputation à la main est simple. L’intérêt de <code>SimpleImputer</code> apparaît dès que l’on doit : (1) répéter l’opération sur de nombreuses colonnes, (2) l’intégrer dans un <code>Pipeline</code> qui garantit l’ordre <code>fit</code> sur train puis <code>transform</code> sur test (chapitre 3, §3.1), et (3) la combiner à d’autres étapes via <code>ColumnTransformer</code> (§6 de ce Lab).</p>
+<p>Sur une seule colonne, coder l’imputation à la main est simple. L’intérêt de <code>SimpleImputer</code> apparaît dès que l’on doit : (1) répéter l’opération sur de nombreuses colonnes, (2) l’intégrer dans un <code>Pipeline</code> qui garantit l’ordre <code>fit</code> sur train puis <code>transform</code> sur test (voir <a href="../chapitres/module_collecte_pretraitement_commun.html#sec-valeurs-manquantes" class="quarto-xref"><span>3.1. Les valeurs manquantes</span></a>), et (3) la combiner à d’autres étapes via <code>ColumnTransformer</code> (voir <a href="#sec-lab2-pipeline" class="quarto-xref"><span>7. Construire le pipeline complet, sans fuite</span></a>).</p>
 </div>
 </div>
 </section>
@@ -751,7 +751,7 @@ window.Quarto = {
 </section>
 <section id="encodage-ne-pas-confondre-labelencoder-et-ordinalencoder" class="level2">
 <h2 class="anchored" data-anchor-id="encodage-ne-pas-confondre-labelencoder-et-ordinalencoder">5. Encodage : ne pas confondre <code>LabelEncoder</code> et <code>OrdinalEncoder</code></h2>
-<p>Le chapitre 3 (§4.1) distingue encodage ordinal et One-Hot. En pratique, <code>scikit-learn</code> propose deux outils différents pour l’encodage ordinal, à ne pas confondre :</p>
+<p>Le chapitre 3 (<a href="../chapitres/module_collecte_pretraitement_commun.html#sec-encodage-categories" class="quarto-xref"><span>4. Encodage des variables catégorielles</span></a>) distingue encodage ordinal et One-Hot. En pratique, <code>scikit-learn</code> propose deux outils différents pour l’encodage ordinal, à ne pas confondre :</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -831,8 +831,9 @@ window.Quarto = {
 <p>Observez comme la valeur extrême écrase les autres avec <code>StandardScaler</code> (des valeurs standardisées proches de 0 pour presque tout le monde), alors que <code>RobustScaler</code> - fondé sur la médiane et l’écart interquartile - reste nettement plus stable (chapitre 3, <a href="../chapitres/module_collecte_pretraitement_commun.html#tbl-scaling" class="quarto-xref">Table&nbsp;<span>7</span></a>).</p>
 </section>
 </section>
-<section id="construire-le-pipeline-complet-sans-fuite" class="level2">
-<h2 class="anchored" data-anchor-id="construire-le-pipeline-complet-sans-fuite">7. Construire le pipeline complet, sans fuite</h2>
+<section id="sec-lab2-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="sec-lab2-pipeline">7. Construire le pipeline complet, sans fuite</h2>
+<p>Le prétraitement doit être ajusté uniquement sur les données d’entraînement, comme pour l’imputation (<a href="../chapitres/module_collecte_pretraitement_commun.html#sec-valeurs-manquantes" class="quarto-xref"><span>3.1. Les valeurs manquantes</span></a>) et la mise à l’échelle (<a href="../chapitres/module_collecte_pretraitement_commun.html#sec-sensibilite-echelle" class="quarto-xref"><span>5.3. Pourquoi certains algorithmes y sont-ils sensibles ? (ML)</span></a>).</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
@@ -866,7 +867,7 @@ window.Quarto = {
 <span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"cat"</span>, pipeline_categorielle, colonnes_categorielles),</span>
 <span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>])</span>
 <span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="co"># fit UNIQUEMENT sur le train (chapitre 3, §5.3 et §3.1)</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajuster le prétraitement uniquement sur les données d'entraînement</span></span>
 <span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>X_train_pret <span class="op">=</span> pretraitement.fit_transform(X_train)</span>
 <span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>X_test_pret <span class="op">=</span> pretraitement.transform(X_test)</span>
 <span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a></span>
@@ -921,7 +922,7 @@ window.Quarto = {
 <ol start="9" type="1">
 <li>Construisez un <code>ColumnTransformer</code> complet (imputation + encodage + mise à l’échelle adaptés à chaque type de colonne) pour préparer <code>X</code>, avec <code>survived</code> comme cible <span class="math inline">\(y\)</span>.</li>
 <li>Séparez Train/Test (80/20, stratifié sur <code>survived</code>), ajustez votre pipeline <strong>uniquement sur le train</strong>, puis transformez le test. Affichez la forme (<code>shape</code>) du tableau obtenu.</li>
-<li><em>(Bonus)</em> Enchaînez votre <code>ColumnTransformer</code> avec un <code>LogisticRegression</code> dans un unique <code>Pipeline</code>, entraînez-le, et affichez son accuracy sur le jeu de test. Vous retrouverez ce même jeu de données pour aller plus loin au Lab 4 (classification).</li>
+<li><em>(Bonus)</em> Enchaînez votre <code>ColumnTransformer</code> avec un <code>LogisticRegression</code> dans un unique <code>Pipeline</code>, entraînez-le, et affichez son accuracy sur le jeu de test. Vous retrouverez ce même jeu de données pour aller plus loin au Lab 4 (classification, <a href="lab4_classification.html#sec-lab4-projet" class="quarto-xref"><span>8. Travail</span></a>).</li>
 </ol>
 </section>
 <section id="livrables" class="level3">

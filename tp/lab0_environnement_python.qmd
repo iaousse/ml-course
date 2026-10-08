@@ -214,7 +214,7 @@ for directory in (PROJECT_DIR / "data" / "interim", PROJECT_DIR / "notebooks"):
 
 ## 4. Premier contact avec des données tabulaires
 
-Créons un tout petit jeu de données local - quelques annonces immobilières, dans l'esprit de l'exemple fil rouge du chapitre 1 (§3) - pour manipuler `pandas` sans dépendre d'Internet.
+Créons un tout petit jeu de données local - quelques annonces immobilières, dans l'esprit de l'exemple fil rouge du cours (@sec-cycle-vie-ml) - pour manipuler `pandas` sans dépendre d'Internet.
 
 ```python
 import pandas as pd
@@ -305,7 +305,7 @@ print(response.json()["full_name"])
 Sans `timeout`, un programme peut rester bloqué indéfiniment si le serveur ne répond jamais. `raise_for_status()` transforme un code d'erreur HTTP (404, 500...) en exception Python explicite, plutôt que de laisser passer silencieusement une réponse invalide.
 :::
 
-### 5.2. Exemple : l'API météo Open-Meteo (sans clé)
+### 5.2. Exemple : l'API météo Open-Meteo (sans clé) {#sec-lab0-meteo}
 
 ```python
 import pandas as pd
@@ -348,9 +348,9 @@ plt.show()
 URL incorrecte, absence de connexion, délai dépassé, service temporairement indisponible : une requête réseau n'est jamais garantie. Dans un vrai projet, on entoure ce type d'appel d'une gestion d'erreurs (`try`/`except`) et on sauvegarde une copie brute de la réponse pour pouvoir rejouer l'analyse hors ligne.
 :::
 
-## 6. Vérifier que `scikit-learn` fonctionne : le filtre anti-spam du chapitre 1
+## 6. Vérifier que `scikit-learn` fonctionne : le filtre anti-spam du chapitre 1 {#sec-lab0-spam}
 
-Le chapitre 1 (§2.2) présente l'idée du filtre anti-spam comme premier exemple du paradigme Data-Driven. Reproduisons-le concrètement, avec un tout petit jeu d'e-mails fait main.
+Le chapitre 1 (@sec-paradigme-data-driven) présente l'idée du filtre anti-spam comme premier exemple du paradigme Data-Driven. Reproduisons-le concrètement, avec un tout petit jeu d'e-mails fait main.
 
 ```python
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -405,7 +405,7 @@ Ce projet reprend, sur des données différentes de celles utilisées en cours, 
 
 ### Partie B - Météo au Maroc, à vous de jouer
 
-Choisissez **trois villes marocaines différentes** de celle utilisée en exemple (§5.2) et récupérez, pour chacune, les températures horaires prévues sur 2 jours via l'API Open-Meteo.
+Choisissez **trois villes marocaines différentes** de celle utilisée en exemple (@sec-lab0-meteo) et récupérez, pour chacune, les températures horaires prévues sur 2 jours via l'API Open-Meteo.
 
 ::: {.callout-tip title="Coordonnées de quelques villes" collapse="true"}
 | Ville | Latitude | Longitude |
@@ -424,7 +424,7 @@ Choisissez **trois villes marocaines différentes** de celle utilisée en exempl
 
 ### Partie C - Améliorer le mini filtre anti-spam
 
-8. Ajoutez **quatre nouveaux e-mails** à la liste d'entraînement de la §6 (deux spams, deux non-spams), rédigés par vous-même, en français ou en darija translittérée.
+8. Ajoutez **quatre nouveaux e-mails** à la liste d'entraînement de @sec-lab0-spam (deux spams, deux non-spams), rédigés par vous-même, en français ou en darija translittérée.
 9. Réentraînez le modèle avec ces dix exemples, puis testez-le sur **trois nouveaux e-mails** que vous inventez (non utilisés à l'entraînement).
 10. Le modèle se trompe-t-il sur l'un de vos trois e-mails de test ? Si oui, proposez une explication plausible en vous appuyant sur le fonctionnement de `TfidfVectorizer` (quels mots le modèle a-t-il pu associer à tort au spam ?).
 

@@ -486,7 +486,7 @@ window.Quarto = {
   <li><a href="#log-loss-ou-entropie-croisée-binaire" id="toc-log-loss-ou-entropie-croisée-binaire" class="nav-link" data-scroll-target="#log-loss-ou-entropie-croisée-binaire">3.5. Log loss ou entropie croisée binaire</a></li>
   <li><a href="#exemple-simple" id="toc-exemple-simple" class="nav-link" data-scroll-target="#exemple-simple">3.6. Exemple simple</a></li>
   </ul></li>
-  <li><a href="#évaluer-une-classification-binaire" id="toc-évaluer-une-classification-binaire" class="nav-link" data-scroll-target="#évaluer-une-classification-binaire">4. Évaluer une classification binaire</a>
+  <li><a href="#sec-evaluation-classification" id="toc-sec-evaluation-classification" class="nav-link" data-scroll-target="#sec-evaluation-classification">4. Évaluer une classification binaire</a>
   <ul class="collapse">
   <li><a href="#matrice-de-confusion" id="toc-matrice-de-confusion" class="nav-link" data-scroll-target="#matrice-de-confusion">4.1. Matrice de confusion</a></li>
   <li><a href="#accuracy" id="toc-accuracy" class="nav-link" data-scroll-target="#accuracy">4.2. Accuracy</a></li>
@@ -794,8 +794,8 @@ z=-1, \qquad p = \frac{1}{1+e} \approx 0{,}269
 <p>Ce modèle montre très bien comment un score linéaire est transformé en probabilité et comment le seuil de décision agit sur la classification.</p>
 </section>
 </section>
-<section id="évaluer-une-classification-binaire" class="level2">
-<h2 class="anchored" data-anchor-id="évaluer-une-classification-binaire">4. Évaluer une classification binaire</h2>
+<section id="sec-evaluation-classification" class="level2">
+<h2 class="anchored" data-anchor-id="sec-evaluation-classification">4. Évaluer une classification binaire</h2>
 <p>La <strong>matrice de confusion</strong> constitue le point de départ de l’évaluation d’un modèle de classification binaire. Elle permet de comparer, pour chaque observation, sa <strong>classe réelle</strong> à la <strong>classe prédite par le modèle</strong>. Toutes les principales métriques présentées dans cette section sont directement construites à partir de ses quatre cases : vrais positifs, vrais négatifs, faux positifs et faux négatifs.</p>
 <section id="matrice-de-confusion" class="level3">
 <h3 class="anchored" data-anchor-id="matrice-de-confusion">4.1. Matrice de confusion</h3>

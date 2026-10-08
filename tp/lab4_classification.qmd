@@ -57,7 +57,7 @@ clients = pd.DataFrame({
 print(clients["churn"].value_counts(normalize=True).round(3))
 ```
 
-Comme souvent en pratique, les classes sont **déséquilibrées** : gardez ce chiffre en tête, il conditionne toute la suite (chapitre 2, §6, « le piège des classes déséquilibrées »).
+Comme souvent en pratique, les classes sont **déséquilibrées** : gardez ce chiffre en tête, il conditionne toute la suite (voir le « piège des classes déséquilibrées », @sec-baseline-accuracy).
 
 ## 2. Un pipeline de classification, de bout en bout
 
@@ -224,7 +224,7 @@ print(f"\nModèle retenu : {meilleur_resultat['nom']}")
 ```
 
 ::: {.callout-tip title="Pourquoi `scoring=\"f1\"` plutôt que l'accuracy ?"}
-Sur un jeu déséquilibré, optimiser l'accuracy par validation croisée pousserait naturellement `GridSearchCV` vers des modèles qui prédisent presque toujours la classe majoritaire (chapitre 2, §6). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.
+Sur un jeu déséquilibré, optimiser l'accuracy par validation croisée pousserait naturellement `GridSearchCV` vers des modèles qui prédisent presque toujours la classe majoritaire (voir @sec-baseline-accuracy). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.
 :::
 
 ## 7. Évaluation finale sur le jeu de test
@@ -263,7 +263,7 @@ Après cette évaluation, ne modifiez pas le modèle, ses hyperparamètres ou so
 ## 8. Travail {#sec-lab4-projet}
 
 **Jeu de données du projet : le Titanic, à nouveau**
-Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l'objectif n'est plus seulement de le nettoyer, mais de réellement **prédire** la survie (`survived`) d'un passager.
+Reprenez le jeu de données du Titanic préparé au Lab 2 (@sec-lab2-projet). Cette fois, l'objectif n'est plus seulement de le nettoyer, mais de réellement **prédire** la survie (`survived`) d'un passager.
 
 ```python
 titanic = pd.read_csv(

@@ -465,12 +465,12 @@ div.csl-indent {
   <li><a href="#de-lintelligence-artificielle-au-machine-learning" id="toc-de-lintelligence-artificielle-au-machine-learning" class="nav-link" data-scroll-target="#de-lintelligence-artificielle-au-machine-learning">1.1. De l’Intelligence Artificielle au Machine Learning</a></li>
   <li><a href="#définition-formelle-du-machine-learning" id="toc-définition-formelle-du-machine-learning" class="nav-link" data-scroll-target="#définition-formelle-du-machine-learning">1.2. Définition formelle du Machine Learning</a></li>
   </ul></li>
-  <li><a href="#programmation-classique-vs.-approche-data-driven" id="toc-programmation-classique-vs.-approche-data-driven" class="nav-link" data-scroll-target="#programmation-classique-vs.-approche-data-driven">2. Programmation classique vs.&nbsp;approche Data-Driven</a>
+  <li><a href="#sec-paradigme-programmation" id="toc-sec-paradigme-programmation" class="nav-link" data-scroll-target="#sec-paradigme-programmation">2. Programmation classique vs.&nbsp;approche Data-Driven</a>
   <ul class="collapse">
   <li><a href="#le-paradigme-classique" id="toc-le-paradigme-classique" class="nav-link" data-scroll-target="#le-paradigme-classique">2.1. Le paradigme classique</a></li>
-  <li><a href="#le-paradigme-data-driven" id="toc-le-paradigme-data-driven" class="nav-link" data-scroll-target="#le-paradigme-data-driven">2.2. Le paradigme Data-Driven</a></li>
+  <li><a href="#sec-paradigme-data-driven" id="toc-sec-paradigme-data-driven" class="nav-link" data-scroll-target="#sec-paradigme-data-driven">2.2. Le paradigme Data-Driven</a></li>
   </ul></li>
-  <li><a href="#le-cycle-de-vie-dun-projet-de-machine-learning" id="toc-le-cycle-de-vie-dun-projet-de-machine-learning" class="nav-link" data-scroll-target="#le-cycle-de-vie-dun-projet-de-machine-learning">3. Le cycle de vie d’un projet de Machine Learning</a></li>
+  <li><a href="#sec-cycle-vie-ml" id="toc-sec-cycle-vie-ml" class="nav-link" data-scroll-target="#sec-cycle-vie-ml">3. Le cycle de vie d’un projet de Machine Learning</a></li>
   <li><a href="#python-pour-le-machine-learning" id="toc-python-pour-le-machine-learning" class="nav-link" data-scroll-target="#python-pour-le-machine-learning">4. Python pour le Machine Learning</a>
   <ul class="collapse">
   <li><a href="#quelques-bibliothèques-scientifiques-de-lécosystème-python" id="toc-quelques-bibliothèques-scientifiques-de-lécosystème-python" class="nav-link" data-scroll-target="#quelques-bibliothèques-scientifiques-de-lécosystème-python">4.1. Quelques bibliothèques scientifiques de l’écosystème Python</a></li>
@@ -643,8 +643,8 @@ Table&nbsp;1: Le cadre TPE de <span class="citation" data-cites="mitchell1997mac
 </ul>
 </section>
 </section>
-<section id="programmation-classique-vs.-approche-data-driven" class="level2">
-<h2 class="anchored" data-anchor-id="programmation-classique-vs.-approche-data-driven">2. Programmation classique vs.&nbsp;approche Data-Driven</h2>
+<section id="sec-paradigme-programmation" class="level2">
+<h2 class="anchored" data-anchor-id="sec-paradigme-programmation">2. Programmation classique vs.&nbsp;approche Data-Driven</h2>
 <section id="le-paradigme-classique" class="level3">
 <h3 class="anchored" data-anchor-id="le-paradigme-classique">2.1. Le paradigme classique</h3>
 <p>Dans le paradigme <strong>classique</strong> (déductif), le développeur déduit un ensemble de <strong>règles explicites</strong>, puis les traduit en code. Le programme prend des <strong>données</strong> en entrée et produit des <strong>résultats</strong> en appliquant mécaniquement ces règles.</p>
@@ -661,8 +661,8 @@ Table&nbsp;1: Le cadre TPE de <span class="citation" data-cites="mitchell1997mac
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">any</span>(mot <span class="kw">in</span> email_minuscule <span class="cf">for</span> mot <span class="kw">in</span> mots_suspects)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ce type d’approche est idéal lorsque les règles métier sont <strong>stables, peu nombreuses et bien comprises</strong> (ex. calcul d’un impôt selon un barème officiel). Mais dès que les spammeurs changent de vocabulaire, la règle doit être <strong>réécrite manuellement</strong> - le programme n’apprend rien de lui-même.</p>
 </section>
-<section id="le-paradigme-data-driven" class="level3">
-<h3 class="anchored" data-anchor-id="le-paradigme-data-driven">2.2. Le paradigme Data-Driven</h3>
+<section id="sec-paradigme-data-driven" class="level3">
+<h3 class="anchored" data-anchor-id="sec-paradigme-data-driven">2.2. Le paradigme Data-Driven</h3>
 <p>Le Machine Learning <strong>inverse la logique</strong> : on fournit au système des <strong>données</strong> et, dans le cas supervisé, les <strong>résultats attendus</strong> correspondants. Un <strong>algorithme d’apprentissage</strong> analyse les régularités entre ces deux éléments pour produire un <strong>modèle</strong>. Ce modèle est une fonction apprise automatiquement, capable de généraliser à de nouvelles données jamais vues.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
@@ -752,8 +752,8 @@ Table&nbsp;2: Comparaison synthétique des deux paradigmes
 </div>
 </section>
 </section>
-<section id="le-cycle-de-vie-dun-projet-de-machine-learning" class="level2">
-<h2 class="anchored" data-anchor-id="le-cycle-de-vie-dun-projet-de-machine-learning">3. Le cycle de vie d’un projet de Machine Learning</h2>
+<section id="sec-cycle-vie-ml" class="level2">
+<h2 class="anchored" data-anchor-id="sec-cycle-vie-ml">3. Le cycle de vie d’un projet de Machine Learning</h2>
 <p>Entraîner un modèle ne représente qu’une fraction du travail réel. Un projet ML se décompose en sept étapes itératives <span class="citation" data-cites="geron2022">(<a href="../references.html#ref-geron2022" role="doc-biblioref">Géron 2022</a>)</span> :</p>
 <ol type="1">
 <li><strong>Cadrage du problème métier</strong> : traduire un besoin en problème ML via la grille (T, P, E) - voir <a href="#def-ml" class="quarto-xref">Définition&nbsp;<span>1</span></a>.</li>

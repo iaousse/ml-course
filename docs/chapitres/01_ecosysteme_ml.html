@@ -436,16 +436,16 @@ window.Quarto = {
    
   <ul>
   <li><a href="#vocabulaire-et-représentation-des-données" id="toc-vocabulaire-et-représentation-des-données" class="nav-link active" data-scroll-target="#vocabulaire-et-représentation-des-données">1. Vocabulaire et représentation des données</a></li>
-  <li><a href="#les-grandes-familles-dapprentissage" id="toc-les-grandes-familles-dapprentissage" class="nav-link" data-scroll-target="#les-grandes-familles-dapprentissage">2. Les grandes familles d’apprentissage</a></li>
-  <li><a href="#apprendre-et-généraliser" id="toc-apprendre-et-généraliser" class="nav-link" data-scroll-target="#apprendre-et-généraliser">3. Apprendre et généraliser</a></li>
-  <li><a href="#jeux-dévaluation-et-fuite-de-données" id="toc-jeux-dévaluation-et-fuite-de-données" class="nav-link" data-scroll-target="#jeux-dévaluation-et-fuite-de-données">4. Jeux d’évaluation et Fuite de données</a>
+  <li><a href="#sec-familles-apprentissage" id="toc-sec-familles-apprentissage" class="nav-link" data-scroll-target="#sec-familles-apprentissage">2. Les grandes familles d’apprentissage</a></li>
+  <li><a href="#sec-generalisation" id="toc-sec-generalisation" class="nav-link" data-scroll-target="#sec-generalisation">3. Apprendre et généraliser</a></li>
+  <li><a href="#sec-jeux-evaluation" id="toc-sec-jeux-evaluation" class="nav-link" data-scroll-target="#sec-jeux-evaluation">4. Jeux d’évaluation et Fuite de données</a>
   <ul class="collapse">
   <li><a href="#le-cas-particulier-des-données-temporelles" id="toc-le-cas-particulier-des-données-temporelles" class="nav-link" data-scroll-target="#le-cas-particulier-des-données-temporelles">4.1. Le cas particulier des données temporelles</a></li>
-  <li><a href="#la-fuite-de-données-data-leakage" id="toc-la-fuite-de-données-data-leakage" class="nav-link" data-scroll-target="#la-fuite-de-données-data-leakage">4.2. La fuite de données (<em>Data Leakage</em>)</a></li>
+  <li><a href="#sec-fuite-donnees" id="toc-sec-fuite-donnees" class="nav-link" data-scroll-target="#sec-fuite-donnees">4.2. La fuite de données (<em>Data Leakage</em>)</a></li>
   </ul></li>
-  <li><a href="#paramètres-et-hyperparamètres" id="toc-paramètres-et-hyperparamètres" class="nav-link" data-scroll-target="#paramètres-et-hyperparamètres">5. Paramètres et Hyperparamètres</a></li>
-  <li><a href="#la-baseline-et-les-limites-de-laccuracy" id="toc-la-baseline-et-les-limites-de-laccuracy" class="nav-link" data-scroll-target="#la-baseline-et-les-limites-de-laccuracy">6. La Baseline et les limites de l’Accuracy</a></li>
-  <li><a href="#prédiction-corrélation-et-causalité" id="toc-prédiction-corrélation-et-causalité" class="nav-link" data-scroll-target="#prédiction-corrélation-et-causalité">7. Prédiction, Corrélation et Causalité</a></li>
+  <li><a href="#sec-parametres-hyperparametres" id="toc-sec-parametres-hyperparametres" class="nav-link" data-scroll-target="#sec-parametres-hyperparametres">5. Paramètres et Hyperparamètres</a></li>
+  <li><a href="#sec-baseline-accuracy" id="toc-sec-baseline-accuracy" class="nav-link" data-scroll-target="#sec-baseline-accuracy">6. La Baseline et les limites de l’Accuracy</a></li>
+  <li><a href="#sec-correlation-causalite" id="toc-sec-correlation-causalite" class="nav-link" data-scroll-target="#sec-correlation-causalite">7. Prédiction, Corrélation et Causalité</a></li>
   <li><a href="#enjeux-éthiques-et-reproductibilité" id="toc-enjeux-éthiques-et-reproductibilité" class="nav-link" data-scroll-target="#enjeux-éthiques-et-reproductibilité">8. Enjeux Éthiques et Reproductibilité</a></li>
   <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">Exercices</a></li>
   </ul>
@@ -580,8 +580,8 @@ Table&nbsp;1: Notions et vocabulaire
 </div>
 </div>
 </section>
-<section id="les-grandes-familles-dapprentissage" class="level2">
-<h2 class="anchored" data-anchor-id="les-grandes-familles-dapprentissage">2. Les grandes familles d’apprentissage</h2>
+<section id="sec-familles-apprentissage" class="level2">
+<h2 class="anchored" data-anchor-id="sec-familles-apprentissage">2. Les grandes familles d’apprentissage</h2>
 <p>Il existe plusieurs façons de classer les méthodes de Machine Learning. Pour ce cours, la distinction fondamentale repose sur la <strong>nature du signal disponible pour l’apprentissage</strong>.</p>
 <p>On retient ici deux <strong>grands paradigmes</strong>, étudiés dans les chapitres suivants :</p>
 <ul>
@@ -647,8 +647,8 @@ Table&nbsp;1: Notions et vocabulaire
 </div>
 </div>
 </section>
-<section id="apprendre-et-généraliser" class="level2">
-<h2 class="anchored" data-anchor-id="apprendre-et-généraliser">3. Apprendre et généraliser</h2>
+<section id="sec-generalisation" class="level2">
+<h2 class="anchored" data-anchor-id="sec-generalisation">3. Apprendre et généraliser</h2>
 <blockquote class="blockquote">
 <p>Le meilleur modèle n’est pas celui qui mémorise le mieux les données d’entraînement, mais celui qui <strong>généralise</strong> le mieux à des données inédites.</p>
 <p>— Principe fondamental du Machine Learning</p>
@@ -687,8 +687,8 @@ Figure&nbsp;1: Évolution de l’erreur d’entraînement et de validation selon
 </div>
 </div>
 </section>
-<section id="jeux-dévaluation-et-fuite-de-données" class="level2">
-<h2 class="anchored" data-anchor-id="jeux-dévaluation-et-fuite-de-données">4. Jeux d’évaluation et Fuite de données</h2>
+<section id="sec-jeux-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="sec-jeux-evaluation">4. Jeux d’évaluation et Fuite de données</h2>
 <p>Pour diagnostiquer la généralisation, on divise l’échantillon initial en <strong>trois sous-ensembles disjoints</strong> :</p>
 <div id="tbl-jeux-evaluation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -752,8 +752,8 @@ Figure&nbsp;2: Séparation typique d’un jeu de données en Train / Validation 
 <h3 class="anchored" data-anchor-id="le-cas-particulier-des-données-temporelles">4.1. Le cas particulier des données temporelles</h3>
 <p>Lorsque les observations sont <strong>datées</strong> (ex. transactions bancaires, ventes mensuelles), un découpage <strong>aléatoire</strong> de Train/Validation/Test est dangereux : le modèle pourrait apprendre à partir d’informations « futures » par rapport à certaines observations de test, ce qui <strong>surestime artificiellement</strong> sa performance réelle. Dans ce cas, on applique plutôt un <strong>découpage chronologique</strong> : les données les plus anciennes forment le jeu d’entraînement, les plus récentes le jeu de test - reproduisant ainsi la situation réelle où le modèle doit prédire l’avenir à partir du passé.</p>
 </section>
-<section id="la-fuite-de-données-data-leakage" class="level3">
-<h3 class="anchored" data-anchor-id="la-fuite-de-données-data-leakage">4.2. La fuite de données (<em>Data Leakage</em>)</h3>
+<section id="sec-fuite-donnees" class="level3">
+<h3 class="anchored" data-anchor-id="sec-fuite-donnees">4.2. La fuite de données (<em>Data Leakage</em>)</h3>
 <p>Il y a <strong>fuite de données</strong> lorsqu’une information qui ne devrait pas être disponible au moment de la prédiction influence malgré tout l’entraînement. Cela génère des performances artificiellement excellentes, qui s’effondrent en production.</p>
 <p><em>Exemples caractéristiques :</em></p>
 <ul>
@@ -763,8 +763,8 @@ Figure&nbsp;2: Séparation typique d’un jeu de données en Train / Validation 
 <p>Pour éviter ce type d’erreur, on utilise des <strong>Pipelines</strong> : des enchaînements d’étapes (normalisation, encodage, modélisation) que l’on ajuste <strong>uniquement</strong> sur le jeu d’entraînement, puis que l’on applique tel quel aux jeux de validation et de test.</p>
 </section>
 </section>
-<section id="paramètres-et-hyperparamètres" class="level2">
-<h2 class="anchored" data-anchor-id="paramètres-et-hyperparamètres">5. Paramètres et Hyperparamètres</h2>
+<section id="sec-parametres-hyperparametres" class="level2">
+<h2 class="anchored" data-anchor-id="sec-parametres-hyperparametres">5. Paramètres et Hyperparamètres</h2>
 <div id="tbl-parametres" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-parametres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -810,12 +810,12 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>On ne règle <strong>jamais</strong> un hyperparamètre en observant sa performance sur le jeu de <strong>test</strong> - cela reviendrait à une fuite de données (voir §4.2). La bonne pratique consiste à comparer plusieurs valeurs d’hyperparamètres uniquement sur le jeu de <strong>validation</strong> (<a href="#tbl-jeux-evaluation" class="quarto-xref">Table&nbsp;<span>2</span></a>), et à ne consulter le jeu de test qu’une fois le meilleur réglage définitivement choisi.</p>
+<p>On ne règle <strong>jamais</strong> un hyperparamètre en observant sa performance sur le jeu de <strong>test</strong> - cela reviendrait à une fuite de données (voir <a href="#sec-fuite-donnees" class="quarto-xref"><span>4.2. La fuite de données (Data Leakage)</span></a>). La bonne pratique consiste à comparer plusieurs valeurs d’hyperparamètres uniquement sur le jeu de <strong>validation</strong> (<a href="#tbl-jeux-evaluation" class="quarto-xref">Table&nbsp;<span>2</span></a>), et à ne consulter le jeu de test qu’une fois le meilleur réglage définitivement choisi.</p>
 </div>
 </div>
 </section>
-<section id="la-baseline-et-les-limites-de-laccuracy" class="level2">
-<h2 class="anchored" data-anchor-id="la-baseline-et-les-limites-de-laccuracy">6. La Baseline et les limites de l’Accuracy</h2>
+<section id="sec-baseline-accuracy" class="level2">
+<h2 class="anchored" data-anchor-id="sec-baseline-accuracy">6. La Baseline et les limites de l’Accuracy</h2>
 <p>Une <strong>baseline</strong> est une règle de décision extrêmement simple (ex. « toujours prédire la classe majoritaire »). Elle répond à la question : <em>le modèle ML complexe fait-il réellement mieux que l’approche la plus basique possible ?</em></p>
 <div class="callout callout-style-default callout-caution callout-titled" title="Le piège des classes déséquilibrées">
 <div class="callout-header d-flex align-content-center">
@@ -832,8 +832,8 @@ Table&nbsp;3: Paramètres et hyperparamètres
 </div>
 <p>Pour étudier plus finement les erreurs d’un modèle de classification, on utilise notamment la <strong>matrice de confusion</strong>, qui sera définie et étudiée dans le chapitre consacré à la classification.</p>
 </section>
-<section id="prédiction-corrélation-et-causalité" class="level2">
-<h2 class="anchored" data-anchor-id="prédiction-corrélation-et-causalité">7. Prédiction, Corrélation et Causalité</h2>
+<section id="sec-correlation-causalite" class="level2">
+<h2 class="anchored" data-anchor-id="sec-correlation-causalite">7. Prédiction, Corrélation et Causalité</h2>
 <p>Un modèle ML excelle à trouver des <strong>corrélations</strong> (ex. les ventes de glaces et les coups de soleil augmentent ensemble l’été). Cependant :</p>
 <ul>
 <li>La <strong>prédiction</strong> exploite une corrélation pour estimer une valeur inconnue.</li>

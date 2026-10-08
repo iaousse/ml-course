@@ -104,7 +104,7 @@ print("R² test  :", round(modele.score(X_test, y_test), 3))
 Les deux scores sont proches : c'est un bon signe (voir @fig-overfitting). Un très grand écart entre les deux serait au contraire la signature d'un sur-apprentissage.
 
 ::: {.callout-warning title="Règle d'or (rappel du chapitre 2, @tbl-jeux-evaluation)"}
-`random_state=42` fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours **le même** partage Train/Test en réexécutant le code - indispensable pour la reproductibilité (chapitre 1, §4.3).
+`random_state=42` fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours **le même** partage Train/Test en réexécutant le code - indispensable pour la reproductibilité (chapitre 1, @sec-uv).
 :::
 
 ## 3. Observer le sur-apprentissage à l'œil nu
@@ -207,7 +207,7 @@ baseline.fit(X_iris_train, y_iris_train)
 print("Accuracy de la baseline :", round(baseline.score(X_iris_test, y_iris_test), 3))
 ```
 
-Le jeu `iris` étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % - un score que **tout** modèle sérieux doit largement dépasser pour être utile (voir chapitre 2, §6).
+Le jeu `iris` étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % - un score que **tout** modèle sérieux doit largement dépasser pour être utile (voir @sec-baseline-accuracy).
 
 ## 6. Un vrai modèle, sa matrice de confusion et ses métriques
 
@@ -238,11 +238,11 @@ print(classification_report(y_iris_test, y_pred, target_names=iris.target_names)
 Comme précisé au chapitre 2 (@tbl-confusion), la convention adoptée dans ce cours est : **lignes = classes réelles, colonnes = classes prédites**. La diagonale contient les prédictions correctes ; toute valeur hors diagonale est une erreur, et sa position indique précisément quelle classe a été confondue avec quelle autre - une information que l'*accuracy* seule ne donne jamais.
 :::
 
-`classification_report` calcule automatiquement, pour chaque classe, la **précision**, le **rappel** et le **F1-score** (moyenne harmonique des deux) - trois métriques annoncées au chapitre 2 (§6) et détaillées au chapitre 5.
+`classification_report` calcule automatiquement, pour chaque classe, la **précision**, le **rappel** et le **F1-score** (moyenne harmonique des deux) - trois métriques annoncées dans @sec-baseline-accuracy et détaillées dans @sec-evaluation-classification.
 
 ## 7. Repérer une fuite de données, concrètement
 
-Le chapitre 2 (§4.2) insiste sur la fuite de données. Provoquons-en une, volontairement, pour en mesurer l'effet chiffré.
+Le chapitre 2 (@sec-fuite-donnees) insiste sur la fuite de données. Provoquons-en une, volontairement, pour en mesurer l'effet chiffré.
 
 ```python
 from sklearn.preprocessing import StandardScaler
@@ -280,7 +280,7 @@ Sur `iris`, l'écart est ici modeste, car le jeu de données est petit et propre
 
 ## 8. Un premier aperçu du réglage d'hyperparamètres
 
-$k$ (le nombre de voisins de `KNeighborsClassifier`) est un **hyperparamètre** (@tbl-parametres) : il n'est pas appris, il doit être choisi. La bonne pratique, rappelée au chapitre 2 (§5), est de comparer plusieurs valeurs **uniquement via la validation croisée**, jamais sur le jeu de test.
+$k$ (le nombre de voisins de `KNeighborsClassifier`) est un **hyperparamètre** (@tbl-parametres) : il n'est pas appris, il doit être choisi. La bonne pratique, rappelée dans @sec-parametres-hyperparametres, est de comparer plusieurs valeurs **uniquement via la validation croisée**, jamais sur le jeu de test.
 
 ```python
 for k in [1, 3, 5, 7, 9, 15]:
@@ -312,7 +312,7 @@ Ce projet utilise le jeu de données `wine`, également fourni par `scikit-learn
 
 ### Partie C - Une mise à l'échelle change-t-elle tout ?
 
-5. Refaites la question 4 en standardisant les données au préalable (avec la méthode **correcte**, sans fuite). L'accuracy change-t-elle ? Proposez une explication liée à la nature de l'algorithme KNN (indice : pensez à la notion de distance entre observations, chapitre 3 §5).
+5. Refaites la question 4 en standardisant les données au préalable (avec la méthode **correcte**, sans fuite). L'accuracy change-t-elle ? Proposez une explication liée à la nature de l'algorithme KNN (indice : pensez à la notion de distance entre observations, @sec-mise-echelle).
 
 ### Partie D - Régler l'hyperparamètre $k$
 

@@ -105,7 +105,7 @@ Le cas **MNAR** est le plus problématique : ignorer ou imputer naïvement ces v
 : Stratégies d'imputation des valeurs manquantes {#tbl-imputation}
 
 ::: {.callout-tip title="Règle d'or"}
-Pour éviter la fuite de données (*data leakage*), la stratégie d'imputation (moyenne, médiane...) doit être **calculée uniquement sur le jeu d'entraînement**, puis appliquée telle quelle aux jeux de validation et de test — sous peine de fuite de données (notion introduite dans le chapitre précédent, §4.2).
+Pour éviter la fuite de données (*data leakage*), la stratégie d'imputation (moyenne, médiane...) doit être **calculée uniquement sur le jeu d'entraînement**, puis appliquée telle quelle aux jeux de validation et de test — sous peine de fuite de données (notion introduite dans le chapitre précédent, @sec-fuite-donnees).
 :::
 
 ### 3.2. Les valeurs aberrantes (*outliers*)
@@ -242,7 +242,7 @@ pretraitement = ColumnTransformer([
     ("cat", pipeline_categorielle, colonnes_categorielles),
 ])
 
-# Fit UNIQUEMENT sur les données d'entraînement (voir §5.3 et le chapitre précédent, §4.2)
+# Fit UNIQUEMENT sur les données d'entraînement
 X_train_pret = pretraitement.fit_transform(X_train)
 # Le même prétraitement, déjà appris, est simplement réappliqué :
 X_test_pret = pretraitement.transform(X_test)
@@ -254,7 +254,7 @@ Depuis les versions récentes de Scikit-Learn, l'appel `pretraitement.set_output
 
 ### 6.2. Mettre à jour l'environnement du projet
 
-En cohérence avec la gestion de projet introduite au chapitre 1 (§4.3), les nouvelles dépendances nécessaires à ce chapitre sont ajoutées explicitement au projet :
+En cohérence avec la gestion de projet introduite au chapitre 1 (@sec-uv), les nouvelles dépendances nécessaires à ce chapitre sont ajoutées explicitement au projet :
 
 ```bash
 uv add scikit-learn
@@ -290,7 +290,7 @@ c. Extraire l'historique des commandes déjà stockées dans le système d'infor
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-1"}
 a. **API** (généralement REST) : les cours de change sont typiquement mis à disposition par des services financiers via une API dédiée, offrant des données structurées et à jour.
-b. **Web scraping** : en l'absence d'API publique, l'extraction du HTML des pages d'annonces (avec `BeautifulSoup` ou `Scrapy`) reste la seule option, sous réserve de vérifier le `robots.txt` et les CGU du site (§1.2).
+b. **Web scraping** : en l'absence d'API publique, l'extraction du HTML des pages d'annonces (avec `BeautifulSoup` ou `Scrapy`) reste la seule option, sous réserve de vérifier le `robots.txt` et les CGU du site (@sec-web-scraping).
 c. **Base de données** : ces données existent déjà, structurées, dans le système d'information de l'entreprise (probablement une base SQL) ; il s'agit alors d'une simple requête, sans collecte externe.
 :::
 :::
@@ -306,7 +306,7 @@ b. Le modèle entraîné sur cet échantillon sera-t-il fiable pour prédire le 
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-2"}
-a. Un **biais de sélection** (§2) : les coureurs qui partagent volontairement leurs performances sur les réseaux sociaux sont probablement plus performants, plus réguliers ou plus motivés que la population générale des coureurs.
+a. Un **biais de sélection** (@sec-representativite) : les coureurs qui partagent volontairement leurs performances sur les réseaux sociaux sont probablement plus performants, plus réguliers ou plus motivés que la population générale des coureurs.
 b. Non, probablement pas de façon fiable : le modèle a appris à partir d'une sous-population non représentative de l'ensemble des utilisateurs ; ses prédictions risquent d'être systématiquement trop optimistes pour un coureur occasionnel.
 :::
 :::
@@ -340,8 +340,8 @@ c. Le mois de la transaction (`Janvier`, ..., `Décembre`).
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-4"}
-a. **Ordinal Encoding** : cette variable possède un ordre naturel non ambigu (`Primaire` < `Secondaire` < `Supérieur`), qu'un encodage ordinal préserve correctement (§4.1).
-b. **One-Hot Encoding** : il n'existe aucun ordre naturel entre les couleurs ; un encodage ordinal introduirait un ordre artificiel et trompeur (§4.1, piège fréquent).
+a. **Ordinal Encoding** : cette variable possède un ordre naturel non ambigu (`Primaire` < `Secondaire` < `Supérieur`), qu'un encodage ordinal préserve correctement (@sec-encodage-categories).
+b. **One-Hot Encoding** : il n'existe aucun ordre naturel entre les couleurs ; un encodage ordinal introduirait un ordre artificiel et trompeur (@sec-encodage-categories, piège fréquent).
 c. **Discutable, à justifier** : un encodage ordinal simple (Janvier=1, ..., Décembre=12) fait implicitement l'hypothèse que Décembre et Janvier sont « éloignés », alors qu'ils sont calendairement adjacents (effet de cyclicité) ; un One-Hot Encoding évite ce problème mais perd la notion de proximité entre mois consécutifs. C'est un exemple où ni l'une ni l'autre des deux méthodes vues dans ce chapitre n'est pleinement satisfaisante (des encodages cycliques spécifiques existent, hors du cadre de ce chapitre).
 :::
 :::
@@ -358,7 +358,7 @@ b. Quelle alternative, parmi celles évoquées dans ce chapitre, serait plus rob
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-5"}
 a. D'après la @tbl-scaling, la normalisation est très sensible aux valeurs aberrantes, car $x_{max}$ serait fixé par ces trois valeurs extrêmes (> 5 000 000). La quasi-totalité des observations « normales » (30 000 à 200 000) se retrouverait alors écrasée dans un intervalle minuscule proche de 0, perdant presque toute variabilité utile.
-b. Le **`RobustScaler`** (§5.3), fondé sur la médiane et l'écart interquartile plutôt que sur le minimum/maximum ou la moyenne/écart-type, serait nettement moins sensible à ces quelques valeurs extrêmes.
+b. Le **`RobustScaler`** (@sec-choix-echelle), fondé sur la médiane et l'écart interquartile plutôt que sur le minimum/maximum ou la moyenne/écart-type, serait nettement moins sensible à ces quelques valeurs extrêmes.
 :::
 :::
 
@@ -379,7 +379,7 @@ b. Proposez, en français (sans code), la démarche correcte à suivre.
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-6"}
-a. **Oui.** Le `StandardScaler` est ajusté (`fit`) sur l'intégralité des données, **avant** la séparation en Train/Test. La moyenne et l'écart-type utilisés pour standardiser `X_train` intègrent donc déjà des informations issues de `X_test` — exactement le cas décrit dans le chapitre précédent (§4.2) et rappelé en §5.3 de ce chapitre.
+a. **Oui.** Le `StandardScaler` est ajusté (`fit`) sur l'intégralité des données, **avant** la séparation en Train/Test. La moyenne et l'écart-type utilisés pour standardiser `X_train` intègrent donc déjà des informations issues de `X_test` — exactement le cas décrit dans le chapitre précédent (@sec-fuite-donnees) et rappelé dans @sec-sensibilite-echelle.
 b. Il faut d'abord **séparer** les données en `X_train` / `X_test`, puis **ajuster** le `StandardScaler` uniquement sur `X_train` (`fit_transform`), et enfin **appliquer** ce même scaler déjà ajusté à `X_test` (`transform` seul, sans nouveau `fit`).
 :::
 :::
@@ -397,7 +397,7 @@ b. Quel est le rôle précis du `ColumnTransformer` dans ce contexte ?
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-7"}
 a. Le `StandardScaler` suppose des variables **numériques** (il calcule une moyenne et un écart-type) ; l'appliquer directement à des colonnes catégorielles (`quartier`, `type_bien`) n'a pas de sens mathématique. De même, l'imputation par la médiane n'est pas adaptée à une variable catégorielle (qui nécessite plutôt une imputation par le mode, @tbl-imputation).
-b. Le `ColumnTransformer` (§6.1, @fig-pipeline) permet d'appliquer des transformations **différentes et adaptées** selon le type de chaque colonne — une chaîne `imputation → StandardScaler` pour les colonnes numériques, une chaîne `imputation → OneHotEncoder` pour les colonnes catégorielles — puis de **fusionner** automatiquement les résultats en une seule matrice.
+b. Le `ColumnTransformer` (@sec-columntransformer-pipeline, @fig-pipeline) permet d'appliquer des transformations **différentes et adaptées** selon le type de chaque colonne — une chaîne `imputation → StandardScaler` pour les colonnes numériques, une chaîne `imputation → OneHotEncoder` pour les colonnes catégorielles — puis de **fusionner** automatiquement les résultats en une seule matrice.
 :::
 :::
 
@@ -412,7 +412,7 @@ b. Cela affecte-t-il davantage un algorithme de classification ou serait-ce sans
 
 :::{.content-visible when-profile="teacher"}
 ::: {.callout-tip collapse="true" title="Solution de l'exercice @exr-pretraitement-8"}
-a. Comme indiqué en §3.3, un doublon donne artificiellement **plus de poids** à l'observation concernée lors de l'apprentissage : le modèle « voit » deux fois le même client, ce qui biaise l'estimation des paramètres en faveur du profil de ce client dupliqué.
+a. Comme indiqué dans @sec-doublons-incoherences, un doublon donne artificiellement **plus de poids** à l'observation concernée lors de l'apprentissage : le modèle « voit » deux fois le même client, ce qui biaise l'estimation des paramètres en faveur du profil de ce client dupliqué.
 b. Cela affecte potentiellement **tout** algorithme entraîné par minimisation d'une fonction de coût sur l'ensemble des observations (donc la plupart des algorithmes vus dans ce cours) : plus une observation est dupliquée, plus son influence sur le modèle final est disproportionnée par rapport à son poids réel dans la population.
 :::
 :::

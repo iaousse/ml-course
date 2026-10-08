@@ -629,7 +629,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>random_state=42</code> fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours <strong>le même</strong> partage Train/Test en réexécutant le code - indispensable pour la reproductibilité (chapitre 1, §4.3).</p>
+<p><code>random_state=42</code> fixe le générateur aléatoire du découpage : cela garantit que vous obtenez toujours <strong>le même</strong> partage Train/Test en réexécutant le code - indispensable pour la reproductibilité (chapitre 1, <a href="../chapitres/00_intro_ml.html#sec-uv" class="quarto-xref"><span>4.3. Gestion de projet avec uv</span></a>).</p>
 </div>
 </div>
 </section>
@@ -737,7 +737,7 @@ window.Quarto = {
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>baseline <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>baseline.fit(X_iris_train, y_iris_train)</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accuracy de la baseline :"</span>, <span class="bu">round</span>(baseline.score(X_iris_test, y_iris_test), <span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Le jeu <code>iris</code> étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % - un score que <strong>tout</strong> modèle sérieux doit largement dépasser pour être utile (voir chapitre 2, §6).</p>
+<p>Le jeu <code>iris</code> étant parfaitement équilibré (50 fleurs par espèce), cette baseline plafonne autour de 33 % - un score que <strong>tout</strong> modèle sérieux doit largement dépasser pour être utile (voir <a href="../chapitres/01_ecosysteme_ml.html#sec-baseline-accuracy" class="quarto-xref"><span>6. La Baseline et les limites de l’Accuracy</span></a>).</p>
 </section>
 <section id="un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques" class="level2">
 <h2 class="anchored" data-anchor-id="un-vrai-modèle-sa-matrice-de-confusion-et-ses-métriques">6. Un vrai modèle, sa matrice de confusion et ses métriques</h2>
@@ -774,11 +774,11 @@ window.Quarto = {
 <p>Comme précisé au chapitre 2 (<a href="../chapitres/04_classification.html#tbl-confusion" class="quarto-xref">Table&nbsp;<span>1</span></a>), la convention adoptée dans ce cours est : <strong>lignes = classes réelles, colonnes = classes prédites</strong>. La diagonale contient les prédictions correctes ; toute valeur hors diagonale est une erreur, et sa position indique précisément quelle classe a été confondue avec quelle autre - une information que l’<em>accuracy</em> seule ne donne jamais.</p>
 </div>
 </div>
-<p><code>classification_report</code> calcule automatiquement, pour chaque classe, la <strong>précision</strong>, le <strong>rappel</strong> et le <strong>F1-score</strong> (moyenne harmonique des deux) - trois métriques annoncées au chapitre 2 (§6) et détaillées au chapitre 5.</p>
+<p><code>classification_report</code> calcule automatiquement, pour chaque classe, la <strong>précision</strong>, le <strong>rappel</strong> et le <strong>F1-score</strong> (moyenne harmonique des deux) - trois métriques annoncées dans <a href="../chapitres/01_ecosysteme_ml.html#sec-baseline-accuracy" class="quarto-xref"><span>6. La Baseline et les limites de l’Accuracy</span></a> et détaillées dans <a href="../chapitres/04_classification.html#sec-evaluation-classification" class="quarto-xref"><span>4. Évaluer une classification binaire</span></a>.</p>
 </section>
 <section id="repérer-une-fuite-de-données-concrètement" class="level2">
 <h2 class="anchored" data-anchor-id="repérer-une-fuite-de-données-concrètement">7. Repérer une fuite de données, concrètement</h2>
-<p>Le chapitre 2 (§4.2) insiste sur la fuite de données. Provoquons-en une, volontairement, pour en mesurer l’effet chiffré.</p>
+<p>Le chapitre 2 (<a href="../chapitres/01_ecosysteme_ml.html#sec-fuite-donnees" class="quarto-xref"><span>4.2. La fuite de données (Data Leakage)</span></a>) insiste sur la fuite de données. Provoquons-en une, volontairement, pour en mesurer l’effet chiffré.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Version INCORRECTE : standardisation avant la séparation ---</span></span>
@@ -812,7 +812,7 @@ window.Quarto = {
 </section>
 <section id="un-premier-aperçu-du-réglage-dhyperparamètres" class="level2">
 <h2 class="anchored" data-anchor-id="un-premier-aperçu-du-réglage-dhyperparamètres">8. Un premier aperçu du réglage d’hyperparamètres</h2>
-<p><span class="math inline">\(k\)</span> (le nombre de voisins de <code>KNeighborsClassifier</code>) est un <strong>hyperparamètre</strong> (<a href="../chapitres/01_ecosysteme_ml.html#tbl-parametres" class="quarto-xref">Table&nbsp;<span>3</span></a>) : il n’est pas appris, il doit être choisi. La bonne pratique, rappelée au chapitre 2 (§5), est de comparer plusieurs valeurs <strong>uniquement via la validation croisée</strong>, jamais sur le jeu de test.</p>
+<p><span class="math inline">\(k\)</span> (le nombre de voisins de <code>KNeighborsClassifier</code>) est un <strong>hyperparamètre</strong> (<a href="../chapitres/01_ecosysteme_ml.html#tbl-parametres" class="quarto-xref">Table&nbsp;<span>3</span></a>) : il n’est pas appris, il doit être choisi. La bonne pratique, rappelée dans <a href="../chapitres/01_ecosysteme_ml.html#sec-parametres-hyperparametres" class="quarto-xref"><span>5. Paramètres et Hyperparamètres</span></a>, est de comparer plusieurs valeurs <strong>uniquement via la validation croisée</strong>, jamais sur le jeu de test.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">15</span>]:</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    scores_k <span class="op">=</span> cross_val_score(</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        KNeighborsClassifier(n_neighbors<span class="op">=</span>k), X_iris_train, y_iris_train, cv<span class="op">=</span><span class="dv">5</span>,</span>
@@ -864,7 +864,7 @@ window.Quarto = {
 <section id="partie-c---une-mise-à-léchelle-change-t-elle-tout" class="level3">
 <h3 class="anchored" data-anchor-id="partie-c---une-mise-à-léchelle-change-t-elle-tout">Partie C - Une mise à l’échelle change-t-elle tout ?</h3>
 <ol start="5" type="1">
-<li>Refaites la question 4 en standardisant les données au préalable (avec la méthode <strong>correcte</strong>, sans fuite). L’accuracy change-t-elle ? Proposez une explication liée à la nature de l’algorithme KNN (indice : pensez à la notion de distance entre observations, chapitre 3 §5).</li>
+<li>Refaites la question 4 en standardisant les données au préalable (avec la méthode <strong>correcte</strong>, sans fuite). L’accuracy change-t-elle ? Proposez une explication liée à la nature de l’algorithme KNN (indice : pensez à la notion de distance entre observations, <a href="../chapitres/module_collecte_pretraitement_commun.html#sec-mise-echelle" class="quarto-xref"><span>5. Mise à l’échelle : standardisation et normalisation</span></a>).</li>
 </ol>
 </section>
 <section id="partie-d---régler-lhyperparamètre-k" class="level3">

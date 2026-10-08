@@ -66,7 +66,7 @@ print("Résultats identiques :", np.allclose([a_calcule, b_calcule], [modele.coe
 
 ## 2. Passer à la régression multiple
 
-En pratique, un seul prédicteur suffit rarement. Construisons un jeu de données d'annonces immobilières casablancaises plus riche, dans l'esprit du fil rouge du cours (chapitre 1, §3).
+En pratique, un seul prédicteur suffit rarement. Construisons un jeu de données d'annonces immobilières casablancaises plus riche, dans l'esprit du fil rouge du cours (chapitre 1, @sec-cycle-vie-ml).
 
 ```python
 import pandas as pd
@@ -155,11 +155,12 @@ print(f"R²   = {r2:.3f}")
 | RMSE | Celle de $y$ (MAD) | Racine de la MSE, revient à l'unité d'origine - la plus lisible en pratique | Minimiser |
 | $R^2$ | Sans unité, $\le 1$ | Proportion de variance expliquée par le modèle par rapport à une baseline qui prédit toujours la moyenne | Maximiser |
 
-::: {.callout-note title="R² et baseline (rappel chapitre 2, §6)"}
+::: {.callout-note title="R² et baseline"}
+Pour le rappel sur les baselines, voir @sec-baseline-accuracy.
 Un $R^2$ de 0 correspond exactement à la performance d'une baseline qui prédirait toujours $\bar{y}$ (la moyenne). Un $R^2$ négatif signifie que votre modèle fait **pire** que cette baseline triviale - un signal d'alerte à ne jamais ignorer.
 :::
 
-## 4. Diagnostiquer un modèle par ses résidus
+## 4. Diagnostiquer un modèle par ses résidus {#sec-lab3-residus}
 
 ```python
 import matplotlib.pyplot as plt
@@ -246,7 +247,7 @@ print("R² sur le test, avec le meilleur modèle :", round(recherche.score(X_tes
 `recherche` se comporte ensuite exactement comme un modèle entraîné classique : `recherche.predict(...)` et `recherche.score(...)` utilisent automatiquement le meilleur pipeline trouvé.
 
 ::: {.callout-note title="Pourquoi une grille plutôt qu'une seule valeur ?"}
-Choisir $\alpha$ à l'œil, ou pire sur le jeu de test, revient à une fuite de données par les hyperparamètres (chapitre 2, §5) : le score obtenu serait artificiellement optimiste et ne refléterait pas la performance réelle attendue en production.
+Choisir $\alpha$ à l'œil, ou pire sur le jeu de test, revient à une fuite de données par les hyperparamètres (@sec-parametres-hyperparametres) : le score obtenu serait artificiellement optimiste et ne refléterait pas la performance réelle attendue en production.
 :::
 
 ## 7. Travail {#sec-lab3-projet}
@@ -263,7 +264,7 @@ Ce projet utilise le jeu de données `diabetes` fourni par `scikit-learn` (`from
 
 3. Entraînez une `LinearRegression` simple (sans régularisation). Calculez MAE, RMSE et $R^2$ sur le jeu de test.
 4. Affichez les coefficients appris (`.coef_`) associés à chaque variable. Quelle variable semble avoir le plus d'impact (en valeur absolue) ?
-5. Tracez le graphique résidus vs prédictions (§4). Observez-vous un motif particulier ?
+5. Tracez le graphique résidus vs prédictions (@sec-lab3-residus). Observez-vous un motif particulier ?
 
 ### Partie C - Régularisation et réglage d'hyperparamètre
 

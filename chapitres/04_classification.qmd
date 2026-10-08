@@ -278,7 +278,7 @@ $$
 
 Ce modèle montre très bien comment un score linéaire est transformé en probabilité et comment le seuil de décision agit sur la classification.
 
-## 4. Évaluer une classification binaire
+## 4. Évaluer une classification binaire {#sec-evaluation-classification}
 
 La **matrice de confusion** constitue le point de départ de l'évaluation d'un modèle de classification binaire. Elle permet de comparer, pour chaque observation, sa **classe réelle** à la **classe prédite par le modèle**. Toutes les principales métriques présentées dans cette section sont directement construites à partir de ses quatre cases : vrais positifs, vrais négatifs, faux positifs et faux négatifs.
 

@@ -541,7 +541,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"churn"</span>: churn,</span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clients[<span class="st">"churn"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>).<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Comme souvent en pratique, les classes sont <strong>déséquilibrées</strong> : gardez ce chiffre en tête, il conditionne toute la suite (chapitre 2, §6, « le piège des classes déséquilibrées »).</p>
+<p>Comme souvent en pratique, les classes sont <strong>déséquilibrées</strong> : gardez ce chiffre en tête, il conditionne toute la suite (voir le « piège des classes déséquilibrées », <a href="../chapitres/01_ecosysteme_ml.html#sec-baseline-accuracy" class="quarto-xref"><span>6. La Baseline et les limites de l’Accuracy</span></a>).</p>
 </section>
 <section id="un-pipeline-de-classification-de-bout-en-bout" class="level2">
 <h2 class="anchored" data-anchor-id="un-pipeline-de-classification-de-bout-en-bout">2. Un pipeline de classification, de bout en bout</h2>
@@ -708,7 +708,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Sur un jeu déséquilibré, optimiser l’accuracy par validation croisée pousserait naturellement <code>GridSearchCV</code> vers des modèles qui prédisent presque toujours la classe majoritaire (chapitre 2, §6). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.</p>
+<p>Sur un jeu déséquilibré, optimiser l’accuracy par validation croisée pousserait naturellement <code>GridSearchCV</code> vers des modèles qui prédisent presque toujours la classe majoritaire (voir <a href="../chapitres/01_ecosysteme_ml.html#sec-baseline-accuracy" class="quarto-xref"><span>6. La Baseline et les limites de l’Accuracy</span></a>). Le F1-score, qui combine précision et rappel, est un choix bien plus pertinent ici.</p>
 </div>
 </div>
 </section>
@@ -753,7 +753,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-lab4-projet" class="level2">
 <h2 class="anchored" data-anchor-id="sec-lab4-projet">8. Travail</h2>
-<p><strong>Jeu de données du projet : le Titanic, à nouveau</strong> Reprenez le jeu de données du Titanic préparé au Lab 2 (§9). Cette fois, l’objectif n’est plus seulement de le nettoyer, mais de réellement <strong>prédire</strong> la survie (<code>survived</code>) d’un passager.</p>
+<p><strong>Jeu de données du projet : le Titanic, à nouveau</strong> Reprenez le jeu de données du Titanic préparé au Lab 2 (<a href="lab2_collecte_pretraitement.html#sec-lab2-projet" class="quarto-xref"><span>8. Travail</span></a>). Cette fois, l’objectif n’est plus seulement de le nettoyer, mais de réellement <strong>prédire</strong> la survie (<code>survived</code>) d’un passager.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>titanic <span class="op">=</span> pd.read_csv(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv"</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>

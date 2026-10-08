@@ -628,7 +628,6 @@ Dans ces cas, il faut parfois transformer les variables, ajouter des caractéris
 
 
 ::: {#exr-reg-1}
-### Identifier le type de problème
 
 Pour chaque situation, indique si l'on parle d'une tâche de régression ou de classification :
 
@@ -650,7 +649,6 @@ Pour chaque situation, indique si l'on parle d'une tâche de régression ou de c
 :::
 
 ::: {#exr-reg-2}
-### Interpréter un coefficient
 
 On considère le modèle :
 
@@ -668,7 +666,6 @@ Interprétez le sens des coefficients associés à $x_1$ et $x_2$, toutes choses
 :::
 
 ::: {#exr-reg-3}
-### Calculer une régression simple
 
 On donne les observations suivantes :
 
@@ -697,7 +694,6 @@ L'ordonnée à l'origine est donc $\beta_0=\bar{y}-\beta_1\bar{x}=13/3-4=1/3$. L
 :::
 
 ::: {#exr-reg-4}
-### Expliquer le résidu
 
 Pourquoi le résidu $e_i = y_i - \hat{y}_i$ est-il important ? Donnez deux raisons.
 :::
@@ -709,7 +705,6 @@ Le résidu mesure l'écart entre la valeur observée et la prédiction. L'examin
 :::
 
 ::: {#exr-reg-5}
-### Choisir une métrique
 
 Un responsable veut éviter les grandes erreurs de prévision, même si elles sont rares. Quelle métrique entre MAE, MSE et RMSE est la plus adaptée ? Justifiez.
 :::
@@ -721,7 +716,6 @@ La **RMSE** convient si l'on veut pénaliser davantage les grandes erreurs tout 
 :::
 
 ::: {#exr-reg-6}
-### Vérifier les hypothèses
 
 Donnez une situation où une régression linéaire risque d'être peu adaptée. Expliquez pourquoi.
 :::
@@ -733,7 +727,6 @@ Si la relation entre la variable explicative et la cible est fortement non liné
 :::
 
 ::: {#exr-reg-7}
-### Comprendre le gradient
 
 Expliquez en une phrase le rôle du gradient dans la descente de gradient.
 :::
@@ -745,7 +738,6 @@ Le gradient indique la direction de plus forte augmentation de la fonction de co
 :::
 
 ::: {#exr-reg-8}
-### Comparer les deux approches
 
 Comparez brièvement la méthode MCO et la descente de gradient pour la régression linéaire.
 :::

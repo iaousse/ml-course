@@ -28,7 +28,7 @@ import pandas as pd
 print("pandas prêt à lire le CSV qui sera créé en section 2.")
 ```
 
-(Nous allons construire ce fichier nous-mêmes en §2.)
+(Nous allons construire ce fichier nous-mêmes dans @sec-lab2-jeu-imparfait.)
 
 ### 1.2. Une API JSON
 
@@ -96,12 +96,12 @@ for livre in livres:
     print(f"{titre} - {prix}")
 ```
 
-::: {.callout-warning title="Éthique et robustesse (rappel chapitre 3, §1.2)"}
-`books.toscrape.com` est un site conçu pour l'entraînement au scraping. Sur un site réel, il faut vérifier `robots.txt`, les conditions d'utilisation, et ajouter un délai entre les requêtes (`time.sleep(1)`). Un scraper de ce type reste fragile : il casse dès que la structure HTML change.
+::: {.callout-warning title="Éthique et robustesse"}
+Comme le rappelle @sec-web-scraping, `books.toscrape.com` est un site conçu pour l'entraînement au scraping. Sur un site réel, il faut vérifier `robots.txt`, les conditions d'utilisation, et ajouter un délai entre les requêtes (`time.sleep(1)`). Un scraper de ce type reste fragile : il casse dès que la structure HTML change.
 :::
 
 
-## 2. Construire un jeu de données volontairement imparfait
+## 2. Construire un jeu de données volontairement imparfait {#sec-lab2-jeu-imparfait}
 
 Pour pratiquer le nettoyage, nous avons besoin de vraies imperfections. Créons-les nous-mêmes, en connaissance de cause :
 
@@ -169,7 +169,7 @@ aberrantes = clients[(clients["age"] < borne_basse) | (clients["age"] > borne_ha
 print(aberrantes[["client_id", "age"]])
 ```
 
-Ici, `age = 250` est manifestement une **erreur de saisie** (un âge humain plausible) plutôt qu'une observation rare et légitime (chapitre 3, §3.2) - on la remplace par une valeur manquante, qui sera traitée comme telle :
+Ici, `age = 250` est manifestement une **erreur de saisie** (un âge humain plausible) plutôt qu'une observation rare et légitime (voir @sec-valeurs-aberrantes) - on la remplace par une valeur manquante, qui sera traitée comme telle :
 
 ```python
 clients.loc[clients["age"] > 120, "age"] = None
@@ -208,7 +208,7 @@ print("Résultats identiques :", np.allclose(age_impute_a_la_main.to_numpy(), ag
 ```
 
 ::: {.callout-important title="Pourquoi passer par `scikit-learn` si le résultat est identique ?"}
-Sur une seule colonne, coder l'imputation à la main est simple. L'intérêt de `SimpleImputer` apparaît dès que l'on doit : (1) répéter l'opération sur de nombreuses colonnes, (2) l'intégrer dans un `Pipeline` qui garantit l'ordre `fit` sur train puis `transform` sur test (chapitre 3, §3.1), et (3) la combiner à d'autres étapes via `ColumnTransformer` (§6 de ce Lab).
+Sur une seule colonne, coder l'imputation à la main est simple. L'intérêt de `SimpleImputer` apparaît dès que l'on doit : (1) répéter l'opération sur de nombreuses colonnes, (2) l'intégrer dans un `Pipeline` qui garantit l'ordre `fit` sur train puis `transform` sur test (voir @sec-valeurs-manquantes), et (3) la combiner à d'autres étapes via `ColumnTransformer` (voir @sec-lab2-pipeline).
 :::
 
 ### 4.3. Imputation catégorielle
@@ -220,7 +220,7 @@ clients["ville"] = imputer_ville.fit_transform(clients[["ville"]]).ravel()
 
 ## 5. Encodage : ne pas confondre `LabelEncoder` et `OrdinalEncoder`
 
-Le chapitre 3 (§4.1) distingue encodage ordinal et One-Hot. En pratique, `scikit-learn` propose deux outils différents pour l'encodage ordinal, à ne pas confondre :
+Le chapitre 3 (@sec-encodage-categories) distingue encodage ordinal et One-Hot. En pratique, `scikit-learn` propose deux outils différents pour l'encodage ordinal, à ne pas confondre :
 
 | Outil | Usage prévu |
 |---|---|
@@ -295,7 +295,9 @@ print(comparaison.tail(3))
 
 Observez comme la valeur extrême écrase les autres avec `StandardScaler` (des valeurs standardisées proches de 0 pour presque tout le monde), alors que `RobustScaler` - fondé sur la médiane et l'écart interquartile - reste nettement plus stable (chapitre 3, @tbl-scaling).
 
-## 7. Construire le pipeline complet, sans fuite
+## 7. Construire le pipeline complet, sans fuite {#sec-lab2-pipeline}
+
+Le prétraitement doit être ajusté uniquement sur les données d'entraînement, comme pour l'imputation (@sec-valeurs-manquantes) et la mise à l'échelle (@sec-sensibilite-echelle).
 
 ```python
 from sklearn.compose import ColumnTransformer
@@ -331,7 +333,7 @@ pretraitement = ColumnTransformer([
     ("cat", pipeline_categorielle, colonnes_categorielles),
 ])
 
-# fit UNIQUEMENT sur le train (chapitre 3, §5.3 et §3.1)
+# Ajuster le prétraitement uniquement sur les données d'entraînement
 X_train_pret = pretraitement.fit_transform(X_train)
 X_test_pret = pretraitement.transform(X_test)
 
@@ -382,7 +384,7 @@ C'est un jeu **réel**, avec de véritables valeurs manquantes et un mélange de
 
 9. Construisez un `ColumnTransformer` complet (imputation + encodage + mise à l'échelle adaptés à chaque type de colonne) pour préparer `X`, avec `survived` comme cible $y$.
 10. Séparez Train/Test (80/20, stratifié sur `survived`), ajustez votre pipeline **uniquement sur le train**, puis transformez le test. Affichez la forme (`shape`) du tableau obtenu.
-11. *(Bonus)* Enchaînez votre `ColumnTransformer` avec un `LogisticRegression` dans un unique `Pipeline`, entraînez-le, et affichez son accuracy sur le jeu de test. Vous retrouverez ce même jeu de données pour aller plus loin au Lab 4 (classification).
+11. *(Bonus)* Enchaînez votre `ColumnTransformer` avec un `LogisticRegression` dans un unique `Pipeline`, entraînez-le, et affichez son accuracy sur le jeu de test. Vous retrouverez ce même jeu de données pour aller plus loin au Lab 4 (classification, @sec-lab4-projet).
 
 ### Livrables
 
